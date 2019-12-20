@@ -1,2 +1,3 @@
 # q2-micom
-A Qiime plugin for MICOM.
+
+A Qiime 2 plugin for MICOM.
