@@ -1,7 +1,11 @@
 """Formats and types for metabolic modeling."""
 
+import pandas as pd
 from qiime2.plugin import SemanticType
 import qiime2.plugin.model as model
+
+REQ_FIELDS = pd.Series(["kingdom", "phylum", "class", "order",
+                        "family", "genus", "species"])
 
 
 class SBMLFormat(model.TextFileFormat):
@@ -9,15 +13,24 @@ class SBMLFormat(model.TextFileFormat):
     def _check_n_lines(self, n):
         """Crudely check if the file is SBML."""
         with open(str(self), mode="r") as xml_file:
-            lines = xml_file.readlines(n).join("")
+            lines = "".join(xml_file.readlines(n))
         return ".xml" in str(self).lower() and "<sbml" in lines.lower()
 
     def _validate_(self, level):
         record_map = {'min': 5, 'max': 100}
-        return self._check_n_lines(self, record_map[level])
+        return self._check_n_lines(record_map[level])
+
+
+class SBMLManifest(model.TextFileFormat):
+    """Represents an SBML file."""
+
+    def _validate_(self, level):
+        header = open(str(self), mode="r").readline().split(",")
+        return REQ_FIELDS.isin(header).all()
 
 
 class SBMLDirectory(model.DirectoryFormat):
+    manifest = model.File("manifest.csv", format=SBMLManifest)
     sbml_files = model.FileCollection(r".+\.xml", format=SBMLFormat)
 
     @sbml_files.set_path_maker
@@ -71,16 +84,19 @@ MicomMediumDirectory = model.SingleFileDirectoryFormat(
 TradeoffResultsDirectory = model.SingleFileDirectoryFormat(
     "TradeoffResultsDirectory", "tradeoff.csv", GrowthRates)
 
+SBML = SemanticType("SBML")
+Pickle = SemanticType("Pickle")
+
 MetabolicModels = SemanticType(
     "MetabolicModels",
     field_names="format",
-    field_members=(SemanticType("SBML"),)
+    field_members={"format": (SBML,)}
 )
 
 CommunityModels = SemanticType(
     "CommunityModels",
     field_names="format",
-    field_members=(SemanticType("Pickle"),)
+    field_members={"format": (Pickle,)}
 )
 
 MicomResults = SemanticType("MicomResults")

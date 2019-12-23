@@ -15,3 +15,15 @@ def _1(data: pd.DataFrame) -> ft.MicomMediumFile:
 @plugin.register_transformer
 def _2(mm: ft.MicomMediumFile) -> pd.DataFrame:
     return pd.read_csv(str(mm), index_col="reaction")
+
+
+@plugin.register_transformer
+def _3(data: pd.DataFrame) -> ft.SBMLManifest:
+    sbm = ft.SBMLManifest()
+    data.to_csv(str(sbm))
+    return sbm
+
+
+@plugin.register_transformer
+def _4(sbm: ft.SBMLManifest) -> pd.DataFrame:
+    return pd.read_csv(str(sbm), index_col="id")

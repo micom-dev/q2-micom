@@ -1,17 +1,22 @@
 """Plugin setup."""
 
+import importlib
 from qiime2.plugin import (Plugin, Str, Properties, Choices, Int, Bool, Range,
                            Float, Set, Visualization, Metadata, MetadataColumn,
                            Categorical, Numeric, Citations)
 
 import q2_micom
 from q2_micom._formats_and_types import (
+    SBML, Pickle,
     SBMLFormat, SBMLDirectory, CommunityModelFormat,
     CommunityModelDirectory, GrowthRates, ExchangeFluxes,
     MicomResultsDirectory, MicomMediumFile,
     MicomMediumDirectory, MetabolicModels, CommunityModels,
-    MicomResults, MicomMedium, TradeoffResults, TradeoffResultsDirectory
+    MicomResults, MicomMedium, TradeoffResults, TradeoffResultsDirectory,
+    REQ_FIELDS
 )
+from q2_types.feature_data import (FeatureData, Taxonomy)
+from q2_types.feature_table import (FeatureTable, RelativeFrequency, Frequency)
 
 citations = Citations.load("citations.bib", package="q2_micom")
 
@@ -41,86 +46,64 @@ plugin.register_semantic_type_to_format(
 plugin.register_semantic_type_to_format(MicomMedium, MicomMediumDirectory)
 
 plugin.methods.register_function(
-    function=q2_diversity.beta_phylogenetic,
-    inputs={"table": FeatureTable[Frequency],
-            "phylogeny": Phylogeny[Rooted]},
-    parameters={"metric": Str % Choices(beta.phylogenetic_metrics()),
-                "n_jobs": Int,
-                "variance_adjusted": Bool,
-                "alpha": Float % Range(0, 1, inclusive_end=True),
-                "bypass_tips": Bool},
-    outputs=[("distance_matrix", DistanceMatrix % Properties("phylogenetic"))],
-    input_descriptions={
-        "table": ("The feature table containing the samples over which beta "
-                  "diversity should be computed."),
-        "phylogeny": ("Phylogenetic tree containing tip identifiers that "
-                      "correspond to the feature identifiers in the table. "
-                      "This tree can contain tip ids that are not present in "
-                      "the table, but all feature ids in the table must be "
-                      "present in this tree.")
-    },
+    function=q2_micom.make_db,
+    inputs={},
+    parameters={"meta": Metadata, "folder": Str},
+    outputs=[("metabolic_models", MetabolicModels[SBML])],
+    input_descriptions={},
     parameter_descriptions={
-        "metric": "The beta diversity metric to be computed.",
-        "n_jobs": "The number of workers to use.",
-        "variance_adjusted": ("Perform variance adjustment based on Chang et "
-                              "al. BMC Bioinformatics 2011. Weights distances "
-                              "based on the proportion of the relative "
-                              "abundance represented between the samples at a"
-                              " given node under evaluation."),
-        "alpha": ("This parameter is only used when the choice of metric is "
-                  "generalized_unifrac. The value of alpha controls importance"
-                  " of sample proportions. 1.0 is weighted normalized UniFrac."
-                  " 0.0 is close to unweighted UniFrac, but only if the sample"
-                  " proportions are dichotomized."),
-        "bypass_tips": ("In a bifurcating tree, the tips make up about 50% of "
-                        "the nodes in a tree. By ignoring them, specificity "
-                        "can be traded for reduced compute time. This has the"
-                        " effect of collapsing the phylogeny, and is analogous"
-                        " (in concept) to moving from 99% to 97% OTUs")
-    },
-    output_descriptions={"distance_matrix": "The resulting distance matrix."},
-    name="Beta diversity (phylogenetic)",
-    description=("Computes a user-specified phylogenetic beta diversity metric"
-                 " for all pairs of samples in a feature table."),
+        "meta": ("Metadata for the individual metabolic models in `folder`. "
+                 "Must contain the the following columns: %s." %
+                 ", ".join(REQ_FIELDS)),
+        "folder": ("The folder where the SBML models are stored. Model files "
+                   "must have filenames in `{ID}.xml` where {ID} is the id "
+                   "in the metadata file."),
+        },
+    output_descriptions={"metabolic_models": "The metabolic model DB."},
+    name="Build a metabolic model database.",
+    description=(
+        "Bundles the metabolic models used by MICOM. "
+        "You will only need to run this function if you want to build a "
+        "custom DB. For most use cases downloading the prebuilt AGORA DB "
+        "should be sufficient."
+    ),
     citations=[
-        citations["lozupone2005unifrac"],
-        citations["lozupone2007quantitative"],
-        citations["chang2011variance"],
-        citations["chen2012associating"],
-        citations["mcdonald2018unifrac"]]
+        citations["agora"],
+        citations["agora_reply"],
+        citations["micom"]
+    ]
 )
 
-
-plugin.visualizers.register_function(
-    function=q2_diversity.adonis,
-    inputs={"distance_matrix": DistanceMatrix},
-    parameters={"metadata": Metadata,
-                "formula": Str,
-                "permutations": Int % Range(1, None),
-                "n_jobs": Int % Range(1, None)},
+plugin.methods.register_function(
+    function=q2_micom.build_models,
+    inputs={"abundance": FeatureTable[Frequency | RelativeFrequency],
+            "taxonomy": FeatureData[Taxonomy],
+            "models": MetabolicModels[SBML],
+            "medium": MicomMedium
+            },
+    parameters={"rank": Str % Choices(q2_micom._build.RANKS),
+                "threads": Int % Range(1, None),
+                "cutoff": Float % Range(0.0, 1.0)
+                },
+    outputs=[("community_models", CommunityModels[Pickle])],
     input_descriptions={
-        "distance_matrix": "Matrix of distances between pairs of samples."
+        "abundance": ("The feature table containing the samples over which beta "
+                  "diversity should be computed."),
+        "taxonomy": "The taxonomy assignments for the ASVs in the table.",
+        "models": "The single taxon model database to use.",
+        "medium": "The growth medium to use."
     },
     parameter_descriptions={
-        "metadata": "Sample metadata containing formula terms.",
-        "formula": "Model formula containing only independent terms contained "
-                   "in the sample metadata. These can be continuous variables "
-                   "effects as well as their interaction. Enclose formulae in "
-                   "quotes to avoid unpleasant surprises.",
-        "permutations": "The number of permutations to be run when computing "
-                        "p-values.",
-        "n_jobs": "Number of parallel processes to run."
-    },
-    name="adonis PERMANOVA test for beta group significance",
-    description=("Determine whether groups of samples are significantly "
-                 "different from one another using the ADONIS permutation-"
-                 "based statistical test in vegan-R. The function partitions "
-                 "sums of squares of a multivariate data set, and is directly "
-                 "analogous to MANOVA (multivariate analysis of variance). "
-                 "This action differs from beta_group_significance in that it "
-                 "accepts R formulae to perform multi-way ADONIS tests; "
-                 "beta_group_signficance only performs one-way tests. For "
-                 "more details see http://cc.oulu.fi/~jarioksa/softhelp/vegan/"
-                 "html/adonis.html"),
-    citations=[citations["anderson2001new"], citations["Oksanen2018"]]
+        "rank": "The phylogenetic rank at which to summarize taxa.",
+        "threads": "The number of threads to use when constructing models.",
+        },
+    output_descriptions={"community_models": "The community models."},
+    name="Build community models.",
+    description=("Builds the metabolic community models for a "
+                 "set of samples."),
+    citations=[
+        citations["micom"]
+    ]
 )
+
+importlib.import_module('q2_micom._transform')
