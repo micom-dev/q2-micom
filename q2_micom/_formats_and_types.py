@@ -44,7 +44,16 @@ class CommunityModelFormat(model.BinaryFileFormat):
         return str(self).lower().endswith(".pickle")
 
 
+class CommunityModelManifest(model.TextFileFormat):
+    """Represents a manifets for community models."""
+
+    def _validate_(self, level):
+        header = open(str(self), mode="r").readline().split(",")
+        return "sample_id" in header
+
+
 class CommunityModelDirectory(model.DirectoryFormat):
+    manifest = model.File("manifest.csv", format=CommunityModelManifest)
     model_files = model.FileCollection(r".+\.pickle",
                                        format=CommunityModelFormat)
 
@@ -62,14 +71,13 @@ class GrowthRates(model.TextFileFormat):
 
 class ExchangeFluxes(model.TextFileFormat):
     def _validate_(self, level):
-        header = open(str(self), mode="r").readline().split(",")
-        return header == ["sample_id", "taxon", "metabolite", "flux",
-                          "direction"]
+        return str(self).endswith(".parquet")
 
 
 class MicomResultsDirectory(model.DirectoryFormat):
     growth_rates = model.File("growth_rates.csv", format=GrowthRates)
-    exchange_fluxes = model.File("exchange_fluxes.csv", format=ExchangeFluxes)
+    exchange_fluxes = model.File("exchange_fluxes.parquet",
+                                 format=ExchangeFluxes)
 
 
 class MicomMediumFile(model.TextFileFormat):

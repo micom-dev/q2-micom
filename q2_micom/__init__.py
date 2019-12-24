@@ -1,6 +1,8 @@
 __version__ = "0.1.0"
 
-from q2_micom._build import build_models
-from q2_micom._db import make_db
+from q2_micom._build import build
+from q2_micom._db import db
+from q2_micom._growth import grow
+from q2_micom._tradeoff import tradeoff
 
-__all__ = ["make_db", "build_models"]
+__all__ = ["db", "build", "grow", "tradeoff"]
