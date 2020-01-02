@@ -69,7 +69,7 @@ class GrowthRates(model.TextFileFormat):
                           "abundance", "tradeoff", "growth_rate"]
 
 
-class ExchangeFluxes(model.TextFileFormat):
+class Fluxes(model.TextFileFormat):
     def _validate_(self, level):
         return str(self).endswith(".parquet")
 
@@ -77,7 +77,7 @@ class ExchangeFluxes(model.TextFileFormat):
 class MicomResultsDirectory(model.DirectoryFormat):
     growth_rates = model.File("growth_rates.csv", format=GrowthRates)
     exchange_fluxes = model.File("exchange_fluxes.parquet",
-                                 format=ExchangeFluxes)
+                                 format=Fluxes)
 
 
 class MicomMediumFile(model.TextFileFormat):

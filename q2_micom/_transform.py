@@ -54,12 +54,12 @@ def _8(gr: ft.GrowthRates) -> pd.DataFrame:
 
 
 @plugin.register_transformer
-def _9(data: pd.DataFrame) -> ft.ExchangeFluxes:
-    ef = ft.ExchangeFluxes()
+def _9(data: pd.DataFrame) -> ft.Fluxes:
+    ef = ft.Fluxes()
     data.to_parquet(str(ef))
     return ef
 
 
 @plugin.register_transformer
-def _10(ef: ft.ExchangeFluxes) -> pd.DataFrame:
+def _10(ef: ft.Fluxes) -> pd.DataFrame:
     return pd.read_parquet(str(ef))

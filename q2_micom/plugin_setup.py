@@ -29,7 +29,7 @@ from q2_micom._formats_and_types import (
     CommunityModelManifest,
     CommunityModelDirectory,
     GrowthRates,
-    ExchangeFluxes,
+    Fluxes,
     MicomResultsDirectory,
     MicomMediumFile,
     MicomMediumDirectory,
@@ -64,7 +64,7 @@ plugin.register_formats(
     CommunityModelManifest,
     CommunityModelDirectory,
     GrowthRates,
-    ExchangeFluxes,
+    Fluxes,
     MicomResultsDirectory,
     MicomMediumFile,
     MicomMediumDirectory,
@@ -235,6 +235,80 @@ plugin.methods.register_function(
         "largest value that allows the majority of taxa in the sample to grow."
     ),
     citations=[citations["micom"]],
+)
+
+plugin.visualizers.register_function(
+    function=q2_micom.plot_growth,
+    inputs={"results": MicomResults},
+    parameters={},
+    input_descriptions={
+        "results": (
+            "A set of MICOM analysis results. "
+            "Contains predicted groath rates and exchange fluxes."
+        )
+    },
+    parameter_descriptions={},
+    name="Plot taxa growth rates.",
+    description=(
+        "Plot predicted growth rates for each taxon in each sample. "
+        "Only points with growing taxa are shown (growth rate sufficiently "
+        "larger than zero)."
+    ),
+    citations=[citations["micom"]]
+)
+
+plugin.visualizers.register_function(
+    function=q2_micom.exchanges_per_sample,
+    inputs={"results": MicomResults},
+    parameters={
+        "direction": Str % Choices("import", "export"),
+        "cluster": Bool},
+    input_descriptions={
+        "results": (
+            "A set of MICOM analysis results. "
+            "Contains predicted groath rates and exchange fluxes."
+        )
+    },
+    parameter_descriptions={
+        "direction": "The direction of the flux.",
+        "cluster": "Whether to perform clutering on samples and reactions."
+    },
+    name="Plot gloabl exchange rates.",
+    description=(
+        "Plot predicted global exchange fluxes for each sample. "
+        "When plotting imports this corresponds to the consumption "
+        "fluxes for each metabolite that is available to the community. "
+        "When plotting export this corresponds to the production fluxes "
+        "for each metabolite."
+    ),
+    citations=[citations["micom"]]
+)
+
+
+plugin.visualizers.register_function(
+    function=q2_micom.exchanges_per_taxon,
+    inputs={"results": MicomResults},
+    parameters={
+        "direction": Str % Choices("import", "export"),
+    },
+    input_descriptions={
+        "results": (
+            "A set of MICOM analysis results. "
+            "Contains predicted groath rates and exchange fluxes."
+        )
+    },
+    parameter_descriptions={
+        "direction": "The direction of the flux.",
+    },
+    name="Plot niche overlap.",
+    description=(
+        "Plot growth or production niches. "
+        "The entire set of import or export fluxes for each taxon in each "
+        "sample is reduced onto a single point on a 2D plane."
+        "Taxa that are close to each other either consume similar metabolites "
+        " (imports) or produce similar metabolites (exports)."
+    ),
+    citations=[citations["micom"]]
 )
 
 importlib.import_module("q2_micom._transform")
