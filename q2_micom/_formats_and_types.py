@@ -21,7 +21,20 @@ class SBMLFormat(model.TextFileFormat):
         return self._check_n_lines(record_map[level])
 
 
-class SBMLManifest(model.TextFileFormat):
+class JSONFormat(model.TextFileFormat):
+    """Represents a JSON file."""
+    def _check_n_lines(self, n):
+        """Crudely check if the file is SBML."""
+        with open(str(self), mode="r") as xml_file:
+            lines = "".join(xml_file.readlines(n))
+        return ".xml" in str(self).lower() and "metabolites" in lines.lower()
+
+    def _validate_(self, level):
+        record_map = {'min': 5, 'max': 100}
+        return self._check_n_lines(record_map[level])
+
+
+class ModelManifest(model.TextFileFormat):
     """Represents an SBML file."""
 
     def _validate_(self, level):
@@ -30,12 +43,21 @@ class SBMLManifest(model.TextFileFormat):
 
 
 class SBMLDirectory(model.DirectoryFormat):
-    manifest = model.File("manifest.csv", format=SBMLManifest)
+    manifest = model.File("manifest.csv", format=ModelManifest)
     sbml_files = model.FileCollection(r".+\.xml", format=SBMLFormat)
 
     @sbml_files.set_path_maker
     def sbml_path_maker(self, model_id):
         return "%s.xml" % model_id
+
+
+class JSONDirectory(model.DirectoryFormat):
+    manifest = model.File("manifest.csv", format=ModelManifest)
+    sbml_files = model.FileCollection(r".+\.json", format=JSONFormat)
+
+    @sbml_files.set_path_maker
+    def sbml_path_maker(self, model_id):
+        return "%s.json" % model_id
 
 
 class CommunityModelFormat(model.BinaryFileFormat):
@@ -94,11 +116,12 @@ TradeoffResultsDirectory = model.SingleFileDirectoryFormat(
 
 SBML = SemanticType("SBML")
 Pickle = SemanticType("Pickle")
+JSON = SemanticType("JSON")
 
 MetabolicModels = SemanticType(
     "MetabolicModels",
     field_names="format",
-    field_members={"format": (SBML,)}
+    field_members={"format": (SBML,JSON)}
 )
 
 CommunityModels = SemanticType(

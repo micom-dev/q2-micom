@@ -22,9 +22,12 @@ from qiime2.plugin import (
 import q2_micom
 from q2_micom._formats_and_types import (
     SBML,
+    JSON,
     Pickle,
     SBMLFormat,
     SBMLDirectory,
+    JSONFormat,
+    JSONDirectory,
     CommunityModelFormat,
     CommunityModelManifest,
     CommunityModelDirectory,
@@ -62,6 +65,8 @@ plugin = Plugin(
 plugin.register_formats(
     SBMLFormat,
     SBMLDirectory,
+    JSONFormat,
+    JSONDirectory,
     CommunityModelFormat,
     CommunityModelManifest,
     CommunityModelDirectory,
@@ -76,6 +81,7 @@ plugin.register_semantic_types(
     MetabolicModels, CommunityModels, MicomResults, MicomMedium
 )
 plugin.register_semantic_type_to_format(MetabolicModels[SBML], SBMLDirectory)
+plugin.register_semantic_type_to_format(MetabolicModels[JSON], JSONDirectory)
 plugin.register_semantic_type_to_format(
     CommunityModels[Pickle], CommunityModelDirectory
 )
@@ -93,8 +99,11 @@ plugin.register_semantic_type_to_format(
 plugin.methods.register_function(
     function=q2_micom.db,
     inputs={},
-    parameters={"meta": Metadata, "folder": Str},
-    outputs=[("metabolic_models", MetabolicModels[SBML])],
+    parameters={
+        "meta": Metadata,
+        "folder": Str,
+        "rank": Str % Choices(q2_micom._build.RANKS)},
+    outputs=[("metabolic_models", MetabolicModels[JSON])],
     input_descriptions={},
     parameter_descriptions={
         "meta": (
@@ -107,6 +116,7 @@ plugin.methods.register_function(
             "must have filenames in `{ID}.xml` where {ID} is the id "
             "in the metadata file."
         ),
+        "rank": "The phylogenetic rank at which to summarize taxa.",
     },
     output_descriptions={"metabolic_models": "The metabolic model DB."},
     name="Build a metabolic model database.",
@@ -128,7 +138,8 @@ plugin.methods.register_function(
     inputs={
         "abundance": FeatureTable[Frequency | RelativeFrequency],
         "taxonomy": FeatureData[Taxonomy],
-        "models": MetabolicModels[SBML],
+        "models": MetabolicModels[JSON],
+        "medium": MicomMedium,
     },
     parameters={
         "rank": Str % Choices(q2_micom._build.RANKS),
