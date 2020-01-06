@@ -109,4 +109,10 @@ CommunityModels = SemanticType(
 
 MicomResults = SemanticType("MicomResults")
 TradeoffResults = SemanticType("TradeoffResults")
-MicomMedium = SemanticType("MicomMedium")
+
+Global = SemanticType("Global")
+PerSample = SemanticType("PerSample")
+MicomMedium = SemanticType(
+    "MicomMedium",
+    field_names="type",
+    field_members={"type": (Global, PerSample)})

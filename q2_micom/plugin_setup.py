@@ -37,6 +37,8 @@ from q2_micom._formats_and_types import (
     CommunityModels,
     MicomResults,
     MicomMedium,
+    Global,
+    PerSample,
     TradeoffResults,
     TradeoffResultsDirectory,
     REQ_FIELDS,
@@ -68,7 +70,7 @@ plugin.register_formats(
     MicomResultsDirectory,
     MicomMediumFile,
     MicomMediumDirectory,
-    TradeoffResultsDirectory
+    TradeoffResultsDirectory,
 )
 plugin.register_semantic_types(
     MetabolicModels, CommunityModels, MicomResults, MicomMedium
@@ -81,7 +83,12 @@ plugin.register_semantic_type_to_format(MicomResults, MicomResultsDirectory)
 plugin.register_semantic_type_to_format(
     TradeoffResults, TradeoffResultsDirectory
 )
-plugin.register_semantic_type_to_format(MicomMedium, MicomMediumDirectory)
+plugin.register_semantic_type_to_format(
+    MicomMedium[Global], MicomMediumDirectory
+)
+plugin.register_semantic_type_to_format(
+    MicomMedium[PerSample], MicomMediumDirectory
+)
 
 plugin.methods.register_function(
     function=q2_micom.db,
@@ -122,7 +129,6 @@ plugin.methods.register_function(
         "abundance": FeatureTable[Frequency | RelativeFrequency],
         "taxonomy": FeatureData[Taxonomy],
         "models": MetabolicModels[SBML],
-        "medium": MicomMedium,
     },
     parameters={
         "rank": Str % Choices(q2_micom._build.RANKS),
@@ -137,7 +143,6 @@ plugin.methods.register_function(
         ),
         "taxonomy": "The taxonomy assignments for the ASVs in the table.",
         "models": "The single taxon model database to use.",
-        "medium": "The growth medium to use.",
     },
     parameter_descriptions={
         "rank": "The phylogenetic rank at which to summarize taxa.",
@@ -152,13 +157,47 @@ plugin.methods.register_function(
 )
 
 plugin.methods.register_function(
+    function=q2_micom.minimal_medium,
+    inputs={"models": CommunityModels[Pickle],},
+    parameters={
+        "min_growth": Float % Range(0.0, None, inclusive_start=False),
+        "threads": Int % Range(1, None),
+    },
+    outputs=[("medium", MicomMedium[Global])],
+    input_descriptions={
+        "models": (
+            "A collection of metabolic community models. "
+            "This should contain on model for each sample."
+        ),
+    },
+    parameter_descriptions={
+        "min_growth": (
+            "The minimum achievable growth rate for each taxon. "
+            "The returned growth medium enables all taxa to growth "
+            "simultaneously with at least this rate."
+        ),
+        "threads": "The number of threads to use when simulating.",
+    },
+    output_descriptions={"medium": "The resulting growth medium."},
+    name="Obtain a minimal growth medium for models.",
+    description=(
+        "Obtains a minimal growth medium for the community models. "
+        "Please note that this medium does not have any biological "
+        "feasibility. If you have any knowledge about metabolites present "
+        "in the environment we recommend you construct the medium by hand."
+    ),
+    citations=[citations["micom"]],
+)
+
+plugin.methods.register_function(
     function=q2_micom.grow,
     inputs={
         "models": CommunityModels[Pickle],
+        "medium": MicomMedium[Global | PerSample],
     },
     parameters={
-        "tradeoff": Float % Range(0.0, 1.0, inclusive_start=False,
-                                  inclusive_end=True),
+        "tradeoff": Float
+        % Range(0.0, 1.0, inclusive_start=False, inclusive_end=True),
         "threads": Int % Range(1, None),
     },
     outputs=[("results", MicomResults)],
@@ -167,13 +206,14 @@ plugin.methods.register_function(
             "A collection of metabolic community models. "
             "This should contain on model for each sample."
         ),
+        "medium": "The growth medium to use.",
     },
     parameter_descriptions={
         "tradeoff": (
             "The tradeoff parameter. This describes the balance "
             "between maximizing biomass production of the entire "
             "community and biomass production of individual taxa "
-            "(ergo \"egoistic\" growth). A value of 1.0 would yield "
+            '(ergo "egoistic" growth). A value of 1.0 would yield '
             "the best biomass production across the community but "
             "will only allow a few taxa to grow. Smaller values will "
             "allow more taxa to grow but will sacrifice overall "
@@ -184,12 +224,12 @@ plugin.methods.register_function(
     },
     output_descriptions={
         "results": "The resulting taxa-level growth rates and metabolic "
-                   "exchange fluxes."
+        "exchange fluxes."
     },
     name="Simulate growth for community models.",
     description=(
         "Simulates growth for a set of samples. Note that those are "
-        "sample-specific or \"personalized\" simulations, so each taxa"
+        'sample-specific or "personalized" simulations, so each taxa'
         "may have different growth rates and metabolite usahe in each sample."
     ),
     citations=[citations["micom"]],
@@ -199,12 +239,13 @@ plugin.methods.register_function(
     function=q2_micom.tradeoff,
     inputs={
         "models": CommunityModels[Pickle],
+        "medium": MicomMedium[Global | PerSample],
     },
     parameters={
         "tradeoff_min": Float % Range(0.0, 1.0, inclusive_start=False),
         "tradeoff_max": Float % Range(0.0, 1.0, inclusive_end=True),
         "step": Float % Range(0.0, 1.0),
-        "threads": Int
+        "threads": Int,
     },
     outputs=[("results", TradeoffResults)],
     input_descriptions={
@@ -212,19 +253,20 @@ plugin.methods.register_function(
             "A collection of metabolic community models. "
             "This should contain on model for each sample."
         ),
+        "medium": "The growth medium to use.",
     },
     parameter_descriptions={
         "tradeoff_min": "The minimum tradeoff parameter to test. This should "
-                        "be larger than 0.0 and smaller than 1.0.",
+        "be larger than 0.0 and smaller than 1.0.",
         "tradeoff_max": "The maximum tradeoff parameter to test. This should "
-                        "be larger than 0.0 and smaller than 1.0 and also be"
-                        "larger than `tradeoff_min`.",
+        "be larger than 0.0 and smaller than 1.0 and also be"
+        "larger than `tradeoff_min`.",
         "step": "The tradeoff value step size to use.",
         "threads": "The number of threads to use when simulating.",
     },
     output_descriptions={
         "results": "The resulting taxa-level growth rates for varying "
-                   "tradeoff values."
+        "tradeoff values."
     },
     name="Test a variety of tradeoff values.",
     description=(
@@ -254,7 +296,7 @@ plugin.visualizers.register_function(
         "Only points with growing taxa are shown (growth rate sufficiently "
         "larger than zero)."
     ),
-    citations=[citations["micom"]]
+    citations=[citations["micom"]],
 )
 
 plugin.visualizers.register_function(
@@ -262,7 +304,8 @@ plugin.visualizers.register_function(
     inputs={"results": MicomResults},
     parameters={
         "direction": Str % Choices("import", "export"),
-        "cluster": Bool},
+        "cluster": Bool,
+    },
     input_descriptions={
         "results": (
             "A set of MICOM analysis results. "
@@ -271,7 +314,7 @@ plugin.visualizers.register_function(
     },
     parameter_descriptions={
         "direction": "The direction of the flux.",
-        "cluster": "Whether to perform clutering on samples and reactions."
+        "cluster": "Whether to perform clutering on samples and reactions.",
     },
     name="Plot gloabl exchange rates.",
     description=(
@@ -281,25 +324,21 @@ plugin.visualizers.register_function(
         "When plotting export this corresponds to the production fluxes "
         "for each metabolite."
     ),
-    citations=[citations["micom"]]
+    citations=[citations["micom"]],
 )
 
 
 plugin.visualizers.register_function(
     function=q2_micom.exchanges_per_taxon,
     inputs={"results": MicomResults},
-    parameters={
-        "direction": Str % Choices("import", "export"),
-    },
+    parameters={"direction": Str % Choices("import", "export"),},
     input_descriptions={
         "results": (
             "A set of MICOM analysis results. "
             "Contains predicted groath rates and exchange fluxes."
         )
     },
-    parameter_descriptions={
-        "direction": "The direction of the flux.",
-    },
+    parameter_descriptions={"direction": "The direction of the flux.",},
     name="Plot niche overlap.",
     description=(
         "Plot growth or production niches. "
@@ -308,7 +347,7 @@ plugin.visualizers.register_function(
         "Taxa that are close to each other either consume similar metabolites "
         " (imports) or produce similar metabolites (exports)."
     ),
-    citations=[citations["micom"]]
+    citations=[citations["micom"]],
 )
 
 importlib.import_module("q2_micom._transform")

@@ -1,14 +1,12 @@
 """Build Community models."""
 
 import biom
-from loguru import logger
 from micom import Community
 from micom.workflows import workflow
 import pandas as pd
 from q2_micom._formats_and_types import (
     SBMLDirectory,
     CommunityModelDirectory,
-    MicomMediumFile,
 )
 
 
@@ -46,6 +44,10 @@ def build_spec(
     abundance = abundance.melt(
         id_vars="sample_id", var_name=rank, value_name="abundance"
     )
+    depth = abundance.groupby("sample_id").abundance.sum()
+    abundance["relative"] = (
+        abundance.abundance / depth[abundance.sample_id].values
+    )
     model_files = models.manifest.view(pd.DataFrame)
     model_files["file"] = model_files.id.apply(
         lambda i: models.sbml_files.path_maker(model_id=i)
@@ -55,24 +57,13 @@ def build_spec(
     )
 
     micom_taxonomy = pd.merge(model_files, abundance, on=rank)
-    depth = micom_taxonomy.groupby("sample_id").abundance.sum()
-    micom_taxonomy["relative"] = (
-        micom_taxonomy.abundance / depth[micom_taxonomy.sample_id].values
-    )
     micom_taxonomy = micom_taxonomy[micom_taxonomy.relative > cutoff]
     return micom_taxonomy
 
 
 def build_and_save(args):
-    s, tax, out, medium = args
+    s, tax, out = args
     com = Community(tax, id=s, progress=False)
-    ex_ids = [r.id for r in com.exchanges]
-    logger.info(
-        "%d/%d import reactions found in model.",
-        medium.index.isin(ex_ids).sum(),
-        len(medium),
-    )
-    com.medium = medium[medium.index.isin(ex_ids)]
     com.to_pickle(out)
 
 
@@ -80,7 +71,6 @@ def build(
     abundance: biom.Table,
     taxonomy: pd.Series,
     models: SBMLDirectory,
-    medium: MicomMediumFile,
     rank: str = "genus",
     threads: int = 1,
     cutoff: float = 0.0001,
@@ -88,15 +78,12 @@ def build(
     """Build the community models."""
     tax = build_spec(abundance, taxonomy, models, rank, cutoff)
     models = CommunityModelDirectory()
-    medium = medium.view(pd.DataFrame)
-    medium.index = medium.reaction
     samples = tax.sample_id.unique()
     args = [
         [
             s,
             tax[tax.sample_id == s],
             models.model_files.path_maker(model_id=s),
-            medium.flux,
         ]
         for s in samples
     ]

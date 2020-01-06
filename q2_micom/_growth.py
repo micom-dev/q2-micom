@@ -9,14 +9,23 @@ import pandas as pd
 from q2_micom._formats_and_types import (
     MicomResultsDirectory,
     CommunityModelDirectory,
+    MicomMediumFile,
 )
+from q2_micom._medium import process_medium
 
 DIRECTION = pd.Series(["import", "export"], index=[0, 1])
 
 
 def _growth(args):
-    p, tradeoff = args
+    p, tradeoff, medium = args
     com = load_pickle(p)
+    ex_ids = [r.id for r in com.exchanges]
+    logger.info(
+        "%d/%d import reactions found in model.",
+        medium.index.isin(ex_ids).sum(),
+        len(medium),
+    )
+    com.medium = medium[medium.index.isin(ex_ids)]
 
     # Get growth rates
     try:
@@ -41,13 +50,20 @@ def _growth(args):
 
 
 def grow(
-    models: CommunityModelDirectory, tradeoff: float = 0.5, threads: int = 1
+    models: CommunityModelDirectory,
+    medium: MicomMediumFile,
+    tradeoff: float = 0.5,
+    threads: int = 1,
 ) -> MicomResultsDirectory:
     """Simulate growth for a set of community models."""
     out = MicomResultsDirectory()
     samples = models.manifest.view(pd.DataFrame).sample_id.unique()
-    paths = [models.model_files.path_maker(model_id=s) for s in samples]
-    args = [[p, tradeoff] for p in paths]
+    paths = {s: models.model_files.path_maker(model_id=s) for s in samples}
+    medium = process_medium(medium, samples)
+    args = [
+        [p, tradeoff, medium.flux[medium.sample_id == s]]
+        for s, p in paths.items()
+    ]
     results = workflow(_growth, args, threads)
     growth = pd.concat(r["growth"] for r in results)
     growth.to_csv(out.growth_rates.path_maker())

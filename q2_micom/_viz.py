@@ -24,7 +24,7 @@ def plot_growth(output_dir: str, results: MicomResultsDirectory) -> None:
     ]
     rates.to_csv(data_loc)
     template.stream(
-        data=rates.to_json(orient="records"), width=1200, height=720
+        data=rates.to_json(orient="records"), width=800, height=400
     ).dump(path.join(output_dir, "index.html"))
 
 
@@ -50,12 +50,13 @@ def exchanges_per_sample(
     sample_order = leaves_list(linkage(mat.values.T, method="average"))
     reaction_order = leaves_list(linkage(mat.values, method="average"))
     mat = mat.iloc[reaction_order, sample_order]
+    print(mat)
     mat["reaction"] = mat.index
     data = mat.melt(
         id_vars="reaction", var_name="sample_id", value_name="flux"
     )
     data.to_csv(data_loc)
-    w = min(1200, mat.shape[1] * 32)
+    w = min(1200, mat.shape[1] * 64)
     template.stream(
         data=data.to_json(orient="records"),
         width=w,
@@ -86,5 +87,5 @@ def exchanges_per_taxon(
     ).reset_index()
     umapped.to_csv(data_loc)
     template.stream(
-        data=umapped.to_json(orient="records"), width=1200, height=800
+        data=umapped.to_json(orient="records"), width=800, height=600
     ).dump(path.join(output_dir, "index.html"))

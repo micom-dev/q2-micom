@@ -3,17 +3,18 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Hello Bulma!</title>
+    <title>Growth rates</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700&display=swap" rel="stylesheet">
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@5.15.0/dist/d3.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega@5.9.0"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@4.0.2"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.2.1"></script>
 
     <style>
     #vis {
-        width: 1200px;
+        width: 100%;
         margin: 1em;
     }
     </style>
@@ -47,6 +48,9 @@
         data: {
             values: {{data | safe}}
         },
+        selection: {
+          pts: {type: "single", fields: ["sample_id"]}
+        },
         mark: {
             type: "point",
             filled: true,
@@ -66,12 +70,23 @@
             sort: {op: "median", field: "growth_rate"},
             axis: {title: null}
           },
-          color: {field: "taxon", type: "nominal", legend: null}
+          color: {
+            condition: {
+              selection: "pts",
+              field: "taxon",
+              type: "nominal",
+              legend: null
+            },
+            value: "lightgrey"
+          }
         }
       };
 
       // Embed the visualization in the container with id `vis`
-      vegaEmbed("#vis", vlSpec);
+      vegaEmbed("#vis", vlSpec, {renderer: "svg"}).then(function(r) {
+        svg = d3.select("#vis svg");
+        svg.attr("width", "100%").attr("height", "auto");
+      });
     </script>
   </section>
   </body>
