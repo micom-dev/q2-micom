@@ -18,14 +18,14 @@ def _2(mm: ft.MicomMediumFile) -> pd.DataFrame:
 
 
 @plugin.register_transformer
-def _3(data: pd.DataFrame) -> ft.SBMLManifest:
+def _3(data: pd.DataFrame) -> ft.ModelManifest:
     sbm = ft.SBMLManifest()
     data.to_csv(str(sbm), index=False)
     return sbm
 
 
 @plugin.register_transformer
-def _4(sbm: ft.SBMLManifest) -> pd.DataFrame:
+def _4(sbm: ft.ModelManifest) -> pd.DataFrame:
     return pd.read_csv(str(sbm), index_col=False)
 
 
