@@ -49,7 +49,7 @@ jobs:
           conda env create -n qiime2-dev --file qiime2-latest-py36-osx-conda.yml
         displayName: Set up Qiime 2
 
-        - bash: |
+    - bash: |
         source activate qiime2-dev
         conda install --yes --quiet --name qiime2-dev -c bioconda -c conda-forge cobra umap-learn jinja2 pyarrow pytest pytest-cov flake8 loguru
       displayName: Install required packages
