@@ -29,9 +29,13 @@ jobs:
       - bash: |
           source activate qiime2-dev
           pip install pytest pytest-cov pytest-azurepipelines
-          pytest --cov
+          pytest
         displayName: Run tests
       - script: |
+          source activate qiime2-dev
+          pip uninstall -y pytest-azurepipelines
+          pip install pytest-cov
+          pytest --cov
           bash <(curl -s https://codecov.io/bash)
         displayName: "Upload to codecov.io"
 
@@ -65,6 +69,6 @@ jobs:
         displayName: Install q2-micom
       - bash: |
           source activate qiime2-dev
-          pip install pytest pytest-cov pytest-azurepipelines
+          pip install pytest pytest-azurepipelines
           pytest
         displayName: Run tests
