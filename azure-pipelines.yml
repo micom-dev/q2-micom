@@ -67,7 +67,9 @@ jobs:
           pip install .
           qiime dev refresh-cache
         displayName: Install q2-micom
-      - bash: flake8
+      - bash: |
+          source activate qiime2-dev
+          flake8
         displayName: "Run flake8"
       - bash: |
           source activate qiime2-dev
