@@ -4,12 +4,10 @@ from micom import load_pickle
 from micom.logger import logger
 from micom.media import minimal_medium
 from micom.workflows import workflow
-import numpy as np
 import pandas as pd
 from q2_micom._formats_and_types import (
     MicomResultsDirectory,
     CommunityModelDirectory,
-    MicomMediumFile,
 )
 from q2_micom._medium import process_medium
 

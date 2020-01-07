@@ -121,7 +121,7 @@ JSON = SemanticType("JSON")
 MetabolicModels = SemanticType(
     "MetabolicModels",
     field_names="format",
-    field_members={"format": (SBML,JSON)}
+    field_members={"format": (SBML, JSON)}
 )
 
 CommunityModels = SemanticType(
