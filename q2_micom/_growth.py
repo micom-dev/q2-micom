@@ -32,7 +32,7 @@ def _growth(args):
         sol = com.cooperative_tradeoff(fraction=tradeoff)
         rates = sol.members
         rates["taxon"] = rates.index
-        rates["tradeoff"] = np.nan
+        rates["tradeoff"] = tradeoff
         rates["sample_id"] = com.id
     except Exception:
         logger.warning("Could not solve cooperative tradeoff for %s." % com.id)
@@ -51,7 +51,7 @@ def _growth(args):
 
 def grow(
     models: CommunityModelDirectory,
-    medium: MicomMediumFile,
+    medium: pd.DataFrame,
     tradeoff: float = 0.5,
     threads: int = 1,
 ) -> MicomResultsDirectory:
@@ -66,6 +66,7 @@ def grow(
     ]
     results = workflow(_growth, args, threads)
     growth = pd.concat(r["growth"] for r in results)
+    growth = growth[growth.taxon != "medium"]
     growth.to_csv(out.growth_rates.path_maker())
     exchanges = pd.concat(r["exchanges"] for r in results)
     exchanges["taxon"] = exchanges.index

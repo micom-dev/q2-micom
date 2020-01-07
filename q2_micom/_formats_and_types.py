@@ -53,9 +53,9 @@ class SBMLDirectory(model.DirectoryFormat):
 
 class JSONDirectory(model.DirectoryFormat):
     manifest = model.File("manifest.csv", format=ModelManifest)
-    sbml_files = model.FileCollection(r".+\.json", format=JSONFormat)
+    json_files = model.FileCollection(r".+\.json", format=JSONFormat)
 
-    @sbml_files.set_path_maker
+    @json_files.set_path_maker
     def sbml_path_maker(self, model_id):
         return "%s.json" % model_id
 

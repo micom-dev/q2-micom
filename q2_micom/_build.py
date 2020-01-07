@@ -10,10 +10,20 @@ from q2_micom._formats_and_types import (
 )
 
 
-RANKS = ["kingdom", "phylum", "class", "order", "family", "genus", "species", "strain"]
+RANKS = [
+    "kingdom",
+    "phylum",
+    "class",
+    "order",
+    "family",
+    "genus",
+    "species",
+    "strain",
+]
 
 
 def reduce_group(df):
+    """Collapse file names."""
     new = df.iloc[0, :]
     new["file"] = "|".join(df.file.astype(str))
     return new
@@ -50,16 +60,17 @@ def build_spec(
     )
     model_files = models.manifest.view(pd.DataFrame)
     model_files["file"] = model_files[rank].apply(
-        lambda i: str(models.sbml_files.path_maker(model_id=i))
+        lambda i: str(models.json_files.path_maker(model_id=i))
     )
-
     micom_taxonomy = pd.merge(model_files, abundance, on=rank)
     micom_taxonomy = micom_taxonomy[micom_taxonomy.relative > cutoff]
+    print(model_files.columns)
     print(micom_taxonomy.sample_id.value_counts().describe())
     return micom_taxonomy
 
 
 def build_and_save(args):
+    """Build a single community model."""
     s, tax, out = args
     com = Community(tax, id=s, progress=False)
     com.to_pickle(out)
@@ -69,7 +80,6 @@ def build(
     abundance: biom.Table,
     taxonomy: pd.Series,
     models: JSONDirectory,
-    medium: MicomMediumFile,
     rank: str = "genus",
     threads: int = 1,
     cutoff: float = 0.0001,

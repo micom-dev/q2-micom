@@ -4,18 +4,12 @@ import importlib
 from qiime2.plugin import (
     Plugin,
     Str,
-    Properties,
     Choices,
     Int,
     Bool,
     Range,
     Float,
-    Set,
-    Visualization,
     Metadata,
-    MetadataColumn,
-    Categorical,
-    Numeric,
     Citations,
 )
 
@@ -102,7 +96,9 @@ plugin.methods.register_function(
     parameters={
         "meta": Metadata,
         "folder": Str,
-        "rank": Str % Choices(q2_micom._build.RANKS)},
+        "rank": Str % Choices(q2_micom._build.RANKS),
+        "threads": Int % Range(1, None),
+    },
     outputs=[("metabolic_models", MetabolicModels[JSON])],
     input_descriptions={},
     parameter_descriptions={
@@ -117,14 +113,20 @@ plugin.methods.register_function(
             "in the metadata file."
         ),
         "rank": "The phylogenetic rank at which to summarize taxa.",
+        "threads": "The number of threads to use when constructing models.",
     },
     output_descriptions={"metabolic_models": "The metabolic model DB."},
     name="Build a metabolic model database.",
     description=(
-        "Bundles the metabolic models used by MICOM. "
+        "Constructs pan-genome models summarized to the specified rank "
+        "and bundles the models to be used by MICOM. "
+        "Optimally the chosen rank would the same you want to build your "
+        "community models on but can also be any lower rank. "
+        "So you may build genus-level community models with a species "
+        "level database but not vice versa. "
         "You will only need to run this function if you want to build a "
-        "custom DB. For most use cases downloading the prebuilt AGORA DB "
-        "should be sufficient."
+        "custom DB. For many use cases downloading the prebuilt AGORA DB "
+        "with the the preferred rank should be sufficient."
     ),
     citations=[
         citations["agora"],
@@ -139,7 +141,6 @@ plugin.methods.register_function(
         "abundance": FeatureTable[Frequency | RelativeFrequency],
         "taxonomy": FeatureData[Taxonomy],
         "models": MetabolicModels[JSON],
-        "medium": MicomMedium,
     },
     parameters={
         "rank": Str % Choices(q2_micom._build.RANKS),
@@ -169,7 +170,7 @@ plugin.methods.register_function(
 
 plugin.methods.register_function(
     function=q2_micom.minimal_medium,
-    inputs={"models": CommunityModels[Pickle],},
+    inputs={"models": CommunityModels[Pickle]},
     parameters={
         "min_growth": Float % Range(0.0, None, inclusive_start=False),
         "threads": Int % Range(1, None),
@@ -283,9 +284,10 @@ plugin.methods.register_function(
     description=(
         "Simulates growth for a set of samples while varying the tradeoff "
         "between community and taxon biomass production. "
-        "This can be used to characterize a good tradeoff value for a specific "
-        "set of samples. Our study suggested that a good tradeoff value is the "
-        "largest value that allows the majority of taxa in the sample to grow."
+        "This can be used to characterize a good tradeoff value for a "
+        "specific set of samples. Our study suggested that a good tradeoff "
+        "value is the largest value that allows the majority of taxa in the "
+        "sample to grow."
     ),
     citations=[citations["micom"]],
 )
@@ -342,14 +344,14 @@ plugin.visualizers.register_function(
 plugin.visualizers.register_function(
     function=q2_micom.exchanges_per_taxon,
     inputs={"results": MicomResults},
-    parameters={"direction": Str % Choices("import", "export"),},
+    parameters={"direction": Str % Choices("import", "export")},
     input_descriptions={
         "results": (
             "A set of MICOM analysis results. "
             "Contains predicted groath rates and exchange fluxes."
         )
     },
-    parameter_descriptions={"direction": "The direction of the flux.",},
+    parameter_descriptions={"direction": "The direction of the flux."},
     name="Plot niche overlap.",
     description=(
         "Plot growth or production niches. "

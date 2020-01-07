@@ -9,7 +9,7 @@ A Qiime 2 plugin for MICOM.
 
 ### Setup Qiime 2
 
-You will need a Qiime development environmet ([how to get that](https://dev.qiime2.org/latest/quickstart/#install-qiime-2-within-a-conda-environment)). Activate the environment:
+You will need a Qiime 2 development environment ([how to get that](https://dev.qiime2.org/latest/quickstart/#install-qiime-2-within-a-conda-environment)). Activate the environment:
 
 ```bash
 conda activate qiime2-dev
@@ -35,7 +35,7 @@ Finally, `MICOM` requires a quadratic programming solver. We currently support [
 
 After registering and downloading the CPLEX studio for your OS unpack it (by running the provided installer) to a directory of your choice (we will assume it's called `ibm`).
 
-Now install the cplex python package:
+Now install the CPLEX python package:
 
 ```bash
 pip install ibm/cplex/python/3.6/x86-64_linux
@@ -63,5 +63,5 @@ You are now ready to run `q2-micom`.
 
 Here is an overview of the analysis paths you can take with `q2-micom`.
 
-<img src="docs/overview.svg" width="100%">
+<img src="docs/overview.png" width="100%">
 

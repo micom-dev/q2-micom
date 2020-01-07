@@ -131,3 +131,7 @@ dmypy.json
 # Editor
 .vscode
 .benchmarks
+
+# large build files
+q2_micom/tests/data/agora*
+q2_micom/tests/data/crc*
