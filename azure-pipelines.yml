@@ -15,7 +15,7 @@ jobs:
 
       - bash: |
           source activate qiime2-dev
-          conda install --yes --quiet --name qiime2-dev -c bioconda -c conda-forge cobra umap-learn jinja2 pyarrow pytest pytest-cov flake8 loguru
+          conda install --yes --quiet --name qiime2-dev -c bioconda -c conda-forge cobra umap-learn jinja2 pyarrow flake8 loguru
         displayName: Install required packages
       - bash: |
           source activate qiime2-dev
@@ -28,6 +28,7 @@ jobs:
         displayName: Install q2-micom
       - bash: |
           source activate qiime2-dev
+          pip install pytest pytest-cov pytest-azurepipelines
           pytest
         displayName: Run tests
       - script: |
@@ -51,7 +52,7 @@ jobs:
 
       - bash: |
           source activate qiime2-dev
-          conda install --yes --quiet --name qiime2-dev -c bioconda -c conda-forge cobra umap-learn jinja2 pyarrow pytest pytest-cov flake8 loguru
+          conda install --yes --quiet --name qiime2-dev -c bioconda -c conda-forge cobra umap-learn jinja2 pyarrow flake8 loguru
         displayName: Install required packages
       - bash: |
           source activate qiime2-dev
@@ -64,5 +65,6 @@ jobs:
         displayName: Install q2-micom
       - bash: |
           source activate qiime2-dev
+          pip install pytest pytest-cov pytest-azurepipelines
           pytest
         displayName: Run tests

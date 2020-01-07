@@ -1,5 +1,10 @@
 <img src="docs/logo.png" width="50%">
 
+[![Build Status](https://dev.azure.com/chdiener/cdiener/_apis/build/status/micom-dev.q2-micom?branchName=master)](https://dev.azure.com/chdiener/cdiener/_build/latest?definitionId=2&branchName=master)
+![Azure DevOps tests](https://img.shields.io/azure-devops/tests/chdiener/cdiener/2)
+[![codecov](https://codecov.io/gh/micom-dev/q2-micom/branch/master/graph/badge.svg)](https://codecov.io/gh/micom-dev/q2-micom)
+
+
 A Qiime 2 plugin for MICOM.
 
 
