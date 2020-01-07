@@ -23,7 +23,6 @@ def test_build():
         table,
         taxa,
         models.view(q2m._formats_and_types.JSONDirectory),
-        "species",
         1,
         0.01,
     )

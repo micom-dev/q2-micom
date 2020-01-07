@@ -58,6 +58,7 @@ def db(
     workflow(_summarize_models, args, threads)
     meta["file"] = meta.index + ".json"
     meta["id"] = meta.index
+    meta["summary_rank"] = rank
     meta.to_csv(json_dir.manifest.path_maker(), index=False)
 
     return json_dir

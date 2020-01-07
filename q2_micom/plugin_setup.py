@@ -120,10 +120,10 @@ plugin.methods.register_function(
     description=(
         "Constructs pan-genome models summarized to the specified rank "
         "and bundles the models to be used by MICOM. "
-        "Optimally the chosen rank would the same you want to build your "
-        "community models on but can also be any lower rank. "
-        "So you may build genus-level community models with a species "
-        "level database but not vice versa. "
+        "The chosen rank has to be the same you want as when building your "
+        "community models. "
+        "So you may not build genus-level community models with a species "
+        "level database. "
         "You will only need to run this function if you want to build a "
         "custom DB. For many use cases downloading the prebuilt AGORA DB "
         "with the the preferred rank should be sufficient."
@@ -143,7 +143,6 @@ plugin.methods.register_function(
         "models": MetabolicModels[JSON],
     },
     parameters={
-        "rank": Str % Choices(q2_micom._build.RANKS),
         "threads": Int % Range(1, None),
         "cutoff": Float % Range(0.0, 1.0),
     },
@@ -157,8 +156,9 @@ plugin.methods.register_function(
         "models": "The single taxon model database to use.",
     },
     parameter_descriptions={
-        "rank": "The phylogenetic rank at which to summarize taxa.",
         "threads": "The number of threads to use when constructing models.",
+        "cutoff": "Taxa with a relative abundance smaller than this will "
+                  "be dropped.",
     },
     output_descriptions={"community_models": "The community models."},
     name="Build community models.",

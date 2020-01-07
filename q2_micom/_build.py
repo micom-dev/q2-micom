@@ -22,18 +22,10 @@ RANKS = [
 ]
 
 
-def reduce_group(df):
-    """Collapse file names."""
-    new = df.iloc[0, :]
-    new["file"] = "|".join(df.file.astype(str))
-    return new
-
-
 def build_spec(
     abundance: biom.Table,
     taxonomy: pd.Series,
     models: JSONDirectory,
-    rank: str,
     cutoff: float,
 ) -> pd.DataFrame:
     """Build the specification for the community models."""
@@ -42,6 +34,13 @@ def build_spec(
     taxa.columns = RANKS[0:taxa.shape[1]]
     taxa["taxid"] = taxonomy.index
     taxa.index == taxa.taxid
+
+    model_files = models.manifest.view(pd.DataFrame)
+    rank = model_files.summary_rank[0]
+    model_files["file"] = model_files[rank].apply(
+        lambda i: str(models.json_files.path_maker(model_id=i))
+    )
+
     abundance = (
         abundance.collapse(
             lambda id_, x: taxa.loc[id_, rank], axis="observation"
@@ -58,10 +57,7 @@ def build_spec(
     abundance["relative"] = (
         abundance.abundance / depth[abundance.sample_id].values
     )
-    model_files = models.manifest.view(pd.DataFrame)
-    model_files["file"] = model_files[rank].apply(
-        lambda i: str(models.json_files.path_maker(model_id=i))
-    )
+
     micom_taxonomy = pd.merge(model_files, abundance, on=rank)
     micom_taxonomy = micom_taxonomy[micom_taxonomy.relative > cutoff]
     print(model_files.columns)
@@ -80,12 +76,11 @@ def build(
     abundance: biom.Table,
     taxonomy: pd.Series,
     models: JSONDirectory,
-    rank: str = "genus",
     threads: int = 1,
     cutoff: float = 0.0001,
 ) -> CommunityModelDirectory:
     """Build the community models."""
-    tax = build_spec(abundance, taxonomy, models, rank, cutoff)
+    tax = build_spec(abundance, taxonomy, models, cutoff)
     tax["file"] = tax.file.str.split("|")
     models = CommunityModelDirectory()
     samples = tax.sample_id.unique()
