@@ -18,7 +18,7 @@ conda activate qiime2-dev
 Install dependencies for `q2-micom`:
 
 ```bash
-conda install -c bioconda -c conda-forge cobra umap-learn jinja2
+conda install -c bioconda -c conda-forge cobra umap-learn jinja2 pyarrow
 ```
 
 Install `q2-micom` (this will install `MICOM` as well).
