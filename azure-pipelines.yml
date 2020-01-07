@@ -49,20 +49,20 @@ jobs:
           conda env create -n qiime2-dev --file qiime2-latest-py36-osx-conda.yml
         displayName: Set up Qiime 2
 
-    - bash: |
-        source activate qiime2-dev
-        conda install --yes --quiet --name qiime2-dev -c bioconda -c conda-forge cobra umap-learn jinja2 pyarrow pytest pytest-cov flake8 loguru
-      displayName: Install required packages
-    - bash: |
-        source activate qiime2-dev
-        conda install --yes --quiet --name qiime2-dev -c ibmdecisionoptimization cplex
-      displayName: Install CPLEX test distribution
-    - bash:
-        source activate qiime2-dev
-        pip install .
-        qiime dev refresh-cache
-      displayName: Install q2-micom
-    - bash: |
-        source activate qiime2-dev
-        pytest
-      displayName: Run tests
+      - bash: |
+          source activate qiime2-dev
+          conda install --yes --quiet --name qiime2-dev -c bioconda -c conda-forge cobra umap-learn jinja2 pyarrow pytest pytest-cov flake8 loguru
+        displayName: Install required packages
+      - bash: |
+          source activate qiime2-dev
+          conda install --yes --quiet --name qiime2-dev -c ibmdecisionoptimization cplex
+        displayName: Install CPLEX test distribution
+      - bash:
+          source activate qiime2-dev
+          pip install .
+          qiime dev refresh-cache
+        displayName: Install q2-micom
+      - bash: |
+          source activate qiime2-dev
+          pytest
+        displayName: Run tests
