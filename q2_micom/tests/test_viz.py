@@ -30,3 +30,11 @@ def test_exchanges_per_taxon():
     with TemporaryDirectory(prefix="q2-micom-") as d:
         q2m.exchanges_per_taxon(str(d), r)
         assert q2m.tests.check_viz(str(d))
+
+
+def test_plot_tradeoff():
+    tradeoff = q2.Artifact.load(path.join(this_dir, "data", "tradeoff.qza"))
+    t = tradeoff.view(pd.DataFrame)
+    with TemporaryDirectory(prefix="q2-micom-") as d:
+        q2m.plot_tradeoff(str(d), t)
+        assert q2m.tests.check_viz(str(d))

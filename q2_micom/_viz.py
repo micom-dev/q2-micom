@@ -3,6 +3,7 @@
 from fastcluster import linkage
 from scipy.cluster.hierarchy import leaves_list
 from jinja2 import Environment, PackageLoader, select_autoescape
+import numpy as np
 import pandas as pd
 from os import path
 from q2_micom._formats_and_types import MicomResultsDirectory
@@ -88,4 +89,34 @@ def exchanges_per_taxon(
     umapped.to_csv(data_loc)
     template.stream(
         data=umapped.to_json(orient="records"), width=800, height=600
+    ).dump(path.join(output_dir, "index.html"))
+
+
+def plot_tradeoff(output_dir: str, results: pd.DataFrame) -> None:
+    """Plot the taxa growth rates."""
+    template = env.get_template("tradeoff.html")
+    data_loc = path.join(output_dir, "tradeoff.csv")
+    results.to_csv(data_loc)
+    growth = results[
+        ["taxon", "sample_id", "abundance", "tradeoff", "growth_rate"]
+    ]
+    growth.tradeoff = growth.tradeoff.round(6).astype(str)
+    growth.tradeoff[growth.tradeoff == "nan"] = "none"
+    growth.growth_rate[growth.growth_rate < 1e-6] = 1e-6
+    growth["log_growth_rate"] = np.log10(growth.growth_rate)
+    tradeoff = growth.groupby(["tradeoff", "sample_id"]).apply(
+        lambda df: pd.Series({
+            "n_taxa": df.shape[0],
+            "n_growing": df[df.growth_rate > 1e-6].shape[0],
+            "fraction_growing": (
+                df[df.growth_rate > 1e-6].shape[0] / df.shape[0]
+            )
+            })
+    ).reset_index()
+    template.stream(
+        growth=growth.to_json(orient="records"),
+        tradeoff=tradeoff.to_json(orient="records"),
+        extent=[growth.log_growth_rate.min(), growth.log_growth_rate.max()],
+        width=1600,
+        height=400
     ).dump(path.join(output_dir, "index.html"))

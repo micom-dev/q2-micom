@@ -348,7 +348,7 @@ plugin.visualizers.register_function(
     input_descriptions={
         "results": (
             "A set of MICOM analysis results. "
-            "Contains predicted groath rates and exchange fluxes."
+            "Contains predicted growth rates and exchange fluxes."
         )
     },
     parameter_descriptions={"direction": "The direction of the flux."},
@@ -359,6 +359,27 @@ plugin.visualizers.register_function(
         "sample is reduced onto a single point on a 2D plane."
         "Taxa that are close to each other either consume similar metabolites "
         " (imports) or produce similar metabolites (exports)."
+    ),
+    citations=[citations["micom"]],
+)
+
+plugin.visualizers.register_function(
+    function=q2_micom.plot_tradeoff,
+    inputs={"results": TradeoffResults},
+    parameters={},
+    input_descriptions={
+        "results": (
+            "A set of MICOM tradeoff analysis results. "
+            "Contains predicted growth rates for each tested tradeoff."
+        )
+    },
+    parameter_descriptions={},
+    name="Plot tradeoff results.",
+    description=(
+        "Plot predicted growth rate distributions for each tradeoff as "
+        "well as the fraction of growing taxa in each sample and tradeoff "
+        "value. For a good tradeoff value one usually tries to find the "
+        "largest tradeoff value that still aloows most taxa to grow."
     ),
     citations=[citations["micom"]],
 )

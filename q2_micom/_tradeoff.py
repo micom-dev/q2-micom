@@ -7,7 +7,6 @@ import numpy as np
 import pandas as pd
 from q2_micom._formats_and_types import (
     CommunityModelDirectory,
-    MicomMediumFile,
 )
 from q2_micom._medium import process_medium
 
@@ -49,7 +48,7 @@ def _tradeoff(args):
 
 def tradeoff(
     models: CommunityModelDirectory,
-    medium: MicomMediumFile,
+    medium: pd.DataFrame,
     tradeoff_min: float = 0.1,
     tradeoff_max: float = 1.0,
     step: float = 0.1,
