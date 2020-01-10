@@ -81,7 +81,7 @@ def exchanges_per_taxon(
         & (exchanges.direction == direction)
         & (exchanges.flux.abs() > 1e-6)
     ]
-    exchanges.flux = exchanges.flux.abs()
+    exchanges["flux"] = exchanges.flux.abs()
     mat = exchanges.pivot_table(
         values="flux", index=["sample_id", "taxon"], columns="reaction",
         fill_value=0
@@ -107,9 +107,9 @@ def plot_tradeoff(output_dir: str, results: pd.DataFrame) -> None:
         ["taxon", "sample_id", "abundance", "tradeoff", "growth_rate"]
     ]
     growth.tradeoff = growth.tradeoff.round(6).astype(str)
-    growth.tradeoff[growth.tradeoff == "nan"] = "none"
-    growth.growth_rate[growth.growth_rate < 1e-6] = 1e-6
-    growth["log_growth_rate"] = np.log10(growth.growth_rate)
+    growth.loc[growth.tradeoff == "nan", "tradeoff"] = "none"
+    growth.loc[growth.growth_rate < 1e-6, "growth_rate"] = 1e-6
+    growth.loc[:, "log_growth_rate"] = np.log10(growth.growth_rate)
     tradeoff = growth.groupby(["tradeoff", "sample_id"]).apply(
         lambda df: pd.Series({
             "n_taxa": df.shape[0],
