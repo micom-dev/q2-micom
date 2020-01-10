@@ -344,14 +344,26 @@ plugin.visualizers.register_function(
 plugin.visualizers.register_function(
     function=q2_micom.exchanges_per_taxon,
     inputs={"results": MicomResults},
-    parameters={"direction": Str % Choices("import", "export")},
+    parameters={
+        "direction": Str % Choices("import", "export"),
+        "n_neighbors": Int % Range(0, None),
+        "min_dist": Float % Range(0, None)},
     input_descriptions={
         "results": (
             "A set of MICOM analysis results. "
             "Contains predicted growth rates and exchange fluxes."
         )
     },
-    parameter_descriptions={"direction": "The direction of the flux."},
+    parameter_descriptions={
+        "direction": "The direction of the flux.",
+        "n_neighbors": "UMAP parameter. Number of neighbors used to calculate "
+                       "distances. Smaller values preserve more local "
+                       "structure and larger values preserve more global "
+                       "structure.",
+        "min_dist": "UMAP parameter. Minimum distance between points. Smaller "
+                    "values clump points more together, larger values spread "
+                    "them out more."
+    },
     name="Plot niche overlap.",
     description=(
         "Plot growth or production niches. "

@@ -30,7 +30,7 @@
         Shows the net utilization (imports) or production (exports) of
         metabolites of the full microbial community in each sample. If requested
         exchange reactions and samples were clustered by euclidean average
-        linkage. Fluxes are shown on the log10 scale.
+        linkage. Fluxes are shown on the log10 scale.<br>
         Hover over each point to see its annotations. Use the "..." menu in the
         upper right hand side to export the plot into various formats.
       </p>
@@ -69,7 +69,7 @@
           color: {
               field: "flux",
               type: "quantitative",
-              scale: {type: "log"}
+              scale: {type: "log", scheme: "viridis"}
           }
         }
       };
