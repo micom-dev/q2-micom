@@ -29,7 +29,7 @@ def build_spec(
     cutoff: float,
 ) -> pd.DataFrame:
     """Build the specification for the community models."""
-    taxa = taxonomy.str.replace("\\w__", "")
+    taxa = taxonomy.str.replace("[\\w_]+__", "")
     taxa = taxa.str.split(";\\s*", expand=True)
     taxa.columns = RANKS[0:taxa.shape[1]]
     taxa["taxid"] = taxonomy.index
@@ -60,8 +60,8 @@ def build_spec(
 
     micom_taxonomy = pd.merge(model_files, abundance, on=rank)
     micom_taxonomy = micom_taxonomy[micom_taxonomy.relative > cutoff]
-    print(model_files.columns)
-    print(micom_taxonomy.sample_id.value_counts().describe())
+    print("Taxa per sample:")
+    print(micom_taxonomy.sample_id.value_counts().describe(), "\n")
     return micom_taxonomy
 
 

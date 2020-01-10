@@ -33,7 +33,6 @@ def test_genus():
     folder = path.join(this_dir, "data", "test_models")
     models = q2m.db(meta, folder, "genus", 1)
     files = models.manifest.view(pd.DataFrame)
-    print(files)
     assert files.shape[0] == 1
     assert files.file[0] == "Escherichia.json"
     cobra_model = micom.util.load_model(str(

@@ -135,3 +135,4 @@ dmypy.json
 # large build files
 q2_micom/tests/data/agora*
 q2_micom/tests/data/crc*
+communities.qza

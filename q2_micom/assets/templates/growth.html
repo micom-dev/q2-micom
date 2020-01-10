@@ -28,7 +28,9 @@
       <p class="subtitle">
         Each point denotes a single taxon in a single sample. Shown are the
         predicted growth rates only if growth was observed (growth rate larger
-        than numerical tolerance of the solver).
+        than numerical tolerance of the solver).<br>
+        Click a point to select points from only that sample. Click on an
+        empty region of the plot to reset the selection.<br>
         Hover over each point to see its annotations. Use the "..." menu in the
         upper right hand side to export the plot into various formats.
       </p>
@@ -54,7 +56,7 @@
         mark: {
             type: "point",
             filled: true,
-            size: 60,
+            size: 40,
             tooltip: {content: "data"}
         },
         encoding: {
@@ -62,7 +64,7 @@
             field: "growth_rate",
             type: "quantitative",
             scale: {type: "log"},
-            axis: {title: "growth rate [1/h]"}
+            axis: {title: "growth rate [1/h]", grid: false}
           },
           x: {
             field: "taxon",
@@ -78,6 +80,13 @@
               legend: null
             },
             value: "lightgrey"
+          },
+          opacity: {
+            condition: {
+                selection: "pts",
+                value: 0.8
+            },
+            value: 0.2
           }
         }
       };

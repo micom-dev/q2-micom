@@ -30,8 +30,11 @@
         Each point denotes the reduced import/export fluxes for a single taxon
         in a single sample. If two points are close to each other they consume
         (for direction="import") or produce (for direction="export") the same
-        metabolites.
-        Hover over each point to see its annotations. Use the "..." menu in the
+        metabolites.<br>
+        Hover over each point to see its annotations. You can click a point
+        to select only that taxon. Click on an empty part of the plot to
+        reset the selection.<br>
+        Use the "..." menu in the
         upper right hand side to export the plot into various formats.
       </p>
     </div>
@@ -54,7 +57,7 @@
         mark: {
             type: "point",
             filled: true,
-            size: 64,
+            size: 20,
             tooltip: {content: "data"}
         },
         encoding: {
@@ -73,6 +76,13 @@
               type: "nominal"
             },
             value: "lightgrey"
+          },
+          opacity: {
+              condition: {
+                  selection: "pts",
+                  value: 0.8
+              },
+              value: 0.2
           }
         }
       };

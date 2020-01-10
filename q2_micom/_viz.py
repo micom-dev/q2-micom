@@ -46,18 +46,18 @@ def exchanges_per_sample(
     ]
     exchanges.flux = exchanges.flux.abs()
     mat = exchanges.pivot_table(
-        values="flux", index="reaction", columns="sample_id"
+        values="flux", index="reaction", columns="sample_id", fill_value=1e-6
     )
     sample_order = leaves_list(linkage(mat.values.T, method="average"))
     reaction_order = leaves_list(linkage(mat.values, method="average"))
     mat = mat.iloc[reaction_order, sample_order]
-    print(mat)
+
     mat["reaction"] = mat.index
     data = mat.melt(
         id_vars="reaction", var_name="sample_id", value_name="flux"
     )
     data.to_csv(data_loc)
-    w = min(1200, mat.shape[1] * 64)
+    w = mat.shape[1] * 10
     template.stream(
         data=data.to_json(orient="records"),
         width=w,
@@ -66,7 +66,11 @@ def exchanges_per_sample(
 
 
 def exchanges_per_taxon(
-    output_dir: str, results: MicomResultsDirectory, direction: str = "import"
+    output_dir: str,
+    results: MicomResultsDirectory,
+    direction: str = "import",
+    n_neighbors: int = 15,
+    min_dist: float = 0.1
 ) -> None:
     """Plot the exchange fluxes."""
     template = env.get_template("umap.html")
@@ -82,13 +86,15 @@ def exchanges_per_taxon(
         values="flux", index=["sample_id", "taxon"], columns="reaction",
         fill_value=0
     )
-    umapped = UMAP().fit_transform(mat.values)
+    umapped = UMAP(
+        min_dist=min_dist,
+        n_neighbors=n_neighbors).fit_transform(mat.values)
     umapped = pd.DataFrame(
         umapped, index=mat.index, columns=["UMAP 1", "UMAP 2"]
     ).reset_index()
     umapped.to_csv(data_loc)
     template.stream(
-        data=umapped.to_json(orient="records"), width=800, height=600
+        data=umapped.to_json(orient="records"), width=600, height=500
     ).dump(path.join(output_dir, "index.html"))
 
 
@@ -117,6 +123,6 @@ def plot_tradeoff(output_dir: str, results: pd.DataFrame) -> None:
         growth=growth.to_json(orient="records"),
         tradeoff=tradeoff.to_json(orient="records"),
         extent=[growth.log_growth_rate.min(), growth.log_growth_rate.max()],
-        width=1600,
-        height=400
+        width=400,
+        height=300
     ).dump(path.join(output_dir, "index.html"))
