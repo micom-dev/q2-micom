@@ -7,7 +7,7 @@ from q2_micom._viz import (
     plot_growth, exchanges_per_sample, exchanges_per_taxon, plot_tradeoff
 )
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 __all__ = [
     "db",
