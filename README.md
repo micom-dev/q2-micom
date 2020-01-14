@@ -1,4 +1,4 @@
-<img src="docs/logo.png" width="50%">
+<img src="docs/assets/logo.png" width="75%">
 
 [![Build Status](https://dev.azure.com/chdiener/cdiener/_apis/build/status/micom-dev.q2-micom?branchName=master)](https://dev.azure.com/chdiener/cdiener/_build/latest?definitionId=2&branchName=master)
 ![Azure DevOps tests](https://img.shields.io/azure-devops/tests/chdiener/cdiener/2)
@@ -68,5 +68,5 @@ You are now ready to run `q2-micom`.
 
 Here is an overview of the analysis paths you can take with `q2-micom`.
 
-<img src="docs/overview.png" width="100%">
+<img src="docs/assets/overview.png" width="100%">
 
