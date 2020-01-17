@@ -4,7 +4,11 @@ from q2_micom._growth import grow
 from q2_micom._medium import minimal_medium
 from q2_micom._tradeoff import tradeoff
 from q2_micom._viz import (
-    plot_growth, exchanges_per_sample, exchanges_per_taxon, plot_tradeoff
+    plot_growth,
+    exchanges_per_sample,
+    exchanges_per_taxon,
+    plot_tradeoff,
+    test_production,
 )
 
 __version__ = "0.3.0"
@@ -19,4 +23,5 @@ __all__ = [
     "exchanges_per_sample",
     "exchanges_per_taxon",
     "plot_tradeoff",
+    "test_production",
 ]

@@ -10,6 +10,8 @@ from qiime2.plugin import (
     Range,
     Float,
     Metadata,
+    MetadataColumn,
+    Categorical,
     Citations,
 )
 
@@ -392,6 +394,31 @@ plugin.visualizers.register_function(
         "well as the fraction of growing taxa in each sample and tradeoff "
         "value. For a good tradeoff value one usually tries to find the "
         "largest tradeoff value that still aloows most taxa to grow."
+    ),
+    citations=[citations["micom"]],
+)
+
+plugin.visualizers.register_function(
+    function=q2_micom.test_production,
+    inputs={
+        "results": MicomResults,
+    },
+    parameters={
+        "metadata": MetadataColumn[Categorical]
+    },
+    input_descriptions={
+        "results": (
+            "A set of MICOM analysis results. "
+            "Contains predicted growth rates and exchange fluxes."
+        ),
+    },
+    parameter_descriptions={
+        "metadata": "The metadata variable to use."
+    },
+    name="Test for differential production",
+    description=(
+        "Test for overall metabolite production differences "
+        "between two groups."
     ),
     citations=[citations["micom"]],
 )

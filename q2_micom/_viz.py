@@ -3,10 +3,13 @@
 from fastcluster import linkage
 from scipy.cluster.hierarchy import leaves_list
 from jinja2 import Environment, PackageLoader, select_autoescape
+import json
 import numpy as np
 import pandas as pd
 from os import path
 from q2_micom._formats_and_types import MicomResultsDirectory
+from qiime2 import CategoricalMetadataColumn
+from scipy.stats import mannwhitneyu
 from umap import UMAP
 
 env = Environment(
@@ -81,7 +84,7 @@ def exchanges_per_taxon(
         & (exchanges.direction == direction)
         & (exchanges.flux.abs() > 1e-6)
     ]
-    exchanges["flux"] = exchanges.flux.abs()
+    exchanges["flux"] = exchanges.flux.abs() * exchanges.abundance
     mat = exchanges.pivot_table(
         values="flux", index=["sample_id", "taxon"], columns="reaction",
         fill_value=0
@@ -126,3 +129,77 @@ def plot_tradeoff(output_dir: str, results: pd.DataFrame) -> None:
         width=400,
         height=300
     ).dump(path.join(output_dir, "index.html"))
+
+
+def augment(df, rxns):
+    df = df.copy()[["reaction", "metabolite", "flux"]]
+    add = pd.DataFrame({
+        "reaction": rxns[~rxns.isin(df.reaction)],
+        "metabolite": rxns[~rxns.isin(df.reaction)].str.replace("EX_", ""),
+        "flux": 1e-6})
+    return pd.concat([df, add])
+
+def test_single(df, v, ref):
+    if df.flux.mean() < 1e-4:
+        res = [float("nan"), float("nan")]
+    else:
+        res = mannwhitneyu(
+            df.flux[df[v] == ref],
+            df.flux[df[v] != ref]
+        )
+    res = list(res)
+    res.append(df.shape[0])
+    return pd.Series(res, index=["U", "pval", "n"])
+
+
+def fdr(p):
+    """Benjamini-Hochberg p-value correction for multiple hypothesis testing."""
+    p = np.asfarray(p)
+    by_descend = p.argsort()[::-1]
+    by_orig = by_descend.argsort()
+    steps = float(len(p)) / np.arange(len(p), 0, -1)
+    q = np.minimum(1, np.minimum.accumulate(steps * p[by_descend]))
+    return q[by_orig]
+
+
+def test_production(output_dir: str,
+                    results: MicomResultsDirectory,
+                    metadata: CategoricalMetadataColumn):
+    """Test for differential metabolite production."""
+    template = env.get_template("tests.html")
+    exchanges = results.exchange_fluxes.view(pd.DataFrame)
+    exchanges = exchanges[
+        (exchanges.taxon != "medium")
+        & (exchanges.direction == "export")
+    ]
+    rxns = pd.Series(exchanges.reaction.unique())
+    fluxes = exchanges.groupby(["sample_id", "taxon", "abundance"]).apply(
+        lambda x: augment(x, rxns)
+    ).reset_index()
+    meta = metadata.to_dataframe()
+    variable = meta.columns[0]
+    meta["sample_id"] = meta.index
+    tot_flux = fluxes.groupby(["metabolite", "sample_id"]).apply(
+        lambda df: sum(df.flux * df.abundance)
+    ).reset_index()
+    tot_flux.columns = ["metabolite", "sample_id", "flux"]
+    tot_flux = pd.merge(tot_flux, meta, on="sample_id")
+    ref = tot_flux[variable].unique()[0]
+    tests = tot_flux.groupby("metabolite").apply(
+        lambda df: test_single(df, variable, ref)
+    ).reset_index()
+    tests["variable"] = variable
+    tests.loc[tests.pval.notnull(), "qval"] = fdr(tests.pval[tests.pval.notnull()])
+    tests.sort_values(by="pval", inplace=True)
+    data_loc = path.join(output_dir, "tests.csv")
+    tests.to_csv(data_loc)
+    template.stream(
+        fluxes=tot_flux.to_json(orient="records"),
+        tests=tests.to_html(classes=["table", "is-hoverable"], border=0),
+        metabolites=json.dumps(list(tests.metabolite.unique())),
+        variable=variable,
+        width=400,
+        height=300
+    ).dump(path.join(output_dir, "index.html"))
+
+

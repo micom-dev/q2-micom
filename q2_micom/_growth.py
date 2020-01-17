@@ -71,6 +71,9 @@ def grow(
     exchanges = exchanges.melt(
         id_vars=["taxon", "sample_id"], var_name="reaction", value_name="flux"
     )
+    abundance = growth[["taxon", "sample_id", "abundance"]]
+    exchanges = pd.merge(exchanges, abundance,
+                         on=["taxon", "sample_id"])
     exchanges["metabolite"] = exchanges.reaction.str.replace("EX_", "")
     exchanges["direction"] = DIRECTION[
         (exchanges.flux > 0.0).astype(int)
