@@ -10,8 +10,18 @@ from pandas.api.types import is_numeric_dtype
 from os import path
 from q2_micom._formats_and_types import MicomResultsDirectory
 from qiime2 import MetadataColumn
+from sklearn.model_selection import (
+    cross_val_predict,
+    cross_val_score,
+    LeaveOneOut,
+)
+from sklearn.linear_model import (
+    LogisticRegressionCV,
+    LassoCV,
+    LogisticRegression,
+    Lasso,
+)
 from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LogisticRegressionCV, LassoCV
 from umap import UMAP
 
 env = Environment(
@@ -139,35 +149,23 @@ def plot_tradeoff(output_dir: str, results: pd.DataFrame) -> None:
     ).dump(path.join(output_dir, "index.html"))
 
 
-def augment(df, rxns):
-    df = df.copy()[["reaction", "metabolite", "flux"]]
-    add = pd.DataFrame(
-        {
-            "reaction": rxns[~rxns.isin(df.reaction)],
-            "metabolite": rxns[~rxns.isin(df.reaction)].str.replace("EX_", ""),
-            "flux": 1e-6,
-        }
-    )
-    return pd.concat([df, add])
-
-
 def fit_phenotype(
     output_dir: str,
     results: MicomResultsDirectory,
     metadata: MetadataColumn,
     variable_type: str = "binary",
     flux_type: str = "production",
+    min_coef: float = 0.01,
 ):
     """Test for differential metabolite production."""
     template = env.get_template("tests.html")
     exchanges = results.exchange_fluxes.view(pd.DataFrame)
-    print(exchanges.taxon.value_counts())
+
     if flux_type == "import":
         exchanges = exchanges[
             (exchanges.taxon == "medium") & (exchanges.direction == "import")
         ]
         exchanges["flux"] = exchanges.flux.abs()
-        print(exchanges)
     else:
         exchanges = exchanges[
             (exchanges.taxon != "medium") & (exchanges.direction == "export")
@@ -181,6 +179,7 @@ def fit_phenotype(
             )
             .reset_index()
         )
+    exchanges.to_csv(path.join(output_dir, "fluxes.csv"))
     exchanges.loc[exchanges.flux < 1e-6, "flux"] = 1e-6
     meta = metadata.to_dataframe()
     variable = meta.columns[0]
@@ -208,35 +207,41 @@ def fit_phenotype(
             penalty="l1",
             scoring="accuracy",
             solver="saga",
-            Cs=np.power(10.0, np.arange(-6, 6, 0.5)),
+            Cs=np.power(10.0, np.arange(-3, 6, 0.5)),
             max_iter=10000,
         )
         fit = model.fit(scaled, meta[variable])
-        score = [
-            np.mean(list(fit.scores_.values())),
-            np.std(list(fit.scores_.values())),
-        ]
+        model = LogisticRegression(
+            penalty="l1", solver="saga", C=fit.C_[0], max_iter=10000,
+        )
     else:
-        model = LassoCV(scoring="r2")
+        model = LassoCV()
         fit = model.fit(scaled, meta[variable])
-        score = [np.mean(fit.scores_), np.std(fit.scores_)]
+        model = Lasso(alpha=fit.alpha_[0])
+    fit = model.fit(scaled, meta[variable])
+    score = cross_val_score(
+        model, X=scaled, y=meta[variable], cv=LeaveOneOut()
+    )
+    score = [np.mean(score), np.std(score)]
     score.append(model.score(scaled, meta[variable]))
+
     coefs = pd.DataFrame(
         {"coef": fit.coef_[0, :], "metabolite": fluxes.columns}
     )
-    coefs = coefs[coefs.coef.abs() > 1e-6].sort_values(by="coef")
-    predicted = model.predict(scaled)
+    coefs.to_csv(path.join(output_dir, "coefficients.csv"))
+    coefs = coefs[coefs.coef.abs() > min_coef].sort_values(by="coef")
+    predicted = cross_val_predict(
+        model, scaled, meta[variable], cv=LeaveOneOut()
+    )
     fitted = pd.DataFrame(
         {"real": meta[variable], "predicted": predicted}, index=meta.index
     )
-    print(score)
 
     exchanges = exchanges.loc[
         exchanges.metabolite.isin(coefs.metabolite.values)
     ]
     exchanges["meta"] = meta.loc[exchanges.sample_id, variable].values
     var_type = "nominal" if variable_type == "binary" else "quantitative"
-    print(fitted)
 
     template.stream(
         fitted=fitted.to_json(orient="records"),
@@ -248,7 +253,6 @@ def fit_phenotype(
         score=score,
         width=400,
         height=300,
-        cheight=400,
+        cheight=2.5 * coefs.shape[0],
         cwidth=10 * coefs.shape[0],
     ).dump(path.join(output_dir, "index.html"))
-

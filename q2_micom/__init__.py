@@ -1,3 +1,5 @@
+"""Global imports for q2-micom."""
+
 from q2_micom._build import build
 from q2_micom._db import db
 from q2_micom._growth import grow

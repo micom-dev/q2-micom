@@ -161,7 +161,7 @@ plugin.methods.register_function(
     parameter_descriptions={
         "threads": "The number of threads to use when constructing models.",
         "cutoff": "Taxa with a relative abundance smaller than this will "
-                  "be dropped.",
+        "be dropped.",
     },
     output_descriptions={"community_models": "The community models."},
     name="Build community models.",
@@ -350,7 +350,8 @@ plugin.visualizers.register_function(
     parameters={
         "direction": Str % Choices("import", "export"),
         "n_neighbors": Int % Range(0, None),
-        "min_dist": Float % Range(0, None)},
+        "min_dist": Float % Range(0, None),
+    },
     input_descriptions={
         "results": (
             "A set of MICOM analysis results. "
@@ -360,12 +361,12 @@ plugin.visualizers.register_function(
     parameter_descriptions={
         "direction": "The direction of the flux.",
         "n_neighbors": "UMAP parameter. Number of neighbors used to calculate "
-                       "distances. Smaller values preserve more local "
-                       "structure and larger values preserve more global "
-                       "structure.",
+        "distances. Smaller values preserve more local "
+        "structure and larger values preserve more global "
+        "structure.",
         "min_dist": "UMAP parameter. Minimum distance between points. Smaller "
-                    "values clump points more together, larger values spread "
-                    "them out more."
+        "values clump points more together, larger values spread "
+        "them out more.",
     },
     name="Plot niche overlap.",
     description=(
@@ -401,13 +402,12 @@ plugin.visualizers.register_function(
 
 plugin.visualizers.register_function(
     function=q2_micom.fit_phenotype,
-    inputs={
-        "results": MicomResults,
-    },
+    inputs={"results": MicomResults},
     parameters={
         "metadata": MetadataColumn[Categorical | Numeric],
         "variable_type": Str % Choices("binary", "continuous"),
-        "flux_type": Str % Choices("import", "production")
+        "flux_type": Str % Choices("import", "production"),
+        "min_coef": Float % Range(0, None),
     },
     input_descriptions={
         "results": (
@@ -418,7 +418,11 @@ plugin.visualizers.register_function(
     parameter_descriptions={
         "metadata": "The metadata variable to use.",
         "variable_type": "The type of the phenotype variable.",
-        "flux_type": "Which fluxes to use."
+        "flux_type": "Which fluxes to use.",
+        "min_coef": (
+            "Only coefficient with absolute values larger than this "
+            "will be shown."
+        ),
     },
     name="Test for differential production",
     description=(

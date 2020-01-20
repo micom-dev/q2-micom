@@ -38,3 +38,19 @@ def test_plot_tradeoff():
     with TemporaryDirectory(prefix="q2-micom-") as d:
         q2m.plot_tradeoff(str(d), t)
         assert q2m.tests.check_viz(str(d))
+
+
+def test_fit_phenotype():
+    large = q2.Artifact.load(
+        path.join(this_dir, "../../docs", "growth.qza"))
+    r = large.view(q2m._formats_and_types.MicomResultsDirectory)
+    mcol = q2.Metadata.load(
+        path.join(this_dir, "../../docs", "metadata.tsv")
+    ).get_column("status")
+    with TemporaryDirectory(prefix="q2-micom-") as d:
+        q2m.fit_phenotype(str(d), r, mcol)
+        assert q2m.tests.check_viz(str(d))
+    with TemporaryDirectory(prefix="q2-micom-") as d:
+        q2m.fit_phenotype(str(d), r, mcol, flux_type="import")
+        assert q2m.tests.check_viz(str(d))
+
