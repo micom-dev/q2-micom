@@ -32,62 +32,150 @@
     </div>
     <!-- Container for the visualization -->
     <div class="container">
+    <div id="coefs"></div>
+    <a href="coefs.csv" class="button is-primary">Download as CSV...</a>
+    </div>
+    <br>
+    <div class="container">
     <div id="vis"></div>
     <a href="tests.csv" class="button is-primary">Download as CSV...</a>
+    </div>
     <br>
-    {{tests | safe}}
+    <div class="container">
+    <h2 class="title">Model performance</h2>
+    {% if type == "continuous" %}
+     <p>full data R<sup>2</sup> = {{score[2]}}</p>
+     <p> cross-validation R<sup>2</sup> = {{score[0]}} &#177; {{score[1]}} </p>
+    {% else %}
+     <p>full data accuracy = {{score[2]}}</p>
+     <p> cross-validation accuracy = {{score[0]}} &#177; {{score[1]}}</p>
+    {% endif %}
     </div>
     <script>
       // Assign the specification to a local variable vlSpec.
-      var vlSpec = {
+      var coef_spec = {
         $schema: "https://vega.github.io/schema/vega-lite/v4.json",
-        width: {{width}},
-        height: {{height}},
+        width: {{cwidth}},
+        height: {{cheight}},
         data: {
-            values: {{fluxes | safe}}
+            values: {{coefs | safe}}
         },
-        selection: {
-          metab: {
-            type: "single",
-            fields: ["metabolite"],
-            bind: {
-              input: "select",
-              options: {{metabolites | safe}}
-            }
-          }
-        },
-        transform: [{
-          filter: {selection: "metab"}
-        }],
         mark: {
-            type: "point",
-            filled: true,
-            size: 40,
+            type: "bar",
             tooltip: {content: "data"}
         },
         encoding: {
-          y: {
-            field: "flux",
-            type: "quantitative",
-            scale: {type: "log"},
-            axis: {title: "flux [mmol/(gDW h)]", grid: false}
-          },
-          x: {
-            field: "{{variable}}",
-            type: "nominal",
-            axis: {title: null}
-          },
-          color: {
-            field: "{{variable}}",
-            type: "nominal"
-          },
-          opacity: {
-            value: 0.75
-          }
+            x: {
+                field: "metabolite",
+                type: "nominal",
+                sort: "-coef"
+            },
+            y: {
+                field: "coef",
+                type: "quantitative",
+                axis: {title: "coefficient [standardized]"}
+            },
+            color: {
+                field: "coef",
+                type: "quantitative",
+                legend: false
+            },
         }
+      }
+      var vlSpec = {
+        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        hconcat: [
+        {
+            width: {{width}},
+            height: {{height}},
+            data: {
+                values: {{fitted | safe}}
+            },
+            {% if type == "continuous" %}
+            mark: {
+                type: "point",
+                tooltip: true
+            },
+            encoding: {
+                y: {
+                    field: "predicted",
+                    type: "quantitative",
+                    axis: {title: "predicted"}
+                },
+                x: {
+                    field: "real",
+                    type: "quantitative",
+                    axis: {title: "real value"}
+                },
+            }
+            {% else %}
+            mark: {
+                type: "bar",
+                tooltip: true
+            },
+            encoding: {
+                color: {
+                    field: "predicted",
+                    type: "nominal"
+                },
+                x: {
+                    field: "real",
+                    type: "nominal",
+                    axis: {title: "real value"}
+                },
+                y: {
+                  aggregate: "count",
+                  field: "predicted",
+                  type: "quantitative",
+                  axis: {title: "count"}
+                }
+            }
+            {% endif %}
+        }, {
+              width: {{width}},
+              height: {{height}},
+              data: {
+                  values: {{exchanges | safe}}
+              },
+              selection: {
+                metab: {
+                  type: "single",
+                  fields: ["metabolite"],
+                  bind: {
+                    input: "select",
+                    options: {{metabolites | safe}}
+                  }
+                }
+              },
+              transform: [{
+                filter: {selection: "metab"}
+              }],
+              mark: {
+                  type: "point",
+                  tooltip: true
+              },
+              encoding: {
+                  y: {
+                      field: "flux",
+                      type: "quantitative",
+                      scale: {type: "log"},
+                      axis: {title: "flux [mmol/gDW/h]"}
+                  },
+                  x: {
+                      field: "meta",
+                      type: "{{type}}",
+                      axis: {title: "{{variable}}"}
+                  },
+              }
+          }]
       };
 
       // Embed the visualization in the container with id `vis`
+      vegaEmbed("#coefs", coef_spec, {renderer: "svg"}).then(function(r) {
+        svg = d3.select("#coefs svg");
+        svg.attr("width", "100%").attr("height", "auto");
+      });
+
       vegaEmbed("#vis", vlSpec, {renderer: "svg"}).then(function(r) {
         svg = d3.select("#vis svg");
         svg.attr("width", "100%").attr("height", "auto");

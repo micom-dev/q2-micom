@@ -12,6 +12,7 @@ from qiime2.plugin import (
     Metadata,
     MetadataColumn,
     Categorical,
+    Numeric,
     Citations,
 )
 
@@ -399,12 +400,14 @@ plugin.visualizers.register_function(
 )
 
 plugin.visualizers.register_function(
-    function=q2_micom.test_production,
+    function=q2_micom.fit_phenotype,
     inputs={
         "results": MicomResults,
     },
     parameters={
-        "metadata": MetadataColumn[Categorical]
+        "metadata": MetadataColumn[Categorical | Numeric],
+        "variable_type": Str % Choices("binary", "continuous"),
+        "flux_type": Str % Choices("import", "production")
     },
     input_descriptions={
         "results": (
@@ -413,7 +416,9 @@ plugin.visualizers.register_function(
         ),
     },
     parameter_descriptions={
-        "metadata": "The metadata variable to use."
+        "metadata": "The metadata variable to use.",
+        "variable_type": "The type of the phenotype variable.",
+        "flux_type": "Which fluxes to use."
     },
     name="Test for differential production",
     description=(

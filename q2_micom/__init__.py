@@ -8,7 +8,7 @@ from q2_micom._viz import (
     exchanges_per_sample,
     exchanges_per_taxon,
     plot_tradeoff,
-    test_production,
+    fit_phenotype,
 )
 
 __version__ = "0.3.0"
@@ -23,5 +23,5 @@ __all__ = [
     "exchanges_per_sample",
     "exchanges_per_taxon",
     "plot_tradeoff",
-    "test_production",
+    "fit_phenotype",
 ]

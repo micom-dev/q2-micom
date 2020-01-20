@@ -6,10 +6,12 @@ from jinja2 import Environment, PackageLoader, select_autoescape
 import json
 import numpy as np
 import pandas as pd
+from pandas.api.types import is_numeric_dtype
 from os import path
 from q2_micom._formats_and_types import MicomResultsDirectory
-from qiime2 import CategoricalMetadataColumn
-from scipy.stats import mannwhitneyu
+from qiime2 import MetadataColumn
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegressionCV, LassoCV
 from umap import UMAP
 
 env = Environment(
@@ -73,25 +75,25 @@ def exchanges_per_taxon(
     results: MicomResultsDirectory,
     direction: str = "import",
     n_neighbors: int = 15,
-    min_dist: float = 0.1
+    min_dist: float = 0.1,
 ) -> None:
     """Plot the exchange fluxes."""
     template = env.get_template("umap.html")
     data_loc = path.join(output_dir, "umap.csv")
     exchanges = results.exchange_fluxes.view(pd.DataFrame)
     exchanges = exchanges[
-        (exchanges.taxon != "medium")
-        & (exchanges.direction == direction)
-        & (exchanges.flux.abs() > 1e-6)
+        (exchanges.taxon != "medium") & (exchanges.direction == direction)
     ]
     exchanges["flux"] = exchanges.flux.abs() * exchanges.abundance
     mat = exchanges.pivot_table(
-        values="flux", index=["sample_id", "taxon"], columns="reaction",
-        fill_value=0
+        values="flux",
+        index=["sample_id", "taxon"],
+        columns="reaction",
+        fill_value=0,
     )
-    umapped = UMAP(
-        min_dist=min_dist,
-        n_neighbors=n_neighbors).fit_transform(mat.values)
+    umapped = UMAP(min_dist=min_dist, n_neighbors=n_neighbors).fit_transform(
+        mat.values
+    )
     umapped = pd.DataFrame(
         umapped, index=mat.index, columns=["UMAP 1", "UMAP 2"]
     ).reset_index()
@@ -113,93 +115,140 @@ def plot_tradeoff(output_dir: str, results: pd.DataFrame) -> None:
     growth.loc[growth.tradeoff == "nan", "tradeoff"] = "none"
     growth.loc[growth.growth_rate < 1e-6, "growth_rate"] = 1e-6
     growth.loc[:, "log_growth_rate"] = np.log10(growth.growth_rate)
-    tradeoff = growth.groupby(["tradeoff", "sample_id"]).apply(
-        lambda df: pd.Series({
-            "n_taxa": df.shape[0],
-            "n_growing": df[df.growth_rate > 1e-6].shape[0],
-            "fraction_growing": (
-                df[df.growth_rate > 1e-6].shape[0] / df.shape[0]
+    tradeoff = (
+        growth.groupby(["tradeoff", "sample_id"])
+        .apply(
+            lambda df: pd.Series(
+                {
+                    "n_taxa": df.shape[0],
+                    "n_growing": df[df.growth_rate > 1e-6].shape[0],
+                    "fraction_growing": (
+                        df[df.growth_rate > 1e-6].shape[0] / df.shape[0]
+                    ),
+                }
             )
-            })
-    ).reset_index()
+        )
+        .reset_index()
+    )
     template.stream(
         growth=growth.to_json(orient="records"),
         tradeoff=tradeoff.to_json(orient="records"),
         extent=[growth.log_growth_rate.min(), growth.log_growth_rate.max()],
         width=400,
-        height=300
+        height=300,
     ).dump(path.join(output_dir, "index.html"))
 
 
 def augment(df, rxns):
     df = df.copy()[["reaction", "metabolite", "flux"]]
-    add = pd.DataFrame({
-        "reaction": rxns[~rxns.isin(df.reaction)],
-        "metabolite": rxns[~rxns.isin(df.reaction)].str.replace("EX_", ""),
-        "flux": 1e-6})
+    add = pd.DataFrame(
+        {
+            "reaction": rxns[~rxns.isin(df.reaction)],
+            "metabolite": rxns[~rxns.isin(df.reaction)].str.replace("EX_", ""),
+            "flux": 1e-6,
+        }
+    )
     return pd.concat([df, add])
 
-def test_single(df, v, ref):
-    if df.flux.mean() < 1e-4:
-        res = [float("nan"), float("nan")]
-    else:
-        res = mannwhitneyu(
-            df.flux[df[v] == ref],
-            df.flux[df[v] != ref]
-        )
-    res = list(res)
-    res.append(df.shape[0])
-    return pd.Series(res, index=["U", "pval", "n"])
 
-
-def fdr(p):
-    """Benjamini-Hochberg p-value correction for multiple hypothesis testing."""
-    p = np.asfarray(p)
-    by_descend = p.argsort()[::-1]
-    by_orig = by_descend.argsort()
-    steps = float(len(p)) / np.arange(len(p), 0, -1)
-    q = np.minimum(1, np.minimum.accumulate(steps * p[by_descend]))
-    return q[by_orig]
-
-
-def test_production(output_dir: str,
-                    results: MicomResultsDirectory,
-                    metadata: CategoricalMetadataColumn):
+def fit_phenotype(
+    output_dir: str,
+    results: MicomResultsDirectory,
+    metadata: MetadataColumn,
+    variable_type: str = "binary",
+    flux_type: str = "production",
+):
     """Test for differential metabolite production."""
     template = env.get_template("tests.html")
     exchanges = results.exchange_fluxes.view(pd.DataFrame)
-    exchanges = exchanges[
-        (exchanges.taxon != "medium")
-        & (exchanges.direction == "export")
-    ]
-    rxns = pd.Series(exchanges.reaction.unique())
-    fluxes = exchanges.groupby(["sample_id", "taxon", "abundance"]).apply(
-        lambda x: augment(x, rxns)
-    ).reset_index()
+    print(exchanges.taxon.value_counts())
+    if flux_type == "import":
+        exchanges = exchanges[
+            (exchanges.taxon == "medium") & (exchanges.direction == "import")
+        ]
+        exchanges["flux"] = exchanges.flux.abs()
+        print(exchanges)
+    else:
+        exchanges = exchanges[
+            (exchanges.taxon != "medium") & (exchanges.direction == "export")
+        ]
+        exchanges = (
+            exchanges.groupby(["reaction", "metabolite", "sample_id"])
+            .apply(
+                lambda df: pd.Series(
+                    {"flux": sum(df.abundance * df.flux.abs())}
+                )
+            )
+            .reset_index()
+        )
+    exchanges.loc[exchanges.flux < 1e-6, "flux"] = 1e-6
     meta = metadata.to_dataframe()
     variable = meta.columns[0]
-    meta["sample_id"] = meta.index
-    tot_flux = fluxes.groupby(["metabolite", "sample_id"]).apply(
-        lambda df: sum(df.flux * df.abundance)
-    ).reset_index()
-    tot_flux.columns = ["metabolite", "sample_id", "flux"]
-    tot_flux = pd.merge(tot_flux, meta, on="sample_id")
-    ref = tot_flux[variable].unique()[0]
-    tests = tot_flux.groupby("metabolite").apply(
-        lambda df: test_single(df, variable, ref)
-    ).reset_index()
-    tests["variable"] = variable
-    tests.loc[tests.pval.notnull(), "qval"] = fdr(tests.pval[tests.pval.notnull()])
-    tests.sort_values(by="pval", inplace=True)
-    data_loc = path.join(output_dir, "tests.csv")
-    tests.to_csv(data_loc)
-    template.stream(
-        fluxes=tot_flux.to_json(orient="records"),
-        tests=tests.to_html(classes=["table", "is-hoverable"], border=0),
-        metabolites=json.dumps(list(tests.metabolite.unique())),
-        variable=variable,
-        width=400,
-        height=300
-    ).dump(path.join(output_dir, "index.html"))
+    if variable_type == "binary" and meta[variable].nunique() != 2:
+        raise ValueError(
+            "Binary variables must have exactly two unique values, yours "
+            "has: %s." % ", ".join(meta[variable].unique())
+        )
+    elif variable_type == "continuous" and not is_numeric_dtype(
+        meta[variable]
+    ):
+        raise ValueError(
+            "Continuous variables must have a numeric type, but yours is"
+            " of type `%s`." % meta[variable].dtype
+        )
 
+    fluxes = exchanges.pivot_table(
+        index="sample_id", columns="metabolite", values="flux", fill_value=1e-6
+    )
+    fluxes = fluxes.applymap(np.log)
+    meta = meta.loc[fluxes.index]
+    scaled = StandardScaler().fit_transform(fluxes)
+    if variable_type == "binary":
+        model = LogisticRegressionCV(
+            penalty="l1",
+            scoring="accuracy",
+            solver="saga",
+            Cs=np.power(10.0, np.arange(-6, 6, 0.5)),
+            max_iter=10000,
+        )
+        fit = model.fit(scaled, meta[variable])
+        score = [
+            np.mean(list(fit.scores_.values())),
+            np.std(list(fit.scores_.values())),
+        ]
+    else:
+        model = LassoCV(scoring="r2")
+        fit = model.fit(scaled, meta[variable])
+        score = [np.mean(fit.scores_), np.std(fit.scores_)]
+    score.append(model.score(scaled, meta[variable]))
+    coefs = pd.DataFrame(
+        {"coef": fit.coef_[0, :], "metabolite": fluxes.columns}
+    )
+    coefs = coefs[coefs.coef.abs() > 1e-6].sort_values(by="coef")
+    predicted = model.predict(scaled)
+    fitted = pd.DataFrame(
+        {"real": meta[variable], "predicted": predicted}, index=meta.index
+    )
+    print(score)
+
+    exchanges = exchanges.loc[
+        exchanges.metabolite.isin(coefs.metabolite.values)
+    ]
+    exchanges["meta"] = meta.loc[exchanges.sample_id, variable].values
+    var_type = "nominal" if variable_type == "binary" else "quantitative"
+    print(fitted)
+
+    template.stream(
+        fitted=fitted.to_json(orient="records"),
+        coefs=coefs.to_json(orient="records"),
+        exchanges=exchanges.to_json(orient="records"),
+        metabolites=json.dumps(coefs.metabolite.tolist()),
+        variable=variable,
+        type=var_type,
+        score=score,
+        width=400,
+        height=300,
+        cheight=400,
+        cwidth=10 * coefs.shape[0],
+    ).dump(path.join(output_dir, "index.html"))
 
