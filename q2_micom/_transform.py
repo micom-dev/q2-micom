@@ -3,6 +3,7 @@
 import pandas as pd
 from q2_micom.plugin_setup import plugin
 import q2_micom._formats_and_types as ft
+from qiime2 import Artifact
 
 
 @plugin.register_transformer
@@ -63,3 +64,12 @@ def _9(data: pd.DataFrame) -> ft.Fluxes:
 @plugin.register_transformer
 def _10(ef: ft.Fluxes) -> pd.DataFrame:
     return pd.read_parquet(str(ef))
+
+
+@plugin.register_transformer
+def _11(res: ft.MicomResultsDirectory) -> ft.MicomResultsData:
+    return ft.MicomResultsData(
+        exchange_fluxes=pd.read_parquet(str(res.exchange_fluxes.path_maker())),
+        growth_rates=pd.read_csv(
+            str(res.growth_rates.path_maker()), index_col=False)
+    )

@@ -207,7 +207,7 @@ def fit_phenotype(
             penalty="l1",
             scoring="accuracy",
             solver="saga",
-            Cs=np.power(10.0, np.arange(-3, 6, 0.5)),
+            Cs=np.power(10.0, np.arange(-6, 4, 0.5)),
             max_iter=10000,
         )
         fit = model.fit(scaled, meta[variable])
@@ -228,6 +228,13 @@ def fit_phenotype(
     coefs = pd.DataFrame(
         {"coef": fit.coef_[0, :], "metabolite": fluxes.columns}
     )
+
+    if all(coefs.coef.abs() < 1e-12):
+        raise RuntimeError(
+            "Unfortunately no metabolite flux was predictive for the "
+            " chosen phenotype :("
+        )
+
     coefs.to_csv(path.join(output_dir, "coefficients.csv"))
     coefs = coefs[coefs.coef.abs() > min_coef].sort_values(by="coef")
     predicted = cross_val_predict(
@@ -253,6 +260,6 @@ def fit_phenotype(
         score=score,
         width=400,
         height=300,
-        cheight=2.5 * coefs.shape[0],
-        cwidth=10 * coefs.shape[0],
+        cheight=2 * coefs.shape[0],
+        cwidth=8 * coefs.shape[0],
     ).dump(path.join(output_dir, "index.html"))

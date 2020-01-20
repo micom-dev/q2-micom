@@ -1,5 +1,6 @@
 """Formats and types for metabolic modeling."""
 
+from collections import namedtuple
 import pandas as pd
 from qiime2.plugin import SemanticType
 import qiime2.plugin.model as model
@@ -139,3 +140,7 @@ MicomMedium = SemanticType(
     "MicomMedium",
     field_names="type",
     field_members={"type": (Global, PerSample)})
+
+
+MicomResultsData = namedtuple(
+    "MicomResultsData", ["growth_rates", "exchange_fluxes"])
