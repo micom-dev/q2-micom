@@ -11,7 +11,7 @@ from q2_micom._viz import (
     fit_phenotype,
 )
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 __all__ = [
     "db",
