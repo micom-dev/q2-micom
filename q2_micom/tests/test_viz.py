@@ -2,6 +2,7 @@
 
 import os.path as path
 import pandas as pd
+import pytest
 import qiime2 as q2
 import q2_micom as q2m
 from tempfile import TemporaryDirectory
@@ -51,6 +52,5 @@ def test_fit_phenotype():
         q2m.fit_phenotype(str(d), r, mcol)
         assert q2m.tests.check_viz(str(d))
     with TemporaryDirectory(prefix="q2-micom-") as d:
-        q2m.fit_phenotype(str(d), r, mcol, flux_type="import")
-        assert q2m.tests.check_viz(str(d))
-
+        with pytest.raises(RuntimeError):
+            q2m.fit_phenotype(str(d), r, mcol, flux_type="import")
