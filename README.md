@@ -70,3 +70,11 @@ Here is an overview of the analysis paths you can take with `q2-micom`.
 
 <img src="docs/assets/overview.png" width="100%">
 
+The best way to get started is to work through the [community tutorial](https://github.com/micom-dev/q2-micom/blob/master/docs/README.md).
+
+## References
+
+MICOM: Metagenome-Scale Modeling To Infer Metabolic Interactions in the Gut Microbiota <br>
+Christian Diener, Sean M. Gibbons, Osbaldo Resendis-Antonio <br>
+mSystems 5:e00606-19 <br>
+https://doi.org/10.1128/mSystems.00606-19
