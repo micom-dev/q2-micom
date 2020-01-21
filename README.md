@@ -14,7 +14,7 @@ A Qiime 2 plugin for MICOM.
 
 ### Setup Qiime 2
 
-You will need a Qiime 2 development environment ([how to get that](https://dev.qiime2.org/latest/quickstart/#install-qiime-2-within-a-conda-environment)). Activate the environment:
+You will need a Qiime 2 development environment ([install Qiime 2](https://dev.qiime2.org/latest/quickstart/#install-qiime-2-within-a-conda-environment)). Once installed, activate the environment:
 
 ```bash
 conda activate qiime2-dev
@@ -34,7 +34,7 @@ pip install git+https://github.com/micom-dev/q2-micom
 
 ### Install a QP solver
 
-Finally, `MICOM` requires a quadratic programming solver. We currently support [CPLEX](https://www.ibm.com/analytics/cplex-optimizer) or [Gurobi](https://www.gurobi.com/) which both have free academic licenses but will require you to sign up for them.
+Finally, `MICOM` requires a quadratic programming solver. We currently support [CPLEX](https://www.ibm.com/analytics/cplex-optimizer) or [Gurobi](https://www.gurobi.com/), which both have free academic licenses but will require you to sign up for them.
 
 **CPLEX**
 
@@ -66,7 +66,7 @@ You are now ready to run `q2-micom`.
 
 ## Usage
 
-Here is an overview of the analysis paths you can take with `q2-micom`.
+Here is a graphical overview of a `q2-micom` analysis.
 
 <img src="docs/assets/overview.png" width="100%">
 
