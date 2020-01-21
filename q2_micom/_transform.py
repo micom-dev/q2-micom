@@ -3,7 +3,6 @@
 import pandas as pd
 from q2_micom.plugin_setup import plugin
 import q2_micom._formats_and_types as ft
-from qiime2 import Artifact
 
 
 @plugin.register_transformer
