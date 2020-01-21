@@ -197,7 +197,7 @@ qiime micom plot-tradeoff --i-results tradeoff.qza \
 
 This will give you the following:
 
-<a href="https://micom-dev.github.io/q2-micom/assets/tradeoff/data/index.html" _target="blank"><img src="assets/tradeoff.png" width="100%"></a>
+<a href="https://micom-dev.github.io/q2-micom/assets/tradeoff/data/index.html" target="_blank"><img src="assets/tradeoff.png" width="100%"></a>
 
 Here the distribution of growth rates is shown by the 2D histogram on the left and the fraction of growing taxa with its mean line is shown on the left. You can see that lowering the tradeoff gives you more and more taxa that grow. The elbow is around 0.5 but we might want to pick a value as low as 0.3 here since that is where we observe the largest jump. It is expected that not all taxa can grow since this can be a consequence of an incorrect model, an imperfect set of growth conditions or even a non-viable but present taxon in the original. However, for consistency we would expoect most of the observed taxa to grow.
 
@@ -212,7 +212,7 @@ qiime micom plot-growth --i-results growth.qza \
                         --o-visualization growth_rates.qzv
 ```
 
-<a href="https://micom-dev.github.io/q2-micom/assets/growth/data/index.html" _target="blank"><img src="assets/growth_rates.png" width="100%"></a>
+<a href="https://micom-dev.github.io/q2-micom/assets/growth/data/index.html" target="_blank"><img src="assets/growth_rates.png" width="100%"></a>
 
 We can see that growth rates are pretty heterogeneous across samples but it's still hard to se what is going one.
 
@@ -226,7 +226,7 @@ qiime micom exchanges-per-sample --i-results growth.qza \
 ```
 
 
-<a href="https://micom-dev.github.io/q2-micom/assets/per_sample/data/index.html" _target="blank"><img src="assets/consumption.png" width="80%"></a>
+<a href="https://micom-dev.github.io/q2-micom/assets/per_sample/data/index.html" target="_blank"><img src="assets/consumption.png" width="80%"></a>
 
 We do see that there is some separation between the healthy and cancer samples. For, instance there are sets of amino acids that get consumed by healthy microbiotas but not as much in the cancer ones. One of them is glutamine. Many cancer cells show glutamine addiction as a consequence of the Warburg effect. So we could hypothesize that this depletes it in cancer samples so the microbiota has adapted to grow without it.
 
@@ -241,7 +241,7 @@ qiime micom exchanges-per-taxon --i-results growth.qza \
                                 --o-visualization niche.qzv
 ```
 
-<a href="https://micom-dev.github.io/q2-micom/assets/per_taxon/data/index.html" _target="blank"><img src="assets/niche.png" width="80%"></a>
+<a href="https://micom-dev.github.io/q2-micom/assets/per_taxon/data/index.html" target="_blank"><img src="assets/niche.png" width="80%"></a>
 
 Most taxa have a specific growth niche those move around a bit across samples. You can tune the UMAP reduction by using the parameters `--p-n-neighbors` and `--p-min-dist`. You can look at metabolite production with `--p-direction export` where you can observe way less clustering, meaning that there is considerate overlap in metabolite production.
 
@@ -288,7 +288,7 @@ We could also define a continous phenotype with `--p-variable-type continuous` o
 
 The created visualization now shows which production fluxes are predictive for the phenotype.
 
-<a href="https://micom-dev.github.io/q2-micom/assets/phenotype/data/index.html" _target="blank"><img src="assets/phenotype.png" width="100%"></a>
+<a href="https://micom-dev.github.io/q2-micom/assets/phenotype/data/index.html" target="_blank"><img src="assets/phenotype.png" width="100%"></a>
 
 Basically the metabolites on both extremes of the barplot are the most predictive ones. In this case negative coefficients denotes fluxes that are higher in cancer samples and positive ones fluxes that are higher in healthy samples. For instance here we see that L-cysteine is produced in larger amounts in healthy samples whereas sulfite and thiosulfate are produced in larger amounts in cancer samples. It is not sur[prising to see those compunds on opposite sides of the barplot since many sulfur oxidizing bacteria can oxidixize thiosulfate to sulfate, but his [requires cysteine as an intermediate](https://www.ncbi.nlm.nih.gov/pubmed/20066349). Also, women with high cysteine plasma levels [have a lower incidence of colorectal cancer](https://doi.org/10.3945/ajcn.112.049932) which seems consistent with what we find here.
 
