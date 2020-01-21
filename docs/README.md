@@ -2,7 +2,8 @@
 
 # Community Tutorial
 
-`q2-micom` provides a Qiime 2 plugin for the [MICOM](https://github.com/micom-dev/micom)Python package and allows for functional analysis of microbial communities using metabolic modeling.
+`q2-micom` provides a Qiime 2 plugin for the [MICOM](https://github.com/micom-dev/micom) 
+Python package and allows for functional analysis of microbial communities using metabolic modeling.
 
 ## A primer on MICOM
 
