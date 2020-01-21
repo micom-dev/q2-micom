@@ -66,7 +66,7 @@ You are now ready to run `q2-micom`.
 
 ## Usage
 
-Here is a graphica overview of a `q2-micom` analysis.
+Here is a graphical overview of a `q2-micom` analysis.
 
 <img src="docs/assets/overview.png" width="100%">
 
