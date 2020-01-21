@@ -1,4 +1,4 @@
-<img src="docs/assets/logo.png" width="50%">
+<img src="assets/logo.png" width="50%">
 
 # Community Tutorial
 
@@ -197,7 +197,7 @@ qiime micom plot-tradeoff --i-results tradeoff.qza \
 
 This will give you the following:
 
-<img src="assets/tradeoff.png" width="100%">
+<a href="assets/tradeoff/data/index.html" _target="blank"><img src="assets/tradeoff.png" width="100%"></a>
 
 Here the distribution of growth rates is shown by the 2D histogram on the left and the fraction of growing taxa with its mean line is shown on the left. You can see that lowering the tradeoff gives you more and more taxa that grow. The elbow is around 0.5 but we might want to pick a value as low as 0.3 here since that is where we observe the largest jump. It is expected that not all taxa can grow since this can be a consequence of an incorrect model, an imperfect set of growth conditions or even a non-viable but present taxon in the original. However, for consistency we would expoect most of the observed taxa to grow.
 
@@ -212,7 +212,7 @@ qiime micom plot-growth --i-results growth.qza \
                         --o-visualization growth_rates.qzv
 ```
 
-<img src="assets/growth_rates.png" width="100%">
+<a href="assets/growth/data/index.html" _target="blank"><img src="assets/growth_rates.png" width="100%"></a>
 
 We can see that growth rates are pretty heterogeneous across samples but it's still hard to se what is going one.
 
@@ -226,7 +226,7 @@ qiime micom exchanges-per-sample --i-results growth.qza \
 ```
 
 
-<img src="assets/consumption.png" width="80%">
+<a href="assets/per_sample/data/index.html" _target="blank"><img src="assets/consumption.png" width="80%"></a>
 
 We do see that there is some separation between the healthy and cancer samples. For, instance there are sets of amino acids that get consumed by healthy microbiotas but not as much in the cancer ones. One of them is glutamine. Many cancer cells show glutamine addiction as a consequence of the Warburg effect. So we could hypothesize that this depletes it in cancer samples so the microbiota has adapted to grow without it.
 
@@ -241,7 +241,148 @@ qiime micom exchanges-per-taxon --i-results growth.qza \
                                 --o-visualization niche.qzv
 ```
 
-<img src="assets/niche.png" width="80%">
+<a href="assets/per_taxon/data/index.html" _target="blank"><img src="assets/niche.png" width="80%"></a>
 
 Most taxa have a specific growth niche those move around a bit across samples. You can tune the UMAP reduction by using the parameters `--p-n-neighbors` and `--p-min-dist`. You can look at metabolite production with `--p-direction export` where you can observe way less clustering, meaning that there is considerate overlap in metabolite production.
 
+### Associating fluxes to a phenotype
+
+A common question is whether there is a conection between a phenotype of interest and the fluxes. However, not all exchange fluxes will be informative for this question. The most predictive type of fluxes for a phenotype of interest is usually the overall production flux, which is the total rate of production of a metabolite *without* considering its consumption by taxa in the community. For instance if all bacteria produce 100 mmol/gDW/h of ethanol but other taxa also consume 90 mmol/gDW/h of ethanol this would still be the 100 mmol/gDW/h of total production. Why is that production flux important? MICOM models microbial communities without other organisms in the environment. But many times the bacteria actually compete with other organisms cells such as intestinal cells in the gut or plant roots in soil. Those will consume a fraction of all produced metabolites in the environment and thus will take up metabolites from this total production pool.
+
+> A similar analogy is a waterhose on your laundry machine. The water comes in from the faucet but then gets out on another one. So the net amount of water consumed by the machine is zero. However, if you put in laundry it will get wet, and how wet it gets probably depends on how much water was supplied to it since it will suck up water from the inflow, competing with the outflow. The inflow is the production flux here.
+
+This is the default set of fluxes used by q2-micom. Additionally, it also allows using the minimal improt fluxes shown in `qiime micom exchanges-per-sample` but those are often not too informative.
+
+To predict a phenotype from fluxes we will use the `fit-phenotype` command. Here you will need a Qiime 2 [Metadata file](https://docs.qiime2.org/2019.10/tutorials/metadata/) that specifies your phenotype of interest. Our metadata is pretty simple and just assigns a healthy or cancer status to each sample:
+
+```
+id	status
+Healthy1	healthy
+Healthy2	healthy
+Healthy3	healthy
+Healthy4	healthy
+Healthy5	healthy
+Healthy6	healthy
+Healthy7	healthy
+Healthy8	healthy
+Cancer1	colorectal cancer
+Cancer2	colorectal cancer
+Cancer3	colorectal cancer
+Cancer4	colorectal cancer
+Cancer5	colorectal cancer
+Cancer6	colorectal cancer
+Cancer7	colorectal cancer
+Cancer8	colorectal cancer
+```
+
+`q2-micom` supports binary or continuous phenotype data (using L1 penalized logistic regression for binary data, and LASSO regression for continuous data).
+
+```bash
+qiime micom fit-phenotype --i-results growth.qza \
+                          --m-metadata-file metadata.tsv \
+                          --m-metadata-column status \
+                          --o-visualization fit.qzv
+```
+
+We could also define a continous phenotype with `--p-variable-type continuous` or rather use for minimal import fluxes with `--p-flux-type import`.
+
+The created visualization now shows which production fluxes are predictive for the phenotype.
+
+<a href="assets/phenotype/data/index.html" _target="blank"><img src="assets/phenotype.png" width="100%"></a>
+
+Basically the metabolites on both extremes of the barplot are the most predictive ones. In this case negative coefficients denotes fluxes that are higher in cancer samples and positive ones fluxes that are higher in healthy samples. For instance here we see that L-cysteine is produced in larger amounts in healthy samples whereas sulfite and thiosulfate are produced in larger amounts in cancer samples. It is not sur[prising to see those compunds on opposite sides of the barplot since many sulfur oxidizing bacteria can oxidixize thiosulfate to sulfate, but his [requires cysteine as an intermediate](https://www.ncbi.nlm.nih.gov/pubmed/20066349). Also, women with high cysteine plasma levels [have a lower incidence of colorectal cancer](https://doi.org/10.3945/ajcn.112.049932) which seems consistent with what we find here.
+
+Obviously, we would still have to validate those hypothesis but at least we got some functional insight starting from 16S data alone (and making a bunch of assumptions...)
+
+## Bonus
+
+### Identifying AGORA metabolites
+
+Many of the metabolite IDs returned by MICOM may be hard to identify. As lonmg as you use the AGORA models you can look them up at https://www.vmh.life/#microbes/metabolites/ after stripping away the final `_m` or `(e)` which denotes the intracellular compartment. For instance to identify the metabolite `nmn_m` or `nmn(e)` use https://www.vmh.life/#microbes/metabolites/nmn.
+
+### Building your own model database
+
+Maybe your sample is not well represented by the AGORA models, or you may have better metabolic reconstructions for the taxa in your samples. In that case you may want to build your own database for `q2-micom`. This is pretty simple and you will need 2 things:
+
+1. A directory that contains your metabolic models in [SBML format](http://sbml.org/Main_Page) with filenames of the form `{ID}.xml`.
+2. A Qiime 2 Metadata file annotating each model with at least an id and the full taxonomy (kingdom | phylum | class | order | family | species | strain (optional)).
+
+With those two things you can use `qiime micom db` to build your database summarized on any given taxonomic rank. For instance the AGORA v1.03 artifact was built by downloading the SBML models from https://www.vmh.life/#downloadview and using an adapted metadata file ([agora.tsv](agora.tsv)). The genus database was the built with
+
+```bash
+qiime micom db --m-meta-file agora.tsv \
+               --p-folder data/agora \
+               --p-rank genus \
+               --p-threads 8 \
+               --o-metabolic-models agora_genus_103.qza
+```
+
+### Getting the growth and flux data for additional analyses
+
+Obviously, you may want to perform different statistical tests, visualizations, or analyses on the growth rates or fluxes obtained from `q2-micom`. For this we provide
+a convenience function in the `q2_micom` module which you can use from within Python and that returns the data as pandas DataFrames.
+
+```python
+In [1]: from q2_micom import read_results
+
+In [2]: res = read_results("growth.qza")
+# there may be some warnings here, they are not dangerous :)
+
+In [3]: res.exchange_fluxes.head()
+Out[3]:
+          taxon sample_id        reaction          flux  abundance   metabolite direction
+0   Actinomyces  Healthy4  EX_12dgr180(e) -1.436615e-11   0.001053  12dgr180(e)    import
+4   Actinomyces  Healthy4   EX_12ppd_S(e)  9.727212e+00   0.001053   12ppd_S(e)    export
+10  Actinomyces  Healthy4   EX_26dap_M(e) -4.315640e+01   0.001053   26dap_M(e)    import
+14  Actinomyces  Healthy4    EX_2dmmq8(e) -3.792135e-12   0.001053    2dmmq8(e)    import
+18  Actinomyces  Healthy4     EX_2obut(e) -6.305684e+01   0.001053     2obut(e)    import
+
+In [4]: res.growth_rates.head()
+Out[4]:
+    compartments  abundance   growth_rate  reactions  metabolites          taxon  tradeoff sample_id
+0    Actinomyces   0.001053  1.167306e+00       2445         1643    Actinomyces       0.3  Healthy4
+1  Adlercreutzia   0.011055  1.392794e-10        942          904  Adlercreutzia       0.3  Healthy4
+2    Akkermansia   0.031848  5.686213e-11       2274         1386    Akkermansia       0.3  Healthy4
+3      Alistipes   0.000464  4.795338e-01       2650         1613      Alistipes       0.3  Healthy4
+4   Anaerococcus   0.002369  7.572441e-01       1330         1097   Anaerococcus       0.3  Healthy4
+```
+
+### Getting a minimal medium
+
+In some cases you may have no information on the environment and may lack a growth medium. In that case `q2-micom` lets you predict a minimal medium based on all importable metabolites in the community models by specifying a minimum growth rate all taxa have to achieve simultaneously.
+
+> However, be aware that this does not have to correspond to any real environment you microbial community is exposed to and may lead to very unrealistic predictions!
+
+For instance we can generate a minimal medium for our community models:
+
+```bash
+qiime micom minimal-medium --i-models communities.qza \
+                           --p-min-growth 0.01 \
+                           --p-threads 8 \
+                           --o-medium minimal_medium.qza \
+                           --verbose
+```
+
+We can use the Qiime 2 artifact API to inspect the medium:
+
+```python
+In [1]: from qiime2 import Artifact
+
+In [2]: import pandas as pd
+
+In [3]: medium = Artifact.load("minimal_medium.qza").view(pd.DataFrame)
+
+In [4]: medium.shape
+Out[4]: (33, 3)
+
+In [5]: medium.sort_values(by="flux", ascending=False).head()
+Out[5]:
+          reaction      flux   metabolite
+5         EX_amp_m  0.011940        amp_m
+3      EX_MGlcn9_m  0.009677     MGlcn9_m
+24        EX_nmn_m  0.007725        nmn_m
+4   EX_MGlcn9_rl_m  0.007656  MGlcn9_rl_m
+2    EX_MGlcn103_m  0.006159   MGlcn103_m
+```
+
+So the most efficient growth requires at least 33 different metabolites and seems to be consuming mucin glycans (all of the MGln* metabolites), as well as nucleotide and NAD precursors like AMP and nicotinamide ribotide.
