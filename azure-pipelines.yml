@@ -28,11 +28,12 @@ jobs:
         displayName: Install q2-micom
       - bash: |
           source activate qiime2-dev
-          pip install pytest
-          pytest --junitxml=junit/test-results.xml
+          pip install pytest pytest-cov pytest-azurepipelines
+          pytest
         displayName: Run tests
       - script: |
           source activate qiime2-dev
+          pip uninstall -y pytest-azurepipelines
           pip install pytest-cov
           pytest --cov
           bash <(curl -s https://codecov.io/bash)
@@ -72,6 +73,6 @@ jobs:
         displayName: "Run flake8"
       - bash: |
           source activate qiime2-dev
-          pip install pytest
-          pytest --junitxml=junit/test-results.xml
+          pip install pytest pytest-cov pytest-azurepipelines
+          pytest
         displayName: Run tests
