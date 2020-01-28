@@ -1,8 +1,8 @@
 jobs:
     - job:
-      displayName: ubuntu-16.04
+      displayName: ubuntu-latest
       pool:
-        vmImage: 'ubuntu-16.04'
+        vmImage: 'ubuntu-latest'
 
       steps:
       - bash: echo "##vso[task.prependpath]$CONDA/bin"
@@ -28,7 +28,7 @@ jobs:
         displayName: Install q2-micom
       - bash: |
           source activate qiime2-dev
-          pip install pytest pytest-cov pytest-azurepipelines
+          pip install pytest pytest-azurepipelines
           pytest
         displayName: Run tests
       - script: |
@@ -41,9 +41,9 @@ jobs:
 
 
     - job:
-      displayName: macOS-10.13
+      displayName: macOS-latest
       pool:
-        vmImage: 'macOS-10.13'
+        vmImage: 'macOS-latest'
 
       steps:
       - bash: echo "##vso[task.prependpath]$CONDA/bin"
