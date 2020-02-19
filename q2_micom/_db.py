@@ -41,6 +41,10 @@ def db(
     files = os.listdir(folder)
     meta["file"] = meta.id + ".xml"
     bad = meta.file.apply(lambda x: x not in files)
+    # try with gzipped files
+    if any(bad):
+        meta["file"] = meta.id + ".xml.gz"
+        bad = meta.file.apply(lambda x: x not in files)
     if any(bad):
         raise ValueError(
             "The following models are in the Metadata but not "

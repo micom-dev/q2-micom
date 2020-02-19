@@ -112,8 +112,8 @@ plugin.methods.register_function(
         ),
         "folder": (
             "The folder where the SBML models are stored. Model files "
-            "must have filenames in `{ID}.xml` where {ID} is the id "
-            "in the metadata file."
+            "must have filenames of the form `{ID}.xml[.gz]` where {ID} is "
+            "the id in the metadata file."
         ),
         "rank": "The phylogenetic rank at which to summarize taxa.",
         "threads": "The number of threads to use when constructing models.",
