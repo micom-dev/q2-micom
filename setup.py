@@ -7,7 +7,7 @@ setup(
     name="q2-micom",
     version="0.5.0",
     packages=find_packages(),
-    package_data={"q2_micom": ["citations.bib", "assets"]},
+    package_data={"q2_micom": ["citations.bib", "assets/templates/*.html"]},
     author="Christian Diener",
     author_email="cdiener (a) isbscience.org",
     description="Plugin for metabolic modeling of microbial communities.",
