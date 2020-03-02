@@ -14,7 +14,7 @@ A Qiime 2 plugin for MICOM.
 
 ### Setup Qiime 2
 
-You will need a Qiime 2 development environment ([install Qiime 2](https://dev.qiime2.org/latest/quickstart/#install-qiime-2-within-a-conda-environment)). Once installed, activate the environment:
+You will need a Qiime 2 environment with version `2020.2` or higher ([install Qiime 2](https://dev.qiime2.org/latest/quickstart/#install-qiime-2-within-a-conda-environment)). Once installed, activate the environment:
 
 ```bash
 conda activate qiime2-dev
