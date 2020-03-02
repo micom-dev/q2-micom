@@ -1,6 +1,6 @@
 """Performs a growth simulation."""
 
-from cobra.util.solver import interface_to_str
+from cobra.util.solver import interface_to_str, OptimizationError
 from micom import load_pickle
 from micom.logger import logger
 from micom.media import minimal_medium
@@ -74,7 +74,14 @@ def grow(
         for s, p in paths.items()
     ]
     results = workflow(_growth, args, threads)
-    growth = pd.concat(r["growth"] for r in results)
+    if all([r is None for r in results]):
+        raise OptimizationError(
+            "All numerical optimizations failed. This indicates a problem "
+            "with the solver or numerical instabilities. Check that you have "
+            "CPLEX or Gurobi installed. You may also increase the abundance "
+            "cutoff in `qiime micom build` to create simpler models."
+        )
+    growth = pd.concat(r["growth"] for r in results if r is not None)
     growth = growth[growth.taxon != "medium"]
     growth.to_csv(out.growth_rates.path_maker())
     exchanges = pd.concat(r["exchanges"] for r in results)
