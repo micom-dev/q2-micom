@@ -19,7 +19,7 @@ def _growth(args):
     p, tradeoff, medium = args
     com = load_pickle(p)
 
-    if "glpk" in interface_to_str(com.solver):
+    if "glpk" in interface_to_str(com.solver.interface):
         logger.error(
             "Community models were not built with a QP-capable solver. "
             "This means that you did not install CPLEX or Gurobi. "

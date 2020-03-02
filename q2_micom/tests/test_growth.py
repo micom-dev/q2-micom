@@ -4,6 +4,7 @@ import os.path as path
 import pandas as pd
 import qiime2 as q2
 import q2_micom as q2m
+from q2_micom.tests import this_dir
 
 this_dir = q2m.tests.this_dir
 
