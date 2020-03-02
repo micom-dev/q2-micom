@@ -34,7 +34,8 @@ pip install git+https://github.com/micom-dev/q2-micom
 
 ### Install a QP solver
 
-Finally, `MICOM` requires a quadratic programming solver. We currently support [CPLEX](https://www.ibm.com/analytics/cplex-optimizer) or [Gurobi](https://www.gurobi.com/), which both have free academic licenses but will require you to sign up for them.
+Finally, `MICOM` requires a quadratic programming solver. We currently support [CPLEX](https://www.ibm.com/analytics/cplex-optimizer) or [Gurobi](https://www.gurobi.com/), which both have free academic licenses but will require you to sign up for them. *We currently recommend using CPLEX as Gurobi can be
+slow for some models.*
 
 **CPLEX**
 
