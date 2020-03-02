@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="q2-micom",
-    version="0.5.2",
+    version="0.5.3",
     packages=find_packages(),
     package_data={"q2_micom": ["citations.bib", "assets/templates/*.html"]},
     author="Christian Diener",
