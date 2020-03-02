@@ -15,7 +15,7 @@ jobs:
 
       - bash: |
           source activate qiime2-dev
-          conda install --yes --quiet --name qiime2-dev -c bioconda -c conda-forge cobra umap-learn jinja2 pyarrow flake8 loguru
+          conda install --yes --quiet --name qiime2-dev -c conda-forge -c bioconda cobra umap-learn jinja2 pyarrow flake8 loguru tqdm
         displayName: Install required packages
       - bash: |
           source activate qiime2-dev
@@ -56,7 +56,7 @@ jobs:
 
       - bash: |
           source activate qiime2-dev
-          conda install --yes --quiet --name qiime2-dev -c bioconda -c conda-forge cobra umap-learn jinja2 pyarrow flake8 loguru
+          conda install --yes --quiet --name qiime2-dev -c conda-forge -c bioconda cobra umap-learn jinja2 pyarrow flake8 loguru tqdm
         displayName: Install required packages
       - bash: |
           source activate qiime2-dev

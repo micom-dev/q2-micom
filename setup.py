@@ -32,11 +32,11 @@ setup(
         "cobra>=0.10.1",
         "pandas>=0.25.3",
         "loguru>=0.3.2",
-        "micom>=0.9.0",
+        "micom>=0.10.5",
         "umap-learn>=0.3.0",
         "jinja2>=2.10.3",
         "pyarrow>=0.11.0",
-        "qiime2>=2019.10.0"
+        "qiime2>=2020.2.0"
     ],
     python_requires=">=3.6",
     extras_require={

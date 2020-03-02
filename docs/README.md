@@ -2,7 +2,7 @@
 
 # Community Tutorial
 
-`q2-micom` provides a Qiime 2 plugin for the [MICOM](https://github.com/micom-dev/micom) 
+`q2-micom` provides a Qiime 2 plugin for the [MICOM](https://github.com/micom-dev/micom)
 Python package and allows for functional analysis of microbial communities using metabolic modeling.
 
 ## A primer on MICOM
@@ -44,7 +44,7 @@ conda activate qiime2-dev
 Install dependencies for `q2-micom`:
 
 ```bash
-conda install -c bioconda -c conda-forge cobra umap-learn jinja2 pyarrow tqdm
+conda install -c conda-forge -c bioconda cobra umap-learn jinja2 pyarrow loguru tqdm
 ```
 
 Install `q2-micom` (this will install `MICOM` as well).
@@ -170,7 +170,7 @@ qiime micom grow --i-models models.qza \
                  --verbose
 ```
 
-You will again see a progress bar and will have the results when everything is done (for me, this took about 7m with 8 threads). 
+You will again see a progress bar and will have the results when everything is done (for me, this took about 7m with 8 threads).
 
 We can now start to look at growth rates and fluxes in our models, but we will first come back to our tradeoff parameter...
 
