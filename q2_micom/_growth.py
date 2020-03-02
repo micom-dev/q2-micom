@@ -1,5 +1,6 @@
 """Performs a growth simulation."""
 
+from cobra.util.solver import interface_to_str
 from micom import load_pickle
 from micom.logger import logger
 from micom.media import minimal_medium
@@ -17,6 +18,16 @@ DIRECTION = pd.Series(["import", "export"], index=[0, 1])
 def _growth(args):
     p, tradeoff, medium = args
     com = load_pickle(p)
+
+    if "glpk" in interface_to_str(com.solver):
+        logger.error(
+            "Community models were not built with a QP-capable solver. "
+            "This means that you did not install CPLEX or Gurobi. "
+            "If you did install one of the two please file a bug report "
+            "at https://github.com/micom-dev/q2-micom/issues."
+        )
+        return None
+
     ex_ids = [r.id for r in com.exchanges]
     logger.info(
         "%d/%d import reactions found in model.",
