@@ -98,7 +98,6 @@ plugin.methods.register_function(
     inputs={},
     parameters={
         "meta": Metadata,
-        "folder": Str,
         "rank": Str % Choices(q2_micom._build.RANKS),
         "threads": Int % Range(1, None),
     },
@@ -109,11 +108,6 @@ plugin.methods.register_function(
             "Metadata for the individual metabolic models in `folder`. "
             "Must contain the the following columns: %s."
             % ", ".join(REQ_FIELDS)
-        ),
-        "folder": (
-            "The folder where the SBML models are stored. Model files "
-            "must have filenames of the form `{ID}.xml[.gz]` where {ID} is "
-            "the id in the metadata file."
         ),
         "rank": "The phylogenetic rank at which to summarize taxa.",
         "threads": "The number of threads to use when constructing models.",

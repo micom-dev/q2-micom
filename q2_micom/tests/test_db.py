@@ -10,6 +10,7 @@ import q2_micom as q2m
 this_dir = q2m.tests.this_dir
 
 meta = pd.read_csv(path.join(this_dir, "data", "test_models.tsv"), sep="\t")
+meta.file = [path.join(this_dir, "data", f) for f in meta.file]
 meta.set_index("id", inplace=True)
 meta = q2.Metadata(meta)
 

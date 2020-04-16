@@ -5,7 +5,7 @@ import pandas as pd
 from qiime2.plugin import SemanticType
 import qiime2.plugin.model as model
 
-REQ_FIELDS = pd.Series(["kingdom", "phylum", "class", "order",
+REQ_FIELDS = pd.Series(["file", "kingdom", "phylum", "class", "order",
                         "family", "genus", "species"])
 
 

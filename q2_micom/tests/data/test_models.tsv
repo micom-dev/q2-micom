@@ -1,4 +1,4 @@
 id	kingdom	phylum	class	order	family	genus	species	reactions	metabolites	file
-Escherichia_coli_1	Bacteria	Protobacteria	Gammaproteobacteria	 Enterobacterales	Enterobacteriaceae	Escherichia	Escherichia coli 1	95	72	/home/cdiener/miniconda3/envs/qiime2-dev/lib/python3.6/site-packages/micom/data/e_coli_core.xml.gz
-Escherichia_coli_2	Bacteria	Protobacteria	Gammaproteobacteria	 Enterobacterales	Enterobacteriaceae	Escherichia	Escherichia coli 2	95	72	/home/cdiener/miniconda3/envs/qiime2-dev/lib/python3.6/site-packages/micom/data/e_coli_core.xml.gz
-Escherichia_coli_3	Bacteria	Protobacteria	Gammaproteobacteria	 Enterobacterales	Enterobacteriaceae	Escherichia	Escherichia coli 3	95	72	/home/cdiener/miniconda3/envs/qiime2-dev/lib/python3.6/site-packages/micom/data/e_coli_core.xml.gz
+Escherichia_coli_1	Bacteria	Protobacteria	Gammaproteobacteria	 Enterobacterales	Enterobacteriaceae	Escherichia	Escherichia coli 1	95	72	test_models/Escherichia_coli_1.xml
+Escherichia_coli_2	Bacteria	Protobacteria	Gammaproteobacteria	 Enterobacterales	Enterobacteriaceae	Escherichia	Escherichia coli 2	95	72	test_models/Escherichia_coli_2.xml
+Escherichia_coli_3	Bacteria	Protobacteria	Gammaproteobacteria	 Enterobacterales	Enterobacteriaceae	Escherichia	Escherichia coli 3	95	72	test_models/Escherichia_coli_3.xml
