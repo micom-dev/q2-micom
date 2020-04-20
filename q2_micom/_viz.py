@@ -229,10 +229,10 @@ def fit_phenotype(
         {"coef": fit.coef_[0, :], "metabolite": fluxes.columns}
     )
 
-    if all(coefs.coef.abs() < 1e-12):
+    if all(coefs.coef.abs() < min_coef):
         raise RuntimeError(
             "Unfortunately no metabolite flux was predictive for the "
-            " chosen phenotype :("
+            "chosen phenotype and a cutoff of %g :(" % min_coef
         )
 
     coefs.to_csv(path.join(output_dir, "coefficients.csv"))
