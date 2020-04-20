@@ -206,13 +206,13 @@ def fit_phenotype(
         model = LogisticRegressionCV(
             penalty="l1",
             scoring="accuracy",
-            solver="saga",
+            solver="liblinear",
             Cs=np.power(10.0, np.arange(-6, 4, 0.5)),
             max_iter=10000,
         )
         fit = model.fit(scaled, meta[variable])
         model = LogisticRegression(
-            penalty="l1", solver="saga", C=fit.C_[0], max_iter=10000,
+            penalty="l1", solver="liblinear", C=fit.C_[0], max_iter=10000,
         )
     else:
         model = LassoCV()
