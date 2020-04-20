@@ -10,7 +10,7 @@ jobs:
 
       - bash: |
           wget https://raw.githubusercontent.com/qiime2/environment-files/master/2020.2/release/qiime2-2020.2-py36-linux-conda.yml
-          conda env create -q -n qiime2-dev --file qiime2-latest-py36-linux-conda.yml
+          conda env create -q -n qiime2-dev --file qiime2-2020.2-py36-linux-conda.yml
         displayName: Set up Qiime 2
 
       - bash: |
@@ -54,7 +54,7 @@ jobs:
 
       - bash: |
           wget https://raw.githubusercontent.com/qiime2/environment-files/master/2020.2/release/qiime2-2020.2-py36-osx-conda.yml
-          conda env create -q -n qiime2-dev --file qiime2-latest-py36-osx-conda.yml
+          conda env create -q -n qiime2-dev --file qiime2-2020.2-py36-osx-conda.yml
         displayName: Set up Qiime 2
 
       - bash: |
