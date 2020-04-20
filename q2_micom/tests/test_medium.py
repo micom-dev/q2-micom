@@ -29,4 +29,4 @@ def test_medium():
 
 
 def test_sane_medium():
-    assert all(medium_high.flux > medium_low.flux - 1e-6)
+    assert medium_high.flux.sum() > medium_low.flux.sum())
