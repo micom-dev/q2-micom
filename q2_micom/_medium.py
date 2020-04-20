@@ -21,7 +21,7 @@ def _medium(args):
         return None
     medium.columns = ["flux"]
     medium.index.name = "reaction"
-    return medium[medium.flux.abs() > 1e-6].reset_index()
+    return medium.reset_index()
 
 
 def process_medium(medium, samples):
