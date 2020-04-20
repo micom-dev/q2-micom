@@ -35,13 +35,22 @@ MICOM models all biochemical reactions in all taxa, which means that the optimiz
 
 ### Setup Qiime 2
 
-You will need a Qiime 2 environment with version `2020.2` or higher ([how to install Qiime 2](https://dev.qiime2.org/latest/quickstart/#install-qiime-2-within-a-conda-environment)). Once installed, activate your Qiime 2 environment:
+You will need a Qiime 2 environment with version `2020.2` or higher ([how to install Qiime 2](https://docs.qiime2.org/2020.2/install/native/#install-qiime-2-within-a-conda-environment)). For instance on Linux you would use:
 
 ```bash
-conda activate qiime2-dev
+wget https://data.qiime2.org/distro/core/qiime2-2020.2-py36-linux-conda.yml
+conda env create -n qiime2-2020.2 --file qiime2-2020.2-py36-linux-conda.yml
+# OPTIONAL CLEANUP
+rm qiime2-2020.2-py36-linux-conda.yml
 ```
 
-Install dependencies for `q2-micom`:
+Once installed, activate your Qiime 2 environment:
+
+```bash
+conda activate qiime2-2020.2
+```
+
+Install dependencies for `q2-micom` from conda:
 
 ```bash
 conda install -c conda-forge -c \
