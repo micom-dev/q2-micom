@@ -16,11 +16,10 @@ meta = q2.Metadata(meta)
 
 
 def test_species():
-    folder = path.join(this_dir, "data", "test_models")
-    models = q2m.db(meta, folder, "species", 1)
+    models = q2m.db(meta, "species", 1)
     files = models.manifest.view(pd.DataFrame)
     assert files.shape[0] == 3
-    assert files.file[0] == "Escherichia coli 1.json"
+    assert files.file[0] == "Escherichia_coli_1.json"
     cobra_model = micom.util.load_model(str(
         models.json_files.path_maker(model_id=files.id[0])))
     assert len(cobra_model.reactions) == 95
@@ -31,8 +30,7 @@ def test_species():
 
 
 def test_genus():
-    folder = path.join(this_dir, "data", "test_models")
-    models = q2m.db(meta, folder, "genus", 1)
+    models = q2m.db(meta, "genus", 1)
     files = models.manifest.view(pd.DataFrame)
     assert files.shape[0] == 1
     assert files.file[0] == "Escherichia.json"
