@@ -9,7 +9,7 @@ jobs:
         displayName: Add conda to PATH
 
       - bash: |
-          wget https://raw.githubusercontent.com/qiime2/environment-files/master/master/2020.2/release/qiime2-latest-py36-linux-conda.yml
+          wget https://raw.githubusercontent.com/qiime2/environment-files/master/2020.2/release/qiime2-2020.2-py36-linux-conda.yml
           conda env create -q -n qiime2-dev --file qiime2-latest-py36-linux-conda.yml
         displayName: Set up Qiime 2
 
@@ -53,7 +53,7 @@ jobs:
         displayName: Take ownership of conda installation
 
       - bash: |
-          wget https://raw.githubusercontent.com/qiime2/environment-files/master/2020.2/release/qiime2-latest-py36-osx-conda.yml
+          wget https://raw.githubusercontent.com/qiime2/environment-files/master/2020.2/release/qiime2-2020.2-py36-osx-conda.yml
           conda env create -q -n qiime2-dev --file qiime2-latest-py36-osx-conda.yml
         displayName: Set up Qiime 2
 
