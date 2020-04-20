@@ -9,7 +9,7 @@ setup(
     packages=find_packages(),
     package_data={"q2_micom": ["citations.bib", "assets/templates/*.html"]},
     author="Christian Diener",
-    author_email="cdiener (a) isbscience.org",
+    author_email="cdiener@isbscience.org",
     description="Plugin for metabolic modeling of microbial communities.",
     license="Apache License 2.0",
     url="https://github.com/micom-dev/q2-micom",
