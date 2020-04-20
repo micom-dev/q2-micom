@@ -116,7 +116,9 @@ To build metabolic community models, you will first need taxon-specific metaboli
 
 **Download:**
 
-- [AGORA 1.03 genus model DB](https://zenodo.org/record/3608330/files/agora_genus_103.qza?download=1)
+- [AGORA 1.03 genus model DB](https://zenodo.org/record/3755182/files/agora103_genus.qza?download=1)
+
+*You may find many more model databases at https://doi.org/10.5281/zenodo.3755182.*
 
 ### Building community models
 
@@ -313,13 +315,12 @@ Many of the metabolite IDs returned by MICOM may be hard to identify. As long as
 Maybe your sample is not well represented by the AGORA models, or you may have better metabolic reconstructions for the taxa in your samples. In that case you may want to build your own database for `q2-micom`. This is pretty simple -- you will need 2 things:
 
 1. A directory that contains your metabolic models in [SBML format](http://sbml.org/Main_Page) with filenames of the form `{ID}.xml`.
-2. A Qiime 2 Metadata file annotating each model with at least an id and the full taxonomy (kingdom | phylum | class | order | family | species | strain (optional)).
+2. A Qiime 2 Metadata file annotating each model with at least an id, the file path, and the full taxonomy (kingdom | phylum | class | order | family | species | strain (optional)).
 
 With these two things you can use `qiime micom db` to build your database, summarized to any given taxonomic rank. For instance the AGORA v1.03 artifact was built by downloading the SBML models from https://www.vmh.life/#downloadview and using an adapted metadata file ([agora.tsv](agora.tsv)). The genus database was then built using the following command.
 
 ```bash
 qiime micom db --m-meta-file agora.tsv \
-               --p-folder data/agora \
                --p-rank genus \
                --p-threads 8 \
                --o-metabolic-models agora_genus_103.qza
