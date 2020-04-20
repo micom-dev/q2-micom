@@ -1,5 +1,6 @@
 """Constructs a minimal medium for a set of community models."""
 
+from cobra.util.solver import OptimizationError
 from micom import load_pickle
 import micom.media as mm
 from micom.workflows import workflow
@@ -11,10 +12,16 @@ def _medium(args):
     """Get minimal medium for a single model."""
     p, min_growth = args
     com = load_pickle(p)
-    medium = mm.minimal_medium(com, 0.0, min_growth=min_growth).to_frame()
+    # open the bounds
+    for ex in com.exchanges:
+        ex.bounds = (-1000.0, 1000.0)
+    try:
+        medium = mm.minimal_medium(com, 0.0, min_growth=min_growth).to_frame()
+    except Exception:
+        return None
     medium.columns = ["flux"]
     medium.index.name = "reaction"
-    return medium.reset_index()
+    return medium[medium.flux.abs() > 1e-6].reset_index()
 
 
 def process_medium(medium, samples):
@@ -38,6 +45,11 @@ def minimal_medium(
     paths = [models.model_files.path_maker(model_id=s) for s in samples]
     args = [[p, min_growth] for p in paths]
     results = workflow(_medium, args, threads)
+    if any(r is None for r in results):
+        raise OptimizationError(
+            "Could not find a growth medium that allows the specified "
+            "growth rate for all taxa in all samples :("
+        )
     results = pd.concat(results, axis=0)
     medium = results.groupby("reaction").flux.max().reset_index()
     medium["metabolite"] = medium.reaction.str.replace("EX_", "")

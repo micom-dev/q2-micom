@@ -1,5 +1,6 @@
 """Helpers to run cooperative tradeoff with various tradeoff values."""
 
+from cobra.util.solver import OptimizationError
 from micom import load_pickle
 from micom.logger import logger
 from micom.workflows import workflow
@@ -21,7 +22,14 @@ def _tradeoff(args):
         len(medium),
     )
     com.medium = medium[medium.index.isin(ex_ids)]
-    sol = com.optimize()
+    try:
+        sol = com.optimize()
+    except Exception:
+        logger.warning(
+            "Sample %s could not be optimized (%s)." %
+            (com.id, com.solver.status),
+        )
+        return None
     rates = sol.members
     rates["taxon"] = rates.index
     rates["tradeoff"] = np.nan
@@ -31,9 +39,10 @@ def _tradeoff(args):
     # Get growth rates
     try:
         sol = com.cooperative_tradeoff(fraction=tradeoffs)
-    except Exception as e:
+    except Exception:
         logger.warning(
-            "Sample %s could not be optimized\n %s" % (com.id, str(e))
+            "Sample %s could not be optimized (%s)." %
+            (com.id, com.solver.status),
         )
         return None
     for i, s in enumerate(sol.solution):
@@ -68,5 +77,12 @@ def tradeoff(
         for s, p in paths.items()
     ]
     results = workflow(_tradeoff, args, threads)
+    if all(r is None for r in results):
+        raise OptimizationError(
+            "All numerical optimizations failed. This indicates a problem "
+            "with the solver or numerical instabilities. Check that you have "
+            "CPLEX or Gurobi installed. You may also increase the abundance "
+            "cutoff in `qiime micom build` to create simpler models."
+        )
     results = pd.concat(results)
     return results
