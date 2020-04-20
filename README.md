@@ -14,28 +14,35 @@ A Qiime 2 plugin for MICOM.
 
 ### Setup Qiime 2
 
-You will need a Qiime 2 environment with version `2020.2` or higher ([install Qiime 2](https://dev.qiime2.org/latest/quickstart/#install-qiime-2-within-a-conda-environment)). Once installed, activate the environment:
+You will need a Qiime 2 environment with version `2020.2` or higher ([how to install Qiime 2](https://docs.qiime2.org/2020.2/install/native/#install-qiime-2-within-a-conda-environment)). For instance on Linux you would use:
 
 ```bash
-conda activate qiime2-dev
+wget https://data.qiime2.org/distro/core/qiime2-2020.2-py36-linux-conda.yml
+conda env create -n qiime2-2020.2 --file qiime2-2020.2-py36-linux-conda.yml
+# OPTIONAL CLEANUP
+rm qiime2-2020.2-py36-linux-conda.yml
 ```
 
-Install dependencies for `q2-micom`:
+Once installed, activate your Qiime 2 environment:
 
 ```bash
-conda install -c conda-forge -c bioconda cobra umap-learn jinja2 pyarrow loguru tqdm
+conda activate qiime2-2020.2
+```
+
+Install dependencies for `q2-micom` from conda:
+
+```bash
+conda install -c conda-forge -c \
+    bioconda cobra umap-learn jinja2 loky pyarrow loguru tqdm
 ```
 
 Install `q2-micom` (this will install `MICOM` as well).
 
 ```bash
-pip install git+https://github.com/micom-dev/q2-micom
+pip install q2-micom
 ```
 
 ### Install a QP solver
-
-Finally, `MICOM` requires a quadratic programming solver. We currently support [CPLEX](https://www.ibm.com/analytics/cplex-optimizer) or [Gurobi](https://www.gurobi.com/), which both have free academic licenses but will require you to sign up for them. *We currently recommend using CPLEX as Gurobi can be
-slow for some models.*
 
 **CPLEX**
 
@@ -47,7 +54,7 @@ Now install the CPLEX python package:
 pip install ibm/cplex/python/3.6/x86-64_linux
 ```
 
-Substitute `x86-64_linux` with the folder corresponding to your system.
+Substitute `x86-64_linux` with the folder corresponding to your system (there will only be one subfolder in that directory).
 
 **Gurobi**
 
@@ -63,7 +70,16 @@ You will now have to register the installation using your license key.
 grbgetkey YOUR-LICENSE-KEY
 ```
 
-You are now ready to run `q2-micom`.
+### Finish your installation
+
+If you installed `q2-micom` in an already existing Qiime 2 environment, update the plugin cache:
+
+```bash
+conda activate qiime2-2020.2  # or whatever you called your environment
+qiime dev refresh-cache
+```
+
+You are now ready to run `q2-micom`!
 
 ## Usage
 

@@ -60,7 +60,7 @@ conda install -c conda-forge -c \
 Install `q2-micom` (this will install `MICOM` as well).
 
 ```bash
-pip install git+https://github.com/micom-dev/q2-micom
+pip install q2-micom
 ```
 
 ### Install a QP solver
@@ -96,7 +96,7 @@ grbgetkey YOUR-LICENSE-KEY
 If you installed `q2-micom` in an already existing Qiime 2 environment, update the plugin cache:
 
 ```bash
-conda activate qiime2-dev  # or whatever you called your environment
+conda activate qiime2-2020.2  # or whatever you called your environment
 qiime dev refresh-cache
 ```
 
