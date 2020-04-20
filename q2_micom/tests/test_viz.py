@@ -49,8 +49,9 @@ def test_fit_phenotype():
         path.join(this_dir, "data", "metadata.tsv")
     ).get_column("status")
     with TemporaryDirectory(prefix="q2-micom-") as d:
-        q2m.fit_phenotype(str(d), r, mcol)
+        q2m.fit_phenotype(str(d), r, mcol, min_coef=0.001)
         assert q2m.tests.check_viz(str(d))
     with TemporaryDirectory(prefix="q2-micom-") as d:
         with pytest.raises(RuntimeError):
-            q2m.fit_phenotype(str(d), r, mcol, flux_type="import")
+            q2m.fit_phenotype(str(d), r, mcol, flux_type="import",
+                              min_coef=0.001)
