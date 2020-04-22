@@ -40,6 +40,7 @@ jobs:
         wget https://raw.githubusercontent.com/qiime2/environment-files/master/${{matrix.qiime.version}}/${{matrix.qiime.tag}}/qiime2-${{matrix.qiime.version}}-py36-${{matrix.os.short}}-conda.yml
         conda env create -q -n qiime2-dev --file qiime2-${{matrix.qiime.version}}-py36-${{matrix.os.short}}-conda.yml
         rm qiime2-${{matrix.qiime.version}}-py36-${{matrix.os.short}}-conda.yml
+        conda activate qiime2-dev
     - name: Install dependencies
       run: |
         conda install conda install -c conda-forge -c \
