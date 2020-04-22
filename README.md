@@ -1,7 +1,6 @@
 <img src="docs/assets/logo.png" width="75%">
 
-[![Build Status](https://dev.azure.com/chdiener/cdiener/_apis/build/status/micom-dev.q2-micom?branchName=master)](https://dev.azure.com/chdiener/cdiener/_build/latest?definitionId=2&branchName=master)
-![Azure DevOps tests](https://img.shields.io/azure-devops/tests/chdiener/cdiener/2)
+![Python package](https://github.com/micom-dev/q2-micom/workflows/Python%20package/badge.svg)
 [![codecov](https://codecov.io/gh/micom-dev/q2-micom/branch/master/graph/badge.svg)](https://codecov.io/gh/micom-dev/q2-micom)
 [![PyPI version](https://badge.fury.io/py/q2-micom.svg)](https://badge.fury.io/py/q2-micom)
 
