@@ -29,12 +29,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Setup conda
-        uses: s-weigand/setup-conda@v1
-        with:
-          update-conda: true
-          python-version: 3.6
-      - run: conda --version
-      - run: which python
+      uses: s-weigand/setup-conda@v1
+      with:
+        update-conda: true
+        python-version: 3.6
+    - run: conda --version
+    - run: which python
     - name: Install Qiime 2
       run: |
         wget https://raw.githubusercontent.com/qiime2/environment-files/master/${{matrix.qiime.version}}/${{matrix.qiime.tag}}/qiime2-${{matrix.qiime.version}}-py36-${{matrix.os.short}}-conda.yml
