@@ -63,7 +63,7 @@ jobs:
       run: |
         conda activate qiime2-dev
         pip install pytest pytest-benchmark pytest-cov
-        pytest --benchmark-skip --cov=q2-micom --cov-report=xml
+        pytest --benchmark-skip --cov=q2_micom --cov-report=xml
     - name: Upload to codecov
       if: matrix.os.image == 'ubuntu-latest'
       uses: codecov/codecov-action@v1
