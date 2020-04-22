@@ -36,8 +36,6 @@ jobs:
       run: |
         conda info
         conda list
-        conda config --show-sources
-        conda config --sho
     - name: Install Qiime 2
       shell: bash -l {0}
       run: |
