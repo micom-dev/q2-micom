@@ -1,17 +1,17 @@
-id	status
-Healthy1	healthy
-Healthy2	healthy
-Healthy3	healthy
-Healthy4	healthy
-Healthy5	healthy
-Healthy6	healthy
-Healthy7	healthy
-Healthy8	healthy
-Cancer1	colorectal cancer
-Cancer2	colorectal cancer
-Cancer3	colorectal cancer
-Cancer4	colorectal cancer
-Cancer5	colorectal cancer
-Cancer6	colorectal cancer
-Cancer7	colorectal cancer
-Cancer8	colorectal cancer
+id	status	measure
+Healthy1	healthy	0
+Healthy2	healthy	0
+Healthy3	healthy	0
+Healthy4	healthy	0
+Healthy5	healthy	0
+Healthy6	healthy	0
+Healthy7	healthy	0
+Healthy8	healthy	0
+Cancer1	colorectal cancer	1
+Cancer2	colorectal cancer	1
+Cancer3	colorectal cancer	1
+Cancer4	colorectal cancer	1
+Cancer5	colorectal cancer	1
+Cancer6	colorectal cancer	1
+Cancer7	colorectal cancer	1
+Cancer8	colorectal cancer	1

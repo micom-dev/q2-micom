@@ -207,27 +207,34 @@ def fit_phenotype(
             penalty="l1",
             scoring="accuracy",
             solver="liblinear",
-            Cs=np.power(10.0, np.arange(-6, 4, 0.5)),
+            cv=2,
+            Cs=np.power(10.0, np.arange(-6, 6, 0.5)),
             max_iter=10000,
         )
         fit = model.fit(scaled, meta[variable])
         model = LogisticRegression(
             penalty="l1", solver="liblinear", C=fit.C_[0], max_iter=10000,
         )
-    else:
-        model = LassoCV()
         fit = model.fit(scaled, meta[variable])
-        model = Lasso(alpha=fit.alpha_[0])
-    fit = model.fit(scaled, meta[variable])
-    score = cross_val_score(
-        model, X=scaled, y=meta[variable], cv=LeaveOneOut()
-    )
+        score = cross_val_score(
+            model, X=scaled, y=meta[variable], cv=LeaveOneOut()
+        )
+        coefs = pd.DataFrame(
+            {"coef": fit.coef_[0, :], "metabolite": fluxes.columns}
+        )
+    else:
+        model = LassoCV(cv=2, max_iter=10000)
+        fit = model.fit(scaled, meta[variable])
+        model = Lasso(alpha=fit.alpha_, max_iter=10000)
+        fit = model.fit(scaled, meta[variable])
+        score = cross_val_score(
+            model, X=scaled, y=meta[variable], cv=3
+        )
+        coefs = pd.DataFrame(
+            {"coef": fit.coef_, "metabolite": fluxes.columns}
+        )
     score = [np.mean(score), np.std(score)]
     score.append(model.score(scaled, meta[variable]))
-
-    coefs = pd.DataFrame(
-        {"coef": fit.coef_[0, :], "metabolite": fluxes.columns}
-    )
 
     if all(coefs.coef.abs() < min_coef):
         raise RuntimeError(
@@ -236,7 +243,7 @@ def fit_phenotype(
         )
 
     coefs.to_csv(path.join(output_dir, "coefficients.csv"))
-    coefs = coefs[coefs.coef.abs() > min_coef].sort_values(by="coef")
+    coefs = coefs[coefs.coef.abs() >= min_coef].sort_values(by="coef")
     predicted = cross_val_predict(
         model, scaled, meta[variable], cv=LeaveOneOut()
     )

@@ -48,8 +48,8 @@ def _growth(args):
         return None
 
     # Get the minimal medium
-    med = minimal_medium(com, 0.95 * sol.growth_rate)
-
+    med = minimal_medium(com, 0.95 * sol.growth_rate,
+                         0.95 * rates.growth_rate.drop("medium"))
     # Apply medium and reoptimize
     com.medium = med[med > 0]
     sol = com.cooperative_tradeoff(fraction=tradeoff, fluxes=True, pfba=False)

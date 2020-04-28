@@ -49,7 +49,7 @@
     <br>
     <div class="container">
     <h2 class="title">Model performance</h2>
-    {% if type == "continuous" %}
+    {% if type == "quantitative" %}
      <p>training R<sup>2</sup> = {{score[2]}}</p>
      <p> cross-validation R<sup>2</sup> = {{score[0]}} &#177; {{score[1]}} </p>
     {% else %}
@@ -134,7 +134,7 @@
             data: {
                 values: {{fitted | safe}}
             },
-            {% if type == "continuous" %}
+            {% if type == "quantitative" %}
             mark: {
                 type: "point",
                 tooltip: true
