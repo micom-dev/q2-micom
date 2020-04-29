@@ -27,6 +27,7 @@ def test_build():
         0.01,
     )
     manifest = d.manifest.view(pd.DataFrame)
+    print(manifest.T)
     assert manifest.shape[0] == 9
     for sa in manifest.sample_id.unique():
         com = micom.load_pickle(d.model_files.path_maker(model_id=sa))

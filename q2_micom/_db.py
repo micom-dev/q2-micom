@@ -1,6 +1,6 @@
 """Build a database of organism metabolic models."""
 
-from micom.db import build_database
+from micom.workflows import build_database
 import os
 from qiime2 import Metadata
 from q2_micom._formats_and_types import JSONDirectory

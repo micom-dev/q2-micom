@@ -52,6 +52,6 @@ def test_fit_phenotype():
         q2m.fit_phenotype(str(d), r, mcol, min_coef=0.001)
         assert q2m.tests.check_viz(str(d))
     with TemporaryDirectory(prefix="q2-micom-") as d:
-        with pytest.raises(RuntimeError):
-            q2m.fit_phenotype(str(d), r, mcol, flux_type="import",
-                              min_coef=0.001)
+        q2m.fit_phenotype(str(d), r, mcol, flux_type="import",
+                          min_coef=0.0)
+        assert q2m.tests.check_viz(str(d))

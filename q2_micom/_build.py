@@ -1,8 +1,8 @@
 """Build Community models."""
 
 import biom
-from micom import Community
-from micom.workflows import workflow
+import os
+import micom.workflows as mw
 import pandas as pd
 from q2_micom._formats_and_types import (
     JSONDirectory,
@@ -65,13 +65,6 @@ def build_spec(
     return micom_taxonomy
 
 
-def build_and_save(args):
-    """Build a single community model."""
-    s, tax, out = args
-    com = Community(tax, id=s, progress=False)
-    com.to_pickle(out)
-
-
 def build(
     abundance: biom.Table,
     taxonomy: pd.Series,
@@ -82,16 +75,16 @@ def build(
     """Build the community models."""
     tax = build_spec(abundance, taxonomy, models, cutoff)
     tax["file"] = tax.file.str.split("|")
-    models = CommunityModelDirectory()
-    samples = tax.sample_id.unique()
-    args = [
-        [
-            s,
-            tax[tax.sample_id == s],
-            models.model_files.path_maker(model_id=s),
-        ]
-        for s in samples
-    ]
-    workflow(build_and_save, args, threads)
-    tax.to_csv(models.manifest.path_maker(), index=False)
-    return models
+    out = CommunityModelDirectory()
+    out_folder = (
+        str(out.model_files.path_maker(model_id="test"))
+        .replace("test.pickle", "")
+    )
+    model_folder = (
+        str(models.json_files.path_maker(model_id="test"))
+        .replace("test.json", "")
+    )
+    mw.build(tax, model_folder, out_folder, cutoff, threads)
+    os.rename(os.path.join(out_folder, "manifest.csv"),
+              out.manifest.path_maker())
+    return out
