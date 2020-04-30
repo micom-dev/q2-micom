@@ -33,7 +33,7 @@ setup(
         "pandas>=0.25.3",
         "loguru>=0.3.2",
         "loky>=2.6.0",
-        "micom>=0.11.2",
+        "micom>=0.12.1",
         "umap-learn>=0.3.0",
         "jinja2>=2.10.3",
         "pyarrow>=0.11.0",
