@@ -2,6 +2,8 @@
 """Setup file for q2-micom."""
 from setuptools import setup, find_packages
 
+with open('README.md') as f:
+    long_description = f.read()
 
 setup(
     name="q2-micom",
@@ -11,6 +13,8 @@ setup(
     author="Christian Diener",
     author_email="cdiener@isbscience.org",
     description="Plugin for metabolic modeling of microbial communities.",
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     license="Apache License 2.0",
     url="https://github.com/micom-dev/q2-micom",
     classifiers=[
