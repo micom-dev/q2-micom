@@ -1,5 +1,6 @@
 """Transformers for MICOM types."""
 
+from micom.workflows.core import GrowthResults
 import pandas as pd
 from q2_micom.plugin_setup import plugin
 import q2_micom._formats_and_types as ft
@@ -72,3 +73,35 @@ def _11(res: ft.MicomResultsDirectory) -> ft.MicomResultsData:
         growth_rates=pd.read_csv(
             str(res.growth_rates.path_maker()), index_col=False)
     )
+
+
+@plugin.register_transformer
+def _12(data: pd.DataFrame) -> ft.Annotations:
+    gr = ft.Annotations()
+    data.to_csv(str(gr), index=False)
+    return gr
+
+
+@plugin.register_transformer
+def _13(an: ft.Annotations) -> pd.DataFrame:
+    return pd.read_csv(str(an), index_col=False)
+
+
+@plugin.register_transformer
+def _14(rd: ft.MicomResultsDirectory) -> GrowthResults:
+    gr = GrowthResults(
+        rd.growth_rates.view(pd.DataFrame),
+        rd.exchange_fluxes.view(pd.DataFrame),
+        rd.annotations.view(pd.DataFrame)
+    )
+    return gr
+
+
+@plugin.register_transformer
+def _15(gr: GrowthResults) -> ft.MicomResultsDirectory:
+    rd = ft.MicomResultsDirectory()
+    gr["growth_rates"].to_csv(rd.growth_rates.path_maker(), index_col=False)
+    gr["annotations"].to_csv(rd.annotations.path_maker(), index_col=False)
+    gr["exchanges"].to_parquet(rd.exchange_fluxes.path_maker())
+    return rd
+

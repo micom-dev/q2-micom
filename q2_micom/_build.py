@@ -74,7 +74,6 @@ def build(
 ) -> CommunityModelDirectory:
     """Build the community models."""
     tax = build_spec(abundance, taxonomy, models, cutoff)
-    tax["file"] = tax.file.str.split("|")
     out = CommunityModelDirectory()
     out_folder = (
         str(out.model_files.path_maker(model_id="test"))

@@ -17,5 +17,6 @@ def minimal_medium(
         str(models.model_files.path_maker(model_id="blub"))
         .replace("blub.pickle", "")
     )
-    medium = mw.minimal_media(manifest, model_folder, min_growth, threads)
+    medium = mw.minimal_media(manifest, model_folder, True,
+                              min_growth, threads)
     return medium

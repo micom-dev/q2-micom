@@ -36,4 +36,5 @@ def test_feasible_exchanges():
     ex = res.exchange_fluxes.view(pd.DataFrame)
     ex = ex[(ex.taxon == "medium") & (ex.direction == "import")]
     ex["bound"] = medium.loc[ex.reaction, "flux"].values
+    ex = ex.dropna()
     assert all(ex.flux < ex.bound + 1e-6)

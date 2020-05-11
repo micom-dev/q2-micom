@@ -21,9 +21,10 @@ def grow(
         .replace("blub.pickle", "")
     )
     manifest = models.manifest.view(pd.DataFrame)
-    growth, exchanges = mw.grow(
+    growth, exchanges, annotations = mw.grow(
         manifest, model_folder, medium, tradeoff, threads)
     growth.to_csv(out.growth_rates.path_maker())
+    annotations.to_csv(out.annotations.path_maker())
     exchanges[pd.notna(exchanges.flux)].to_parquet(
         out.exchange_fluxes.path_maker()
     )

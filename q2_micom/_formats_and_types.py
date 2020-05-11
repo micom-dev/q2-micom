@@ -97,10 +97,17 @@ class Fluxes(model.TextFileFormat):
         return str(self).endswith(".parquet")
 
 
+class Annotations(model.TextFileFormat):
+    def _validate_(self, level):
+        header = open(str(self), mode="r").readline().split(",")
+        return header == ["reaction", "metabolite", "description"]
+
+
 class MicomResultsDirectory(model.DirectoryFormat):
     growth_rates = model.File("growth_rates.csv", format=GrowthRates)
     exchange_fluxes = model.File("exchange_fluxes.parquet",
                                  format=Fluxes)
+    annotations = model.File("annotations.csv", format=Annotations)
 
 
 class MicomMediumFile(model.TextFileFormat):
