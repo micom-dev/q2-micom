@@ -22,6 +22,8 @@ jobs:
         qiime:
             - version: "2020.2"
               tag: "release"
+            - version: "2020.6"
+              tag: "release" 
             - version: "latest"
               tag: "staging"
     runs-on: "${{matrix.os.image}}"
