@@ -20,10 +20,10 @@ jobs:
             - image: "macos-latest"
               short: "osx"
         qiime:
-            - version: "2020.2"
-              tag: "release"
             - version: "2020.6"
-              tag: "release" 
+              tag: "release"
+            - version: "2020.8"
+              tag: "release"
             - version: "latest"
               tag: "staging"
     runs-on: "${{matrix.os.image}}"
