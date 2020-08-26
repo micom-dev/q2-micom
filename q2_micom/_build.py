@@ -3,6 +3,7 @@
 import biom
 import os
 import micom.workflows as mw
+from micom.taxonomy import build_from_qiime
 import pandas as pd
 from q2_micom._formats_and_types import (
     JSONDirectory,
@@ -27,41 +28,30 @@ def build_spec(
     taxonomy: pd.Series,
     models: JSONDirectory,
     cutoff: float,
+    strict: bool
 ) -> pd.DataFrame:
     """Build the specification for the community models."""
-    taxa = taxonomy.str.replace("[\\w_]+__", "")
-    taxa = taxa.str.split(";\\s*", expand=True)
-    taxa.columns = RANKS[0:taxa.shape[1]]
-    taxa["taxid"] = taxonomy.index
-    taxa.index == taxa.taxid
-
-    model_files = models.manifest.view(pd.DataFrame)
+    model_files = models.manifest.view(pd.DataFrame).rename(columns={"id": "model_id"})
     rank = model_files.summary_rank[0]
+    rank_index = RANKS.index(rank)
+    if strict:
+        ranks = RANKS[0:rank_index]
+    else:
+        ranks = [rank]
     model_files["file"] = model_files[rank].apply(
         lambda i: str(models.json_files.path_maker(model_id=i))
     )
 
-    abundance = (
-        abundance.collapse(
-            lambda id_, x: taxa.loc[id_, rank], axis="observation"
-        )
-        .to_dataframe(dense=True)
-        .T
-    )
-    abundance["sample_id"] = abundance.index
-
-    abundance = abundance.melt(
-        id_vars="sample_id", var_name=rank, value_name="abundance"
-    )
-    depth = abundance.groupby("sample_id").abundance.sum()
-    abundance["relative"] = (
-        abundance.abundance / depth[abundance.sample_id].values
-    )
-
-    micom_taxonomy = pd.merge(model_files, abundance, on=rank)
+    tax = build_from_qiime(abundance, taxonomy, collapse_on=ranks)
+    micom_taxonomy = pd.merge(model_files, tax, on=ranks)
     micom_taxonomy = micom_taxonomy[micom_taxonomy.relative > cutoff]
-    print("Taxa per sample:")
-    print(micom_taxonomy.sample_id.value_counts().describe(), "\n")
+    stats = micom_taxonomy.sample_id.value_counts().describe()
+    print("Merged with the database using ranks: %s" % ", ".join(ranks))
+    print(
+        "Each community model contains %d-%d taxa (average %d+-%d)." % (
+            stats["min"], stats["max"],
+            round(stats["mean"]), round(stats["std"]))
+    )
     return micom_taxonomy
 
 
@@ -71,9 +61,10 @@ def build(
     models: JSONDirectory,
     threads: int = 1,
     cutoff: float = 0.0001,
+    strict: bool = False,
 ) -> CommunityModelDirectory:
     """Build the community models."""
-    tax = build_spec(abundance, taxonomy, models, cutoff)
+    tax = build_spec(abundance, taxonomy, models, cutoff, strict)
     out = CommunityModelDirectory()
     out_folder = (
         str(out.model_files.path_maker(model_id="test"))

@@ -41,20 +41,20 @@ You will need a Qiime 2 environment with version `2020.2` or higher ([how to ins
 wget https://data.qiime2.org/distro/core/qiime2-2020.2-py36-linux-conda.yml
 conda env create -n qiime2-2020.2 --file qiime2-2020.2-py36-linux-conda.yml
 # OPTIONAL CLEANUP
-rm qiime2-2020.2-py36-linux-conda.yml
+rm qiime2-2020.8-py36-linux-conda.yml
 ```
 
 Once installed, activate your Qiime 2 environment:
 
 ```bash
-conda activate qiime2-2020.2
+conda activate qiime2-2020.8
 ```
 
 Install dependencies for `q2-micom` from conda:
 
 ```bash
 conda install -c conda-forge -c \
-    bioconda cobra umap-learn jinja2 loky pyarrow loguru tqdm
+    bioconda cobra jinja2 loguru tqdm
 ```
 
 Install `q2-micom` (this will install `MICOM` as well).
@@ -96,7 +96,7 @@ grbgetkey YOUR-LICENSE-KEY
 If you installed `q2-micom` in an already existing Qiime 2 environment, update the plugin cache:
 
 ```bash
-conda activate qiime2-2020.2  # or whatever you called your environment
+conda activate qiime2-2020.8  # or whatever you called your environment
 qiime dev refresh-cache
 ```
 
@@ -136,7 +136,7 @@ Using our pre-baked model database, we can now build our community models with t
 ```bash
 qiime micom build --i-abundance crc_table.qza \
                   --i-taxonomy crc_taxa.qza \
-                  --i-models agora_genus_103.qza \
+                  --i-models agora103_genus.qza \
                   --p-cutoff 0.0001 \
                   --p-threads 8 \
                   --o-community-models models.qza \
@@ -146,21 +146,12 @@ qiime micom build --i-abundance crc_table.qza \
 This will give you something like this:
 
 ```
-Taxa per sample:
-count    16.0000
-mean     27.0000
-std       5.7038
-min      17.0000
-25%      22.7500
-50%      28.0000
-75%      30.0000
-max      36.0000
-Name: sample_id, dtype: float64
-
- 50%|█████████████████████████████████████                                   | 8/16 [09:39<09:39, 72.48s/sample(s)]
+Merged with the database using ranks: genus
+Each community model contains 17-36 taxa (average 27+-6).
+  0%|                      | 0/16 [00:00<?, ?sample(s)/s]
 ```
 
-The first number indicates the number of models (i.e. samples). On average, we a mean of 27 taxa per sample (and a range of 17-36). Building the community models will take a while, but this usually only needs to be done once for each sample. You can then run many growth simulations for a given sample using the existing model.
+ On average, we a mean of 27 taxa per sample (and a range of 17-36). Building the community models will take a while, but this usually only needs to be done once for each sample. You can then run many growth simulations for a given sample using the existing model.
 
 ### Running a growth simulation
 
@@ -182,7 +173,7 @@ qiime micom grow --i-models models.qza \
                  --verbose
 ```
 
-You will again see a progress bar and will have the results when everything is done (for me, this took about 7m with 8 threads).
+You will again see a progress bar and will have the results when everything is done (for me, this took about 5m with 4 threads).
 
 We can now start to look at growth rates and fluxes in our models, but we will first come back to our tradeoff parameter...
 
@@ -209,7 +200,8 @@ qiime micom plot-tradeoff --i-results tradeoff.qza \
 
 This will give you the following:
 
-<a href="https://micom-dev.github.io/q2-micom/assets/tradeoff/data/index.html" target="_blank"><img src="assets/tradeoff.png" width="100%"></a>
+<a href="https://micom-dev.github.io/q2-micom/assets/tradeoff/data/index.html" target="_blank">
+<img src="https://micom-dev.github.io/micom/_images/tradeoff.png" width="100%"></a>
 
 Here the distribution of growth rates is shown by the 2D histogram on the left and the fraction of growing taxa with its mean line is shown on the right. You can see that lowering the tradeoff gives you more and more taxa that grow. The elbow is around 0.5, but we might want to pick a value as low as 0.3 here because that is where we observe the largest jump. Due to the constant dilution rate in the gut system, we expect most of the taxa at appreciable relative abundances should have a positive growth rate. We use this assumption to tune the tradeoff parameter. Another way to validate model growth rates, if you are working with shotgun metagenomic data, is to compare them against [independently-estimated replication rates](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5087275/). Alternatively, non-growth could also be due to a breakdown between MICOM and reality (e.g. incorrect dietary parameterization or gaps in the genome-scale metabolic models that do not accurately represent the activity of the strains that are in your sample).
 
@@ -224,7 +216,8 @@ qiime micom plot-growth --i-results growth.qza \
                         --o-visualization growth_rates.qzv
 ```
 
-<a href="https://micom-dev.github.io/q2-micom/assets/growth/data/index.html" target="_blank"><img src="assets/growth_rates.png" width="100%"></a>
+<a href="https://micom-dev.github.io/q2-micom/assets/growth/data/index.html" target="_blank">
+<img src="https://micom-dev.github.io/micom/_images/growth_rates.png" width="100%"></a>
 
 We can see that growth rates are pretty heterogeneous across samples, but it's still hard to see what is going on.
 
@@ -238,7 +231,8 @@ qiime micom exchanges-per-sample --i-results growth.qza \
 ```
 
 
-<a href="https://micom-dev.github.io/q2-micom/assets/per_sample/data/index.html" target="_blank"><img src="assets/consumption.png" width="80%"></a>
+<a href="https://micom-dev.github.io/q2-micom/assets/per_sample/data/index.html" target="_blank">
+<img src="assets/per_sample.png" width="80%"></a>
 
 We do see that there is some separation between healthy and cancer samples in the consumption of certain metabolites. For instance, there is a set of amino acids that get consumed by healthy gut microbiota but not so much in the cancer-associated gut microbiota. One of these amino acids is glutamine. Many cancer cells show glutamine addiction, as a consequence of the [Warburg effect](https://en.wikipedia.org/wiki/Warburg_effect_(oncology)). So, we might hypothesize that glutamine is somewhat depleted in cancer samples and the associated microbiota have adapted to grow without it.
 
@@ -253,7 +247,8 @@ qiime micom exchanges-per-taxon --i-results growth.qza \
                                 --o-visualization niche.qzv
 ```
 
-<a href="https://micom-dev.github.io/q2-micom/assets/per_taxon/data/index.html" target="_blank"><img src="assets/niche.png" width="80%"></a>
+<a href="https://micom-dev.github.io/q2-micom/assets/per_taxon/data/index.html" target="_blank">
+<img src="https://micom-dev.github.io/micom/_images/niche.png" width="80%"></a>
 
 Most taxa have a specific growth niche, which varies slightly from sample to sample. You can tune the UMAP reduction by using the parameters `--p-n-neighbors` and `--p-min-dist`. You can look at metabolite production with `--p-direction export` where you can observe weaker clustering, suggesting that there is considerably more overlap across taxa in metabolite production.
 
@@ -298,11 +293,16 @@ We could define a continous phenotype with `--p-variable-type continuous` or use
 
 The visualization now shows which production fluxes are predictive of the phenotype.
 
-<a href="https://micom-dev.github.io/q2-micom/assets/phenotype/data/index.html" target="_blank"><img src="assets/phenotype.png" width="100%"></a>
+**Disclaimer**: Depending on the version of scikit-learn in your installation this may look different.
 
-Basically, the metabolites on both extremes of the barplot are the most predictive. In this case, negative coefficients denote fluxes that are higher in cancer samples and positive coefficients denote fluxes that are higher in healthy samples. For instance, here we see that an oxidized form of cysteine - cystine - is produced in larger amounts in healthy samples, whereas sulfite and thiosulfate are produced in larger amounts in cancer samples. It is not surprising to see these compunds on opposite sides of the barplot because many sulfur oxidizing bacteria can oxidixize thiosulfate to sulfate, but this [requires cysteine as an intermediate](https://www.ncbi.nlm.nih.gov/pubmed/20066349). Also, women with high cysteine plasma levels [have a lower incidence of colorectal cancer](https://doi.org/10.3945/ajcn.112.049932), which seems consistent with what we find here.
+<a href="https://micom-dev.github.io/q2-micom/assets/phenotype/data/index.html" target="_blank">
+<img src="assets/phenotype.png" width="100%"></a>
 
-Obviously, we would still have to validate these very speculatrive hypotheses, but at least we get some functional insight starting from 16S data alone (while making several assumptions detailed above...).
+Basically, the metabolites on both extremes of the barplot are the most predictive. In this case, negative coefficients denote fluxes that are higher in cancer samples and positive coefficients denote fluxes that are higher in healthy samples. For instance, here we see that butyrate, a helath-romoting, short-chain fatty acid is produced in slightly
+higher levels in helathy individuals. We also see a lot of sulfate-related compounds associated with cancer which
+is consistent with the proliferation-promoting properties of hydrogen sulfite (https://doi.org/10.1042/CBI20090368).
+
+Obviously, we would still have to validate these very speculative hypotheses, but at least we get some functional insight starting from 16S data alone (while making several assumptions as detailed above...).
 
 ## Bonus
 
@@ -364,7 +364,7 @@ In some cases you may have no information on the environment and thus lack a sta
 For instance we can generate a minimal medium for our community models:
 
 ```bash
-qiime micom minimal-medium --i-models communities.qza \
+qiime micom minimal-medium --i-models models.qza \
                            --p-min-growth 0.01 \
                            --p-threads 8 \
                            --o-medium minimal_medium.qza \

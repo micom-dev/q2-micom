@@ -23,9 +23,9 @@ def grow(
     manifest = models.manifest.view(pd.DataFrame)
     growth, exchanges, annotations = mw.grow(
         manifest, model_folder, medium, tradeoff, threads)
-    growth.to_csv(out.growth_rates.path_maker())
-    annotations.to_csv(out.annotations.path_maker())
-    exchanges[pd.notna(exchanges.flux)].to_parquet(
-        out.exchange_fluxes.path_maker()
+    growth.to_csv(out.growth_rates.path_maker(), index=False)
+    annotations.to_csv(out.annotations.path_maker(), index=False)
+    exchanges[pd.notna(exchanges.flux)].to_csv(
+        out.exchange_fluxes.path_maker(), index=False
     )
     return out

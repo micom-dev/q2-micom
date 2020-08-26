@@ -33,14 +33,11 @@ setup(
     },
     zip_safe=False,
     install_requires=[
-        "cobra>=0.10.1",
-        "pandas>=0.25.3",
+        "cobra>=0.18.1",
+        "pandas>=1.0",
         "loguru>=0.3.2",
-        "loky>=2.6.0",
-        "micom==0.16.*",
-        "umap-learn>=0.3.0",
+        "micom==0.18.*",
         "jinja2>=2.10.3",
-        "pyarrow>=0.11.0",
         "qiime2>=2020.2.0"
     ],
     python_requires=">=3.6",

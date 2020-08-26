@@ -142,6 +142,7 @@ plugin.methods.register_function(
     parameters={
         "threads": Int % Range(1, None),
         "cutoff": Float % Range(0.0, 1.0),
+        "strict": Bool
     },
     outputs=[("community_models", CommunityModels[Pickle])],
     input_descriptions={
@@ -156,6 +157,11 @@ plugin.methods.register_function(
         "threads": "The number of threads to use when constructing models.",
         "cutoff": "Taxa with a relative abundance smaller than this will "
         "be dropped.",
+        "strict": "If true will collapse and match on all taxa ranks up to the "
+                  "specified rank (so on all higher ranks as well). If false "
+                  "(default) will match only on single taxa rank specified before. "
+                  "If using the strict option make sure ranks are named the same as in "
+                  "the used database."
     },
     output_descriptions={"community_models": "The community models."},
     name="Build community models.",
@@ -343,8 +349,7 @@ plugin.visualizers.register_function(
     inputs={"results": MicomResults},
     parameters={
         "direction": Str % Choices("import", "export"),
-        "n_neighbors": Int % Range(0, None),
-        "min_dist": Float % Range(0, None),
+        "perplexity": Int % Range(2, None),
     },
     input_descriptions={
         "results": (
@@ -354,13 +359,9 @@ plugin.visualizers.register_function(
     },
     parameter_descriptions={
         "direction": "The direction of the flux.",
-        "n_neighbors": "UMAP parameter. Number of neighbors used to calculate "
-        "distances. Smaller values preserve more local "
-        "structure and larger values preserve more global "
-        "structure.",
-        "min_dist": "UMAP parameter. Minimum distance between points. Smaller "
-        "values clump points more together, larger values spread "
-        "them out more.",
+        "perplexity": "TSNE parameter. Relates to the number of neighbors used to "
+        "calculate distances. Smaller values preserve more local "
+        "structure and larger values preserve more global structure.",
     },
     name="Plot niche overlap.",
     description=(

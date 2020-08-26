@@ -25,6 +25,7 @@ def test_build():
         models.view(q2m._formats_and_types.JSONDirectory),
         1,
         0.01,
+        False
     )
     manifest = d.manifest.view(pd.DataFrame)
     print(manifest.T)

@@ -44,7 +44,7 @@ def test_plot_tradeoff():
 
 def test_fit_phenotype():
     large = q2.Artifact.load(
-        path.join(this_dir, "data", "large.qza"))
+        path.join(this_dir, "data", "growth.qza"))
     r = large.view(GrowthResults)
     mcol = q2.Metadata.load(
         path.join(this_dir, "data", "metadata.tsv")
