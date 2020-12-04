@@ -7,7 +7,7 @@ with open('README.md') as f:
 
 setup(
     name="q2-micom",
-    version="0.10.0",
+    version="0.10.1",
     packages=find_packages(),
     package_data={"q2_micom": ["citations.bib", "assets/templates/*.html"]},
     author="Christian Diener",
