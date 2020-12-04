@@ -36,7 +36,7 @@ setup(
         "cobra>=0.18.1",
         "pandas>=1.0",
         "loguru>=0.3.2",
-        "micom==0.18.7",
+        "micom>=0.18.7",
         "jinja2>=2.10.3",
         "qiime2>=2020.6.0"
     ],
