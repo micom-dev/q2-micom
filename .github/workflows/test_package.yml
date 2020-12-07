@@ -20,9 +20,9 @@ jobs:
             - image: "macos-latest"
               short: "osx"
         qiime:
-            - version: "2020.6"
-              tag: "release"
             - version: "2020.8"
+              tag: "release"
+            - version: "2020.11"
               tag: "release"
             - version: "latest"
               tag: "staging"
