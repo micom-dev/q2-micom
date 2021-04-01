@@ -1,0 +1,21 @@
+# Ref: https://help.github.com/en/github/building-a-strong-community/configuring-issue-templates-for-your-repository#configuring-the-template-chooser
+blank_issues_enabled: true
+contact_links:
+- name: 📧 QIIME 2 Forum - community plugin support
+  url: https://forum.qiime2.org/c/community-plugin-support/
+  about: >
+    Please ask all questions regarding usage, methods and strategies here.
+- name: 💬 Gitter
+  url: https://gitter.im/opencobra/cobrapy
+  about: >
+    If you want to chat about q2-micom you can do so on the COBRApy gitter chat by
+    pinging @cdiener.
+- name: 🦠 q2-micom
+  url: https://github.com/micom-dev/micom
+  about: >
+    For everything regarding the MICOM python package.
+- name: 🍲 MICOM media repository
+  url: https://github.com/micom-dev/media
+  about: >
+    If you are looking for diets or environmental media specifications for MICOM
+    please see the MICOM media repository.

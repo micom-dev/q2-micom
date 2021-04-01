@@ -69,3 +69,39 @@ jobs:
     - name: Upload to codecov
       if: matrix.os.image == 'ubuntu-latest'
       uses: codecov/codecov-action@v1
+
+  release:
+    needs: test
+    if: startsWith(github.ref, 'refs/tags')
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools wheel twine
+    - name: Build and publish
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USER }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      run: |
+        python setup.py sdist bdist_wheel
+        twine upload dist/*
+    - uses: actions/upload-artifact@v2
+      with:
+        name: python-packages
+        path: dist/*
+    - name: Create Release
+      uses: ncipollo/release-action@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        artifacts: 'dist/*'
+        body: |
+          Please see https://github.com/micom-dev/q2-micom/blob/master/NEWS.md for the full release notes.
+        draft: false
+        prerelease: false

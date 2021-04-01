@@ -5,27 +5,27 @@
 [![PyPI version](https://badge.fury.io/py/q2-micom.svg)](https://badge.fury.io/py/q2-micom)
 
 
-A Qiime 2 plugin for MICOM.
+A QIIME 2 plugin for MICOM.
 
 ## Installation
 
 *This will become easier soon.*
 
-### Setup Qiime 2
+### Setup QIIME 2
 
-You will need a Qiime 2 environment with version `2020.11` or higher ([how to install Qiime 2](https://docs.qiime2.org/2020.11/install/native/#install-qiime-2-within-a-conda-environment)). For instance on Linux you would use:
+You will need a QIIME 2 environment with version `2021.2` or higher ([how to install QIIME 2](https://docs.qiime2.org/2021.2/install/native/#install-qiime-2-within-a-conda-environment)). For instance on Linux you would use:
 
 ```bash
-wget https://data.qiime2.org/distro/core/qiime2-2020.11-py36-linux-conda.yml
-conda env create -n qiime2-2020.11 --file qiime2-2020.11-py36-linux-conda.yml
+wget https://data.qiime2.org/distro/core/qiime2-2021.2-py36-linux-conda.yml
+conda env create -n qiime2-2021.2 --file qiime2-2021.2-py36-linux-conda.yml
 # OPTIONAL CLEANUP
-rm qiime2-2020.11-py36-linux-conda.yml
+rm qiime2-2021.2-py36-linux-conda.yml
 ```
 
-Once installed, activate your Qiime 2 environment:
+Once installed, activate your QIIME 2 environment:
 
 ```bash
-conda activate qiime2-2020.11
+conda activate qiime2-2021.2
 ```
 
 Install dependencies for `q2-micom` from conda:
@@ -71,10 +71,10 @@ grbgetkey YOUR-LICENSE-KEY
 
 ### Finish your installation
 
-If you installed `q2-micom` in an already existing Qiime 2 environment, update the plugin cache:
+If you installed `q2-micom` in an already existing QIIME 2 environment, update the plugin cache:
 
 ```bash
-conda activate qiime2-2020.11  # or whatever you called your environment
+conda activate qiime2-2021.2  # or whatever you called your environment
 qiime dev refresh-cache
 ```
 
@@ -86,7 +86,15 @@ Here is a graphical overview of a `q2-micom` analysis.
 
 <img src="docs/assets/overview.png" width="100%">
 
-The best way to get started is to work through the [community tutorial](https://github.com/micom-dev/q2-micom/blob/master/docs/README.md).
+The best way to get started is to work through the [community tutorial](https://micom-dev.github.io/q2-micom).
+
+## Supported QIIME 2 versions
+
+`q2-micom` is tested agains:
+
+1. the current [QIIME 2 version](https://docs.qiime2.org/)
+2. the previous version
+3. the [development version](https://dev.qiime2.org/latest/)
 
 ## References
 
