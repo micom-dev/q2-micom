@@ -50,7 +50,7 @@ jobs:
       run: |
         conda activate qiime2-dev
         conda install -yq -c conda-forge -c \
-            conda-forge cobra jinja2 rich scikit-learn
+            conda-forge cobra jinja2 rich
         conda install -yq -c ibmdecisionoptimization cplex
     - name: Install q2-micom
       run: pip install -e .
