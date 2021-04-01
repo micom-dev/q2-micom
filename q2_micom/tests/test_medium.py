@@ -12,13 +12,11 @@ this_dir = q2m.tests.this_dir
 models = q2.Artifact.load(path.join(this_dir, "data", "build.qza"))
 
 medium_high = q2m._medium.minimal_medium(
-    models.view(q2m._formats_and_types.CommunityModelDirectory),
-    0.5
+    models.view(q2m._formats_and_types.CommunityModelDirectory), 0.5
 )
 
 medium_low = q2m._medium.minimal_medium(
-    models.view(q2m._formats_and_types.CommunityModelDirectory),
-    0.1
+    models.view(q2m._formats_and_types.CommunityModelDirectory), 0.1
 )
 
 

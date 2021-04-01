@@ -39,6 +39,7 @@ def read_results(path):
         the taxon `medium.
     """
     from qiime2 import Artifact
+
     art = Artifact.load(path)
     return art.view(MicomResultsData)
 

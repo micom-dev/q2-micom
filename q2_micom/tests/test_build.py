@@ -9,23 +9,14 @@ import q2_micom as q2m
 
 this_dir = q2m.tests.this_dir
 
-table = q2.Artifact.load(path.join(this_dir, "data", "table.qza")).view(
-    biom.Table
-)
-taxa = q2.Artifact.load(path.join(this_dir, "data", "taxa.qza")).view(
-    pd.Series
-)
+table = q2.Artifact.load(path.join(this_dir, "data", "table.qza")).view(biom.Table)
+taxa = q2.Artifact.load(path.join(this_dir, "data", "taxa.qza")).view(pd.Series)
 models = q2.Artifact.load(path.join(this_dir, "data", "species_models.qza"))
 
 
 def test_build():
     d = q2m.build(
-        table,
-        taxa,
-        models.view(q2m._formats_and_types.JSONDirectory),
-        1,
-        0.01,
-        False
+        table, taxa, models.view(q2m._formats_and_types.JSONDirectory), 1, 0.01, False
     )
     manifest = d.manifest.view(pd.DataFrame)
     print(manifest.T)

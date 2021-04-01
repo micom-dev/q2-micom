@@ -55,8 +55,8 @@ plugin = Plugin(
     website="https://github.com/micom-dev/q2-micom",
     package="q2_micom",
     description=(""),
-    short_description="Plugin for metabolic modeling of "
-    "microbial communities.",
+    short_description="Plugin for metabolic modeling of microbial communities.",
+    citations=[citations["micom"]],
 )
 
 plugin.register_formats(
@@ -83,15 +83,9 @@ plugin.register_semantic_type_to_format(
     CommunityModels[Pickle], CommunityModelDirectory
 )
 plugin.register_semantic_type_to_format(MicomResults, MicomResultsDirectory)
-plugin.register_semantic_type_to_format(
-    TradeoffResults, TradeoffResultsDirectory
-)
-plugin.register_semantic_type_to_format(
-    MicomMedium[Global], MicomMediumDirectory
-)
-plugin.register_semantic_type_to_format(
-    MicomMedium[PerSample], MicomMediumDirectory
-)
+plugin.register_semantic_type_to_format(TradeoffResults, TradeoffResultsDirectory)
+plugin.register_semantic_type_to_format(MicomMedium[Global], MicomMediumDirectory)
+plugin.register_semantic_type_to_format(MicomMedium[PerSample], MicomMediumDirectory)
 
 plugin.methods.register_function(
     function=q2_micom.db,
@@ -106,8 +100,7 @@ plugin.methods.register_function(
     parameter_descriptions={
         "meta": (
             "Metadata for the individual metabolic models in `folder`. "
-            "Must contain the the following columns: %s."
-            % ", ".join(REQ_FIELDS)
+            "Must contain the the following columns: %s." % ", ".join(REQ_FIELDS)
         ),
         "rank": "The phylogenetic rank at which to summarize taxa.",
         "threads": "The number of threads to use when constructing models.",
@@ -142,7 +135,7 @@ plugin.methods.register_function(
     parameters={
         "threads": Int % Range(1, None),
         "cutoff": Float % Range(0.0, 1.0),
-        "strict": Bool
+        "strict": Bool,
     },
     outputs=[("community_models", CommunityModels[Pickle])],
     input_descriptions={
@@ -158,16 +151,14 @@ plugin.methods.register_function(
         "cutoff": "Taxa with a relative abundance smaller than this will "
         "be dropped.",
         "strict": "If true will collapse and match on all taxa ranks up to the "
-                  "specified rank (so on all higher ranks as well). If false "
-                  "(default) will match only on single taxa rank specified before. "
-                  "If using the strict option make sure ranks are named the same as in "
-                  "the used database."
+        "specified rank (so on all higher ranks as well). If false "
+        "(default) will match only on single taxa rank specified before. "
+        "If using the strict option make sure ranks are named the same as in "
+        "the used database.",
     },
     output_descriptions={"community_models": "The community models."},
     name="Build community models.",
-    description=(
-        "Builds the metabolic community models for a " "set of samples."
-    ),
+    description=("Builds the metabolic community models for a set of samples."),
     citations=[citations["micom"]],
 )
 
@@ -211,8 +202,7 @@ plugin.methods.register_function(
         "medium": MicomMedium[Global | PerSample],
     },
     parameters={
-        "tradeoff": Float
-        % Range(0.0, 1.0, inclusive_start=False, inclusive_end=True),
+        "tradeoff": Float % Range(0.0, 1.0, inclusive_start=False, inclusive_end=True),
         "threads": Int % Range(1, None),
     },
     outputs=[("results", MicomResults)],
@@ -415,14 +405,12 @@ plugin.visualizers.register_function(
         "variable_type": "The type of the phenotype variable.",
         "flux_type": "Which fluxes to use.",
         "min_coef": (
-            "Only coefficient with absolute values larger than this "
-            "will be shown."
+            "Only coefficient with absolute values larger than this " "will be shown."
         ),
     },
     name="Test for differential production",
     description=(
-        "Test for overall metabolite production differences "
-        "between two groups."
+        "Test for overall metabolite production differences " "between two groups."
     ),
     citations=[citations["micom"]],
 )

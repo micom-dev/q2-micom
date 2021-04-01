@@ -28,7 +28,7 @@ def build_spec(
     taxonomy: pd.Series,
     models: JSONDirectory,
     cutoff: float,
-    strict: bool
+    strict: bool,
 ) -> pd.DataFrame:
     """Build the specification for the community models."""
     model_files = models.manifest.view(pd.DataFrame).rename(columns={"id": "model_id"})
@@ -48,9 +48,8 @@ def build_spec(
     stats = micom_taxonomy.sample_id.value_counts().describe()
     print("Merged with the database using ranks: %s" % ", ".join(ranks))
     print(
-        "Each community model contains %d-%d taxa (average %d+-%d)." % (
-            stats["min"], stats["max"],
-            round(stats["mean"]), round(stats["std"]))
+        "Each community model contains %d-%d taxa (average %d+-%d)."
+        % (stats["min"], stats["max"], round(stats["mean"]), round(stats["std"]))
     )
     return micom_taxonomy
 
@@ -66,15 +65,12 @@ def build(
     """Build the community models."""
     tax = build_spec(abundance, taxonomy, models, cutoff, strict)
     out = CommunityModelDirectory()
-    out_folder = (
-        str(out.model_files.path_maker(model_id="test"))
-        .replace("test.pickle", "")
+    out_folder = str(out.model_files.path_maker(model_id="test")).replace(
+        "test.pickle", ""
     )
-    model_folder = (
-        str(models.json_files.path_maker(model_id="test"))
-        .replace("test.json", "")
+    model_folder = str(models.json_files.path_maker(model_id="test")).replace(
+        "test.json", ""
     )
     mw.build(tax, model_folder, out_folder, cutoff, threads)
-    os.rename(os.path.join(out_folder, "manifest.csv"),
-              out.manifest.path_maker())
+    os.rename(os.path.join(out_folder, "manifest.csv"), out.manifest.path_maker())
     return out

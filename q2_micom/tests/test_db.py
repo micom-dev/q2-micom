@@ -20,13 +20,13 @@ def test_species():
     files = models.manifest.view(pd.DataFrame)
     assert files.shape[0] == 3
     assert files.file[0] == "Escherichia_coli_1.json"
-    cobra_model = micom.util.load_model(str(
-        models.json_files.path_maker(model_id=files.id[0])))
+    cobra_model = micom.util.load_model(
+        str(models.json_files.path_maker(model_id=files.id[0]))
+    )
     assert len(cobra_model.reactions) == 95
     assert np.allclose(
-        cobra_model.optimize().objective_value,
-        0.874,
-        rtol=1e-3, atol=1e-3)
+        cobra_model.optimize().objective_value, 0.874, rtol=1e-3, atol=1e-3
+    )
 
 
 def test_genus():
@@ -34,11 +34,11 @@ def test_genus():
     files = models.manifest.view(pd.DataFrame)
     assert files.shape[0] == 1
     assert files.file[0] == "Escherichia.json"
-    cobra_model = micom.util.load_model(str(
-        models.json_files.path_maker(model_id=files.id[0])))
+    cobra_model = micom.util.load_model(
+        str(models.json_files.path_maker(model_id=files.id[0]))
+    )
     # one additional reaction due to averaged biomass
     assert len(cobra_model.reactions) == 96
     assert np.allclose(
-        cobra_model.optimize().objective_value,
-        0.874,
-        rtol=1e-3, atol=1e-3)
+        cobra_model.optimize().objective_value, 0.874, rtol=1e-3, atol=1e-3
+    )

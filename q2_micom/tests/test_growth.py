@@ -8,15 +8,10 @@ from q2_micom.tests import this_dir
 
 this_dir = q2m.tests.this_dir
 
-medium = q2.Artifact.load(path.join(this_dir, "data", "medium.qza")).view(
-    pd.DataFrame
-)
+medium = q2.Artifact.load(path.join(this_dir, "data", "medium.qza")).view(pd.DataFrame)
 models = q2.Artifact.load(path.join(this_dir, "data", "build.qza"))
 
-res = q2m.grow(
-    models.view(q2m._formats_and_types.CommunityModelDirectory),
-    medium
-)
+res = q2m.grow(models.view(q2m._formats_and_types.CommunityModelDirectory), medium)
 
 
 def test_growth_rates():

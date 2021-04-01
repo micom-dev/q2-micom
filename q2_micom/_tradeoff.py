@@ -18,14 +18,11 @@ def tradeoff(
 ) -> pd.DataFrame:
     """Run tradeoff analysis."""
     manifest = models.manifest.view(pd.DataFrame)
-    model_folder = (
-        str(models.model_files.path_maker(model_id="blub"))
-        .replace("blub.pickle", "")
+    model_folder = str(models.model_files.path_maker(model_id="blub")).replace(
+        "blub.pickle", ""
     )
     if tradeoff_min >= tradeoff_max:
-        raise ValueError(
-            "`tradeoff_min` must be smaller than `tradeoff_max` :("
-        )
+        raise ValueError("`tradeoff_min` must be smaller than `tradeoff_max` :(")
     tradeoffs = np.arange(tradeoff_min, tradeoff_max + 1e-6, step)
     results = mw.tradeoff(manifest, model_folder, medium, tradeoffs, threads)
     return results

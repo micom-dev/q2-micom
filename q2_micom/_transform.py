@@ -69,10 +69,10 @@ def _10(ef: ft.Fluxes) -> pd.DataFrame:
 @plugin.register_transformer
 def _11(res: ft.MicomResultsDirectory) -> ft.MicomResultsData:
     return ft.MicomResultsData(
-        exchange_fluxes=pd.read_csv(str(res.exchange_fluxes.path_maker()),
-                                    index_col=False),
-        growth_rates=pd.read_csv(
-            str(res.growth_rates.path_maker()), index_col=False)
+        exchange_fluxes=pd.read_csv(
+            str(res.exchange_fluxes.path_maker()), index_col=False
+        ),
+        growth_rates=pd.read_csv(str(res.growth_rates.path_maker()), index_col=False),
     )
 
 
@@ -93,7 +93,7 @@ def _14(rd: ft.MicomResultsDirectory) -> GrowthResults:
     gr = GrowthResults(
         rd.growth_rates.view(pd.DataFrame),
         rd.exchange_fluxes.view(pd.DataFrame),
-        rd.annotations.view(pd.DataFrame)
+        rd.annotations.view(pd.DataFrame),
     )
     return gr
 
@@ -105,4 +105,3 @@ def _15(gr: GrowthResults) -> ft.MicomResultsDirectory:
     gr["annotations"].to_csv(rd.annotations.path_maker(), index=False)
     gr["exchanges"].to_csv(rd.exchange_fluxes.path_maker(), index=False)
     return rd
-
