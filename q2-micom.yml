@@ -1,0 +1,9 @@
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - cobra
+  - jinja2
+  - python-symengine
+  - pip:
+    - q2-micom
