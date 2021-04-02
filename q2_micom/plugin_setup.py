@@ -285,6 +285,86 @@ plugin.methods.register_function(
     citations=[citations["micom"]],
 )
 
+plugin.methods.register_function(
+    function=q2_micom.filter_models,
+    inputs={
+        "models": CommunityModels[Pickle]
+    },
+    parameters={
+        "metadata": Metadata,
+        "query": Str,
+        "exclude": Bool
+    },
+    outputs=[("filtered_models", CommunityModels[Pickle])],
+    input_descriptions={
+        "models": (
+            "A collection of metabolic community models. "
+            "This should contain on model for each sample."
+        )
+    },
+    parameter_descriptions={
+        "metadata": "The metadata for the samples to keep or to query.",
+        "query": (
+            "A pandas query expression to select samples from the metadata. "
+            "This will call `query` on the metadata DataFrame, so you can test "
+            "your query by loading our metadata into a pandas DataFrame."
+        ),
+        "exclude": (
+            "If true will use all samples *except* the ones selected "
+            "by metadata and query."
+        )
+    },
+    output_descriptions={
+        "filtered_models": "The filtered community models."
+    },
+    name="Filters models for a chosen set of samples.",
+    description=(
+        "Select a subset of samples and their community models using a list "
+        "of samples or a pandas query expression."
+    ),
+    citations=[citations["micom"]],
+)
+
+plugin.methods.register_function(
+    function=q2_micom.filter_results,
+    inputs={
+        "results": MicomResults
+    },
+    parameters={
+        "metadata": Metadata,
+        "query": Str,
+        "exclude": Bool
+    },
+    outputs=[("filtered_results", MicomResults)],
+    input_descriptions={
+        "results": (
+            "A set of MICOM analysis results. "
+            "Contains predicted groath rates and exchange fluxes."
+        )
+    },
+    parameter_descriptions={
+        "metadata": "The metadata for the samples to keep or to query.",
+        "query": (
+            "A pandas query expression to select samples from the metadata. "
+            "This will call `query` on the metadata DataFrame, so you can test "
+            "your query by loading our metadata into a pandas DataFrame."
+        ),
+        "exclude": (
+            "If true will use all samples *except* the ones selected "
+            "by metadata and query."
+        )
+    },
+    output_descriptions={
+        "filtered_results": "The filtered simulation models."
+    },
+    name="Filters results for a chosen set of samples.",
+    description=(
+        "Select a subset of samples and their simulation results using a list "
+        "of samples or a pandas query expression."
+    ),
+    citations=[citations["micom"]],
+)
+
 plugin.visualizers.register_function(
     function=q2_micom.plot_growth,
     inputs={"results": MicomResults},

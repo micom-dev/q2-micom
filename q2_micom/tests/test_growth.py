@@ -15,20 +15,20 @@ res = q2m.grow(models.view(q2m._formats_and_types.CommunityModelDirectory), medi
 
 
 def test_growth_rates():
-    gcs = res.growth_rates.view(pd.DataFrame)
+    gcs = res.growth_rates
     assert "growth_rate" in gcs.columns
     assert "sample_id" in gcs.columns
     assert all(gcs.growth_rate > 1e-6)
 
 
 def test_exchanges():
-    ex = res.exchange_fluxes.view(pd.DataFrame)
+    ex = res.exchanges
     assert "reaction" in ex.columns
     assert ex.reaction.str.startswith("EX_").all()
 
 
 def test_feasible_exchanges():
-    ex = res.exchange_fluxes.view(pd.DataFrame)
+    ex = res.exchanges
     ex = ex[(ex.taxon == "medium") & (ex.direction == "import")]
     ex["bound"] = medium.loc[ex.reaction, "flux"].values
     ex = ex.dropna()

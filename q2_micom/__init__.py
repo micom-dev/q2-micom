@@ -2,6 +2,7 @@
 
 from q2_micom._build import build
 from q2_micom._db import db
+from q2_micom._filter import filter_models, filter_results
 from q2_micom._formats_and_types import MicomResultsData
 from q2_micom._growth import grow
 from q2_micom._medium import minimal_medium
@@ -56,4 +57,6 @@ __all__ = [
     "plot_tradeoff",
     "fit_phenotype",
     "read_results",
+    "filter_models",
+    "filter_results",
 ]
