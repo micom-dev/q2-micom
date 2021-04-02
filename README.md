@@ -9,45 +9,37 @@ A QIIME 2 plugin for MICOM.
 
 ## Installation
 
-*This will become easier soon.*
+You will need an existing QIIME 2 environment. Follow the instructions on ([how to install QIIME 2](https://docs.qiime2.org/2021.2/install/native/#install-qiime-2-within-a-conda-environment))
+otherwise. Let's assume that environment was called `qiime2-2021.2` for all further steps.
 
-### Setup QIIME 2
+### Add q2-micom to the QIIME 2 environment
 
-You will need a QIIME 2 environment with version `2021.2` or higher ([how to install QIIME 2](https://docs.qiime2.org/2021.2/install/native/#install-qiime-2-within-a-conda-environment)). For instance on Linux you would use:
+This will be the same step for any supported QIIME 2 version or operating systems.
 
 ```bash
-wget https://data.qiime2.org/distro/core/qiime2-2021.2-py36-linux-conda.yml
-conda env create -n qiime2-2021.2 --file qiime2-2021.2-py36-linux-conda.yml
+wget https://raw.githubusercontent.com/micom-dev/q2-micom/master/q2-micom.yml
+conda env update -n qiime2-2021.2 -f q2-micom.yml
 # OPTIONAL CLEANUP
-rm qiime2-2021.2-py36-linux-conda.yml
+rm q2-micom.yml
 ```
 
-Once installed, activate your QIIME 2 environment:
+Finally, you activate your environment.
+
 
 ```bash
 conda activate qiime2-2021.2
 ```
 
-Install dependencies for `q2-micom` from conda:
-
-```bash
-conda install -c conda-forge -c \
-    bioconda cobra jinja2 loguru tqdm python-symengine
-```
-
-Install `q2-micom` (this will install `MICOM` as well).
-
-```bash
-pip install q2-micom
-```
-
+### Install a QP solver
 ### Install a QP solver
 
-**CPLEX**
+**CPLEX (recommended)**
+
+*QIIME 2 is only compatible with CPLEX 12.10 or earlier (later version require at least Python 3.7).*
 
 After registering and downloading the CPLEX studio for your OS unpack it (by running the provided installer) to a directory of your choice (we will assume it's called `ibm`).
 
-Now install the CPLEX python package:
+Now install the CPLEX python package into your activated environment:
 
 ```bash
 pip install ibm/cplex/python/3.6/x86-64_linux
@@ -68,6 +60,8 @@ You will now have to register the installation using your license key.
 ```bash
 grbgetkey YOUR-LICENSE-KEY
 ```
+
+Note that Gurobi support is often iffy and might break for periods of time. It will also be *much* slower than CPLEX.
 
 ### Finish your installation
 

@@ -35,41 +35,42 @@ MICOM models all biochemical reactions in all taxa, which means that the optimiz
 
 ### Setup Qiime 2
 
-You will need a Qiime 2 environment with version `2020.11` or higher ([how to install Qiime 2](https://docs.qiime2.org/2020.11/install/native/#install-qiime-2-within-a-conda-environment)). For instance on Linux you would use:
+You will need a Qiime 2 environment with version `2021.2` or higher ([how to install Qiime 2](https://docs.qiime2.org/2021.2/install/native/#install-qiime-2-within-a-conda-environment)). For instance on Linux you would use:
 
 ```bash
-wget https://data.qiime2.org/distro/core/qiime2-2020.11-py36-linux-conda.yml
-conda env create -n qiime2-2020.11 --file qiime2-2020.11-py36-linux-conda.yml
+wget https://data.qiime2.org/distro/core/qiime2-2021.2-py36-linux-conda.yml
+conda env create -n qiime2-2021.2 --file qiime2-2021.2-py36-linux-conda.yml
 # OPTIONAL CLEANUP
-rm qiime2-2020.11-py36-linux-conda.yml
+rm qiime2-2021.2-py36-linux-conda.yml
 ```
 
-Once installed, activate your Qiime 2 environment:
+Once installed, we also download the environment for q2-micom and install it into the
+QIIME 2 environment we just created.
 
 ```bash
-conda activate qiime2-2020.11
+wget https://raw.githubusercontent.com/micom-dev/q2-micom/master/q2-micom.yml
+conda env update -n qiime2-2021.2 -f q2-micom.yml
+# OPTIONAL CLEANUP
+rm q2-micom.yml
 ```
 
-Install dependencies for `q2-micom` from conda:
+Finally, you activate your environment.
+
 
 ```bash
-conda install -c conda-forge -c \
-    bioconda cobra jinja2 loguru tqdm python-symengine
+conda activate qiime2-2021.2
 ```
 
-Install `q2-micom` (this will install `MICOM` as well).
-
-```bash
-pip install q2-micom
-```
 
 ### Install a QP solver
 
-**CPLEX**
+**CPLEX (recommended)**
+
+*QIIME 2 is only compatible with CPLEX 12.10 or earlier (later version require at least Python 3.7).*
 
 After registering and downloading the CPLEX studio for your OS unpack it (by running the provided installer) to a directory of your choice (we will assume it's called `ibm`).
 
-Now install the CPLEX python package:
+Now install the CPLEX python package into your activated environment:
 
 ```bash
 pip install ibm/cplex/python/3.6/x86-64_linux
@@ -91,12 +92,14 @@ You will now have to register the installation using your license key.
 grbgetkey YOUR-LICENSE-KEY
 ```
 
+Note that Gurobi support is often iffy and might break for periods of time. It will also be *much* slower than CPLEX.
+
 ### Finish your installation
 
 If you installed `q2-micom` in an already existing Qiime 2 environment, update the plugin cache:
 
 ```bash
-conda activate qiime2-2020.11  # or whatever you called your environment
+conda activate qiime2-2021.2  # or whatever you called your environment
 qiime dev refresh-cache
 ```
 
@@ -258,7 +261,7 @@ A common question is whether there is a conection between a host phenotype of in
 
 Overall production fluxes are the default set of fluxes used by q2-micom. MICOM also allows for the analysis of minimal import fluxes shown in `qiime micom exchanges-per-sample`, but these are often not very informative.
 
-To predict a phenotype from fluxes we will use the `fit-phenotype` command. Here you will need a Qiime 2 [Metadata file](https://docs.qiime2.org/2019.10/tutorials/metadata/) that specifies your phenotype of interest. Our metadata is pretty simple and just assigns a healthy or cancer status to each sample:
+To predict a phenotype from fluxes we will use the `fit-phenotype` command. Here you will need a Qiime 2 [Metadata file](https://docs.qiime2.org/2021.2/tutorials/metadata/) that specifies your phenotype of interest. Our metadata is pretty simple and just assigns a healthy or cancer status to each sample:
 
 ```
 id	status
@@ -305,6 +308,34 @@ is consistent with the proliferation-promoting properties of hydrogen sulfite (h
 Obviously, we would still have to validate these very speculative hypotheses, but at least we get some functional insight starting from 16S data alone (while making several assumptions as detailed above...).
 
 ## Bonus
+
+### Filtering built community models or simulation results
+
+You can create q2-micom artifacts containing only a subset of samples using the `filter-models` and `filter-results` actions. For instance, if we wanted
+to create model and results artifacts that contain only the cancer samples we could do the following:
+
+```bash
+qiime micom filter-models --i-models built.qza \
+                          --m-metadata metdata.tsv \
+                          --query "status == 'Cancer'" \
+                          --o-filtered-models cancer_built_models.qza
+```
+
+and similarly for the results:
+
+```bash
+qiime micom filter-models --i-results growth.qza \
+                          --m-metadata metdata.tsv \
+                          --query "status == 'Cancer'" \
+                          --o-filtered-models cancer_results.qza
+```
+
+Note that you will need a metadata table either (1) only includes the samples of interest or (2) can be
+queried with a [pandas query](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html)
+to select only the samples of interest. You can also add the parameter `--p-exclude` which will
+return an artifact covering all samples *except* the ones selected by the metadata and query.
+
+Those can now be passed on to the visualization steps to generate visualizations for only the cancer samples.
 
 ### Identifying AGORA metabolites
 
