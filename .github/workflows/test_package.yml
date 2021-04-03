@@ -45,17 +45,16 @@ jobs:
         wget https://raw.githubusercontent.com/qiime2/environment-files/master/${{matrix.qiime.version}}/${{matrix.qiime.tag}}/qiime2-${{matrix.qiime.version}}-py36-${{matrix.os.short}}-conda.yml
         conda env create -q -n qiime2-dev --file qiime2-${{matrix.qiime.version}}-py36-${{matrix.os.short}}-conda.yml
         rm qiime2-${{matrix.qiime.version}}-py36-${{matrix.os.short}}-conda.yml
-    - name: Install dependencies
-      shell: bash -l {0}
-      run: |
-        conda activate qiime2-dev
-        conda install -yq -c conda-forge -c bioconda cobra jinja2
-        conda install -yq -c ibmdecisionoptimization cplex
     - name: Install q2-micom
       shell: bash -l {0}
       run: |
         conda activate qiime2-dev
-        pip install -e .
+        conda env update -yq -n qiime2-dev -f q2-micom.yml
+    - name: Install CPLEX
+      shell: bash -l {0}
+      run: |
+        conda activate qiime2-dev
+        conda install -yq -c ibmdecisionoptimization cplex
     - name: Lint with flake8
       shell: bash -l {0}
       run: |

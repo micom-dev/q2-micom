@@ -292,7 +292,7 @@ qiime micom fit-phenotype --i-results growth.qza \
                           --o-visualization fit.qzv
 ```
 
-We could define a continous phenotype with `--p-variable-type continuous` or use for minimal import fluxes with `--p-flux-type import`.
+We could define a continuous phenotype with `--p-variable-type continuous` or use for minimal import fluxes with `--p-flux-type import`.
 
 The visualization now shows which production fluxes are predictive of the phenotype.
 
@@ -315,9 +315,9 @@ You can create q2-micom artifacts containing only a subset of samples using the 
 to create model and results artifacts that contain only the cancer samples we could do the following:
 
 ```bash
-qiime micom filter-models --i-models built.qza \
-                          --m-metadata metdata.tsv \
-                          --query "status == 'Cancer'" \
+qiime micom filter-models --i-models models.qza \
+                          --m-metadata-file metadata.tsv \
+                          --p-query "status == 'Cancer'" \
                           --o-filtered-models cancer_built_models.qza
 ```
 
@@ -325,8 +325,8 @@ and similarly for the results:
 
 ```bash
 qiime micom filter-models --i-results growth.qza \
-                          --m-metadata metdata.tsv \
-                          --query "status == 'Cancer'" \
+                          --m-metadata-file metadata.tsv \
+                          --p-query "status == 'Cancer'" \
                           --o-filtered-models cancer_results.qza
 ```
 

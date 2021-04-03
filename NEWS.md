@@ -5,6 +5,10 @@ This includes a list of major changes for each minor version starting from 0.10.
 For information on how to use `q2-micom` please refer to
 [the tutorial](https://micom-dev.github.io/q2-micom).
 
+### 0.11.0
+
+Add the actions `filter-models` and `filter-results`.
+
 ### 0.10.1
 
 Fixed an issue with the required MICOM version.
