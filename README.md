@@ -25,7 +25,6 @@ rm q2-micom.yml
 
 Finally, you activate your environment.
 
-
 ```bash
 conda activate qiime2-2021.2
 ```
