@@ -49,7 +49,7 @@ jobs:
       shell: bash -l {0}
       run: |
         conda activate qiime2-dev
-        conda env update -yq -n qiime2-dev -f q2-micom.yml
+        conda env update -n qiime2-dev -f q2-micom.yml
     - name: Install CPLEX
       shell: bash -l {0}
       run: |
