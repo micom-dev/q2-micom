@@ -2,8 +2,9 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - cobra
+  - cobra>=0.21.0
   - jinja2
-  - python-symengine
+  - python-symengine>=0.6.1
+  - pip
   - pip:
     - q2-micom
