@@ -1,15 +1,19 @@
 # News and release notes for q2-micom
 
-This includes a list of major changes for each minor version starting from 0.10.0.
+This includes a list of major changes for each minor version starting from 0.10.0. `q2-micom` uses [SemVer 2](https://semver.org/).
 
 For information on how to use `q2-micom` please refer to
 [the tutorial](https://micom-dev.github.io/q2-micom).
+
+#### 0.11.1
+
+Fixed building of package and artifacts.
 
 ### 0.11.0
 
 Add the actions `filter-models` and `filter-results`.
 
-### 0.10.1
+#### 0.10.1
 
 Fixed an issue with the required MICOM version.
 
