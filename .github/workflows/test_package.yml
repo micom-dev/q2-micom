@@ -6,6 +6,8 @@ name: Test and deploy
 on:
   push:
     branches: [ master ]
+    tags:
+    - 'v[0-9]+.[0-9]+.[0-9]+'
   pull_request:
     branches: [ master ]
 
@@ -45,7 +47,7 @@ jobs:
       shell: bash -l {0}
       run: |
         conda activate qiime2-dev
-        conda env update -n qiime2-dev -f q2-micom.yml
+        conda env update -q -n qiime2-dev -f q2-micom.yml
     - name: Install CPLEX
       shell: bash -l {0}
       run: |
