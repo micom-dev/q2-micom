@@ -3,7 +3,9 @@ channels:
   - bioconda
 dependencies:
   - cobra
+  - rich
   - jinja2
-  - python-symengine
+  - python-symengine>=0.6.1
+  - pip
   - pip:
     - q2-micom
