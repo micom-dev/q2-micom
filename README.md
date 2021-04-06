@@ -83,11 +83,16 @@ The best way to get started is to work through the [community tutorial](https://
 
 ## Supported QIIME 2 versions
 
-`q2-micom` is tested agains:
+`q2-micom` is tested against:
 
 1. the current [QIIME 2 version](https://docs.qiime2.org/)
 2. the previous version
+
+It should also work with
+
 3. the [development version](https://dev.qiime2.org/latest/)
+   however, we don't test it in the CI as it occasionally breaks
+
 
 ## References
 
