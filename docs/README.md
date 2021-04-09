@@ -131,8 +131,8 @@ For the purposes of this tutorial, we will provide pre-built artifacts for a 16S
 
 **Downloads**:
 
-- [abundance table](crc_table.qza)
-- [taxonomy](crc_taxa.qza)
+- [abundance table](https://github.com/micom-dev/q2-micom/raw/master/docs/crc_table.qza)
+- [taxonomy](https://github.com/micom-dev/q2-micom/raw/master/docs/crc_taxa.qza)
 
 Using our pre-baked model database, we can now build our community models with the `qiime micom build` command. Note that most commands in `q2-micom` take a `--p-threads` parameter that specifies how many CPU cores to use. Using multiple threads will speed things up considerably. Additionally, using the `--verbose` flag will usually show a progress bar. Finally, low abundance taxa are usually dropped from the models to improve computational efficiency. This abundance cutoff is controlled by the `--p-cutoff` parameter, which is set to 0.01% by default. Okay, let's build our community models:
 
