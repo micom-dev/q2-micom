@@ -1,0 +1,61 @@
+name: Test with qiime2-dev
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+            - image: "ubuntu-latest"
+              short: "linux"
+            - image: "macos-latest"
+              short: "osx"
+    runs-on: "${{matrix.os.image}}"
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup conda
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+       python-version: 3.8
+    - shell: bash -l {0}
+      run: |
+        conda info
+        conda list
+    - name: Install Qiime 2
+      shell: bash -l {0}
+      run: |
+        wget https://raw.githubusercontent.com/qiime2/environment-files/master/latest/staging/qiime2-latest-py38-{{matrix.os.short}}-conda.yml
+        conda env create -q -n qiime2-dev --file qiime2-${{matrix.qiime.version}}-py36-${{matrix.os.short}}-conda.yml
+        rm qiime2-${{matrix.qiime.version}}-py36-${{matrix.os.short}}-conda.yml
+    - name: Install q2-micom
+      shell: bash -l {0}
+      run: |
+        conda activate qiime2-dev
+        conda env update -q -n qiime2-dev -f q2-micom.yml
+    - name: Install CPLEX
+      shell: bash -l {0}
+      run: |
+        conda activate qiime2-dev
+        conda install -yq -c ibmdecisionoptimization cplex
+    - name: Lint with flake8
+      shell: bash -l {0}
+      run: |
+        pip install flake8
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=80 --statistics
+    - name: Test with pytest
+      shell: bash -l {0}
+      run: |
+        conda activate qiime2-dev
+        pip install pytest pytest-benchmark pytest-cov
+        pytest --benchmark-skip --cov=q2_micom --cov-report=xml
