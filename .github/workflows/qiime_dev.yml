@@ -33,8 +33,8 @@ jobs:
       shell: bash -l {0}
       run: |
         wget https://raw.githubusercontent.com/qiime2/environment-files/master/latest/staging/qiime2-latest-py38-{{matrix.os.short}}-conda.yml
-        conda env create -q -n qiime2-dev --file qiime2-${{matrix.qiime.version}}-py36-${{matrix.os.short}}-conda.yml
-        rm qiime2-${{matrix.qiime.version}}-py36-${{matrix.os.short}}-conda.yml
+        conda env create -q -n qiime2-dev --file qiime2-latest-py38-{{matrix.os.short}}-conda.yml
+        rm qiime2-latest-py38-{{matrix.os.short}}-conda.yml
     - name: Install q2-micom
       shell: bash -l {0}
       run: |
