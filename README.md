@@ -91,7 +91,7 @@ The best way to get started is to work through the [community tutorial](https://
 It should also work with
 
 3. the [development version](https://dev.qiime2.org/latest/)
-   however, we don't test it in the CI as it occasionally breaks
+   However, this may occasionally break. Check [here for the current status](https://github.com/micom-dev/q2-micom/actions/workflows/qiime_dev.yml).
 
 
 ## References
