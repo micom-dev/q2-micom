@@ -66,7 +66,7 @@ conda activate qiime2-2021.2
 
 **CPLEX (recommended)**
 
-*QIIME 2 is only compatible with CPLEX 12.10 or earlier (later version require at least Python 3.7).*
+*QIIME 2 versions before 2021.4 are only compatible with CPLEX 12.10 or earlier (later version require at least Python 3.7).*
 
 After registering and downloading the CPLEX studio for your OS unpack it (by running the provided installer) to a directory of your choice (we will assume it's called `ibm`).
 
@@ -76,9 +76,16 @@ Now install the CPLEX python package into your activated environment:
 pip install ibm/cplex/python/3.6/x86-64_linux
 ```
 
+Substitute `3.6` with the Python version in your QIMME 2 environment, `3.6` for QIIME 2 up to 2021.2 and `3.8` for QIIME 2 2021.4 and newer.
 Substitute `x86-64_linux` with the folder corresponding to your system (there will only be one subfolder in that directory).
 
-**Gurobi**
+**Gurobi (works, but not recommended)**
+
+`q2-micom` is not tested against Gurobi. Consequently Gurobi support is often iffy and might break for periods of time. It will also be *much* slower than CPLEX or OSQP.
+
+You should only consider using Gurobi if:
+1. You do not have access to CPLEX
+2. You do need high accuracy solutions (tolerance of 1e-6 or lower)
 
 Gurobi can be installed with conda.
 
@@ -91,8 +98,6 @@ You will now have to register the installation using your license key.
 ```bash
 grbgetkey YOUR-LICENSE-KEY
 ```
-
-Note that Gurobi support is often iffy and might break for periods of time. It will also be *much* slower than CPLEX.
 
 ### Finish your installation
 
