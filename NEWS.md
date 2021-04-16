@@ -5,6 +5,10 @@ This includes a list of major changes for each minor version starting from 0.10.
 For information on how to use `q2-micom` please refer to
 [the tutorial](https://micom-dev.github.io/q2-micom).
 
+#### 0.11.2
+
+Fixed an error where growth results could not be saved to an artifact.
+
 #### 0.11.1
 
 Fixed building of package and artifacts.

@@ -4,6 +4,8 @@ import os.path as path
 import pandas as pd
 import qiime2 as q2
 import q2_micom as q2m
+from micom.workflows.core import GrowthResults
+from q2_micom._formats_and_types import MicomResults
 from q2_micom.tests import this_dir
 
 this_dir = q2m.tests.this_dir
@@ -33,3 +35,14 @@ def test_feasible_exchanges():
     ex["bound"] = medium.loc[ex.reaction, "flux"].values
     ex = ex.dropna()
     assert all(ex.flux < ex.bound + 1e-6)
+
+
+def test_artifact(tmpdir):
+    out = str(tmpdir.join("growth.qza"))
+    art = q2.Artifact.import_data("MicomResults", res)
+    art.save(out)
+    assert path.exists(out)
+    art = q2.Artifact.load(out)
+    assert art.type == MicomResults
+    results = art.view(GrowthResults)
+    assert isinstance(results, GrowthResults)

@@ -101,7 +101,7 @@ def _14(rd: ft.MicomResultsDirectory) -> GrowthResults:
 @plugin.register_transformer
 def _15(gr: GrowthResults) -> ft.MicomResultsDirectory:
     rd = ft.MicomResultsDirectory()
-    gr["growth_rates"].to_csv(rd.growth_rates.path_maker(), index=False)
-    gr["annotations"].to_csv(rd.annotations.path_maker(), index=False)
-    gr["exchanges"].to_csv(rd.exchange_fluxes.path_maker(), index=False)
+    gr.growth_rates.to_csv(rd.growth_rates.path_maker(), index=False)
+    gr.annotations.to_csv(rd.annotations.path_maker(), index=False)
+    gr.exchanges.to_csv(rd.exchange_fluxes.path_maker(), index=False)
     return rd

@@ -35,3 +35,14 @@ def test_sane_tradeoff():
             tradeoff_min=0.5,
             tradeoff_max=0.4,
         )
+
+def test_artifact(tmpdir):
+    out = str(tmpdir.join("tradeoff.qza"))
+    art = q2.Artifact.import_data("TradeoffResults", res)
+    art.save(out)
+    assert path.exists(out)
+    art = q2.Artifact.load(out)
+    assert art.type == q2m._formats_and_types.TradeoffResults
+    results = art.view(pd.DataFrame)
+    assert isinstance(results, pd.DataFrame)
+    assert "sample_id" in results.columns
