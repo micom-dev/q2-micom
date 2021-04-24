@@ -34,7 +34,7 @@ jobs:
     - name: Setup conda
       uses: conda-incubator/setup-miniconda@v2
       with:
-       python-version: ${{matrix.qiime.python}}
+       python-version: 3.8
     - shell: bash -l {0}
       run: |
         conda info
