@@ -24,9 +24,9 @@ jobs:
               short: "osx"
         qiime:
             - version: "2021.2"
-              python: 3.6
+              python: 36
             - version: "2021.4"
-              python: 3.8
+              python: 38
     runs-on: "${{matrix.os.image}}"
 
     steps:
@@ -34,7 +34,7 @@ jobs:
     - name: Setup conda
       uses: conda-incubator/setup-miniconda@v2
       with:
-       python-version: ${{matrix.qiime.python}}
+       python-version: 3.8
     - shell: bash -l {0}
       run: |
         conda info
