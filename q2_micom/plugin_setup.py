@@ -287,14 +287,8 @@ plugin.methods.register_function(
 
 plugin.methods.register_function(
     function=q2_micom.filter_models,
-    inputs={
-        "models": CommunityModels[Pickle]
-    },
-    parameters={
-        "metadata": Metadata,
-        "query": Str,
-        "exclude": Bool
-    },
+    inputs={"models": CommunityModels[Pickle]},
+    parameters={"metadata": Metadata, "query": Str, "exclude": Bool},
     outputs=[("filtered_models", CommunityModels[Pickle])],
     input_descriptions={
         "models": (
@@ -312,11 +306,9 @@ plugin.methods.register_function(
         "exclude": (
             "If true will use all samples *except* the ones selected "
             "by metadata and query."
-        )
+        ),
     },
-    output_descriptions={
-        "filtered_models": "The filtered community models."
-    },
+    output_descriptions={"filtered_models": "The filtered community models."},
     name="Filters models for a chosen set of samples.",
     description=(
         "Select a subset of samples and their community models using a list "
@@ -327,14 +319,8 @@ plugin.methods.register_function(
 
 plugin.methods.register_function(
     function=q2_micom.filter_results,
-    inputs={
-        "results": MicomResults
-    },
-    parameters={
-        "metadata": Metadata,
-        "query": Str,
-        "exclude": Bool
-    },
+    inputs={"results": MicomResults},
+    parameters={"metadata": Metadata, "query": Str, "exclude": Bool},
     outputs=[("filtered_results", MicomResults)],
     input_descriptions={
         "results": (
@@ -352,11 +338,9 @@ plugin.methods.register_function(
         "exclude": (
             "If true will use all samples *except* the ones selected "
             "by metadata and query."
-        )
+        ),
     },
-    output_descriptions={
-        "filtered_results": "The filtered simulation models."
-    },
+    output_descriptions={"filtered_results": "The filtered simulation models."},
     name="Filters results for a chosen set of samples.",
     description=(
         "Select a subset of samples and their simulation results using a list "

@@ -16,8 +16,6 @@ def grow(
         "blub.pickle", ""
     )
     manifest = models.manifest.view(pd.DataFrame)
-    results = mw.grow(
-        manifest, model_folder, medium, tradeoff, threads
-    )
+    results = mw.grow(manifest, model_folder, medium, tradeoff, threads)
 
     return results

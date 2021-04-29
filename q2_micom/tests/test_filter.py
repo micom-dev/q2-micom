@@ -35,17 +35,23 @@ def test_filter_models_metadata():
     assert filtered.manifest.view(pd.DataFrame).shape[0] == 2
 
     filtered = q2m.filter_models(
-        models.view(CommunityModelDirectory), q2.Metadata(metadata.iloc[0:2]), exclude=True
+        models.view(CommunityModelDirectory),
+        q2.Metadata(metadata.iloc[0:2]),
+        exclude=True,
     )
     assert filtered.manifest.view(pd.DataFrame).shape[0] == 1
 
     with pytest.raises(ValueError):
-        q2m.filter_models(models.view(CommunityModelDirectory), q2.Metadata(metadata), exclude=True)
+        q2m.filter_models(
+            models.view(CommunityModelDirectory), q2.Metadata(metadata), exclude=True
+        )
 
 
 def test_filter_models_query():
     filtered = q2m.filter_models(
-        models.view(CommunityModelDirectory), q2.Metadata(metadata), query="group == 'a'"
+        models.view(CommunityModelDirectory),
+        q2.Metadata(metadata),
+        query="group == 'a'",
     )
     assert filtered.manifest.view(pd.DataFrame).shape[0] == 1
 
@@ -63,13 +69,18 @@ def test_filter_models_query():
     assert filtered.manifest.view(pd.DataFrame).shape[0] == 1
 
     filtered = q2m.filter_models(
-        models.view(CommunityModelDirectory), q2.Metadata(metadata), query="value > 2", exclude=True
+        models.view(CommunityModelDirectory),
+        q2.Metadata(metadata),
+        query="value > 2",
+        exclude=True,
     )
     assert filtered.manifest.view(pd.DataFrame).shape[0] == 2
 
     with pytest.raises(ValueError):
         q2m.filter_models(
-            models.view(CommunityModelDirectory), q2.Metadata(metadata), query="value > 3"
+            models.view(CommunityModelDirectory),
+            q2.Metadata(metadata),
+            query="value > 3",
         )
 
 
@@ -98,7 +109,9 @@ def test_filter_results_query():
     filtered = q2m.filter_results(r, q2.Metadata(metadata), query="value > 2")
     assert has_nsamples(filtered, 1)
 
-    filtered = q2m.filter_results(r, q2.Metadata(metadata), query="value > 2", exclude=True)
+    filtered = q2m.filter_results(
+        r, q2.Metadata(metadata), query="value > 2", exclude=True
+    )
     assert has_nsamples(filtered, 2)
 
     with pytest.raises(ValueError):

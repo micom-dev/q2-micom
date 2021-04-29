@@ -36,6 +36,7 @@ def test_sane_tradeoff():
             tradeoff_max=0.4,
         )
 
+
 def test_artifact(tmpdir):
     out = str(tmpdir.join("tradeoff.qza"))
     art = q2.Artifact.import_data("TradeoffResults", res)
