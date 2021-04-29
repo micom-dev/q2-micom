@@ -322,17 +322,17 @@ to create model and results artifacts that contain only the cancer samples we co
 ```bash
 qiime micom filter-models --i-models models.qza \
                           --m-metadata-file metadata.tsv \
-                          --p-query "status == 'Cancer'" \
+                          --p-query "status == 'colorectal cancer'" \
                           --o-filtered-models cancer_built_models.qza
 ```
 
 and similarly for the results:
 
 ```bash
-qiime micom filter-models --i-results growth.qza \
-                          --m-metadata-file metadata.tsv \
-                          --p-query "status == 'Cancer'" \
-                          --o-filtered-models cancer_results.qza
+qiime micom filter-results --i-results growth.qza \
+                           --m-metadata-file metadata.tsv \
+                           --p-query "status == 'colorectal cancer'" \
+                           --o-filtered-results cancer_results.qza
 ```
 
 Note that you will need a metadata table either (1) only includes the samples of interest or (2) can be

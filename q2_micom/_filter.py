@@ -1,6 +1,7 @@
 """Filter samples from artifacts."""
 
 from q2_micom._formats_and_types import CommunityModelDirectory
+from qiime2 import Metadata
 from micom.workflows.core import GrowthResults
 import pandas as pd
 import shutil
@@ -8,14 +9,14 @@ import shutil
 
 def filter_models(
     models: CommunityModelDirectory,
-    metadata: pd.DataFrame,
+    metadata: Metadata,
     query: str = None,
     exclude: bool = False,
 ) -> CommunityModelDirectory:
     """Filter samples from a set of community models."""
     manifest = models.manifest.view(pd.DataFrame)
     if query is not None:
-        metadata = metadata.copy().query(query)
+        metadata = metadata.to_dataframe().query(query)
     if exclude:
         filtered_manifest = manifest[~manifest.sample_id.isin(metadata.index)]
     else:
@@ -35,7 +36,7 @@ def filter_models(
 
 def filter_results(
     results: GrowthResults,
-    metadata: pd.DataFrame,
+    metadata: Metadata,
     query: str = None,
     exclude: bool = False,
 ) -> GrowthResults:
@@ -44,7 +45,7 @@ def filter_results(
     exchanges = results.exchanges
     rates = results.growth_rates
     if query is not None:
-        metadata = metadata.copy().query(query)
+        metadata = metadata.to_dataframe().query(query)
     if exclude:
         filtered_sids = sids[~sids.isin(metadata.index)]
     else:
