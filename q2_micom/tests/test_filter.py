@@ -18,6 +18,7 @@ metadata = pd.DataFrame(
     {"group": ["a", "b", "c"], "value": [1, 2, 3]},
     index=["sample_1", "sample_2", "sample_3"],
 )
+metadata.index.name = "id"
 
 
 def has_nsamples(results, n):
@@ -29,76 +30,76 @@ def has_nsamples(results, n):
 
 def test_filter_models_metadata():
     filtered = q2m.filter_models(
-        models.view(CommunityModelDirectory), metadata.iloc[0:2]
+        models.view(CommunityModelDirectory), q2.Metadata(metadata.iloc[0:2])
     )
     assert filtered.manifest.view(pd.DataFrame).shape[0] == 2
 
     filtered = q2m.filter_models(
-        models.view(CommunityModelDirectory), metadata.iloc[0:2], exclude=True
+        models.view(CommunityModelDirectory), q2.Metadata(metadata.iloc[0:2]), exclude=True
     )
     assert filtered.manifest.view(pd.DataFrame).shape[0] == 1
 
     with pytest.raises(ValueError):
-        q2m.filter_models(models.view(CommunityModelDirectory), metadata, exclude=True)
+        q2m.filter_models(models.view(CommunityModelDirectory), q2.Metadata(metadata), exclude=True)
 
 
 def test_filter_models_query():
     filtered = q2m.filter_models(
-        models.view(CommunityModelDirectory), metadata, query="group == 'a'"
+        models.view(CommunityModelDirectory), q2.Metadata(metadata), query="group == 'a'"
     )
     assert filtered.manifest.view(pd.DataFrame).shape[0] == 1
 
     filtered = q2m.filter_models(
         models.view(CommunityModelDirectory),
-        metadata.iloc[0:2],
+        q2.Metadata(metadata.iloc[0:2]),
         query="group == 'a'",
         exclude=True,
     )
     assert filtered.manifest.view(pd.DataFrame).shape[0] == 2
 
     filtered = q2m.filter_models(
-        models.view(CommunityModelDirectory), metadata, query="value > 2"
+        models.view(CommunityModelDirectory), q2.Metadata(metadata), query="value > 2"
     )
     assert filtered.manifest.view(pd.DataFrame).shape[0] == 1
 
     filtered = q2m.filter_models(
-        models.view(CommunityModelDirectory), metadata, query="value > 2", exclude=True
+        models.view(CommunityModelDirectory), q2.Metadata(metadata), query="value > 2", exclude=True
     )
     assert filtered.manifest.view(pd.DataFrame).shape[0] == 2
 
     with pytest.raises(ValueError):
         q2m.filter_models(
-            models.view(CommunityModelDirectory), metadata, query="value > 3"
+            models.view(CommunityModelDirectory), q2.Metadata(metadata), query="value > 3"
         )
 
 
 def test_filter_results_metadata():
     r = results
-    filtered = q2m.filter_results(r, metadata.iloc[0:2])
+    filtered = q2m.filter_results(r, q2.Metadata(metadata.iloc[0:2]))
     assert has_nsamples(filtered, 2)
 
-    filtered = q2m.filter_results(r, metadata.iloc[0:2], exclude=True)
+    filtered = q2m.filter_results(r, q2.Metadata(metadata.iloc[0:2]), exclude=True)
     assert has_nsamples(filtered, 1)
 
     with pytest.raises(ValueError):
-        q2m.filter_results(r, metadata, exclude=True)
+        q2m.filter_results(r, q2.Metadata(metadata), exclude=True)
 
 
 def test_filter_results_query():
     r = results
-    filtered = q2m.filter_results(r, metadata, query="group == 'a'")
+    filtered = q2m.filter_results(r, q2.Metadata(metadata), query="group == 'a'")
     assert has_nsamples(filtered, 1)
 
     filtered = q2m.filter_results(
-        r, metadata.iloc[0:2], query="group == 'a'", exclude=True
+        r, q2.Metadata(metadata.iloc[0:2]), query="group == 'a'", exclude=True
     )
     assert has_nsamples(filtered, 2)
 
-    filtered = q2m.filter_results(r, metadata, query="value > 2")
+    filtered = q2m.filter_results(r, q2.Metadata(metadata), query="value > 2")
     assert has_nsamples(filtered, 1)
 
-    filtered = q2m.filter_results(r, metadata, query="value > 2", exclude=True)
+    filtered = q2m.filter_results(r, q2.Metadata(metadata), query="value > 2", exclude=True)
     assert has_nsamples(filtered, 2)
 
     with pytest.raises(ValueError):
-        q2m.filter_results(r, metadata, query="value > 3")
+        q2m.filter_results(r, q2.Metadata(metadata), query="value > 3")

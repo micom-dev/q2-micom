@@ -15,8 +15,9 @@ def filter_models(
 ) -> CommunityModelDirectory:
     """Filter samples from a set of community models."""
     manifest = models.manifest.view(pd.DataFrame)
+    metadata = metadata.to_dataframe()
     if query is not None:
-        metadata = metadata.to_dataframe().query(query)
+        metadata = metadata.query(query)
     if exclude:
         filtered_manifest = manifest[~manifest.sample_id.isin(metadata.index)]
     else:
@@ -44,8 +45,9 @@ def filter_results(
     sids = results.growth_rates.sample_id
     exchanges = results.exchanges
     rates = results.growth_rates
+    metadata = metadata.to_dataframe()
     if query is not None:
-        metadata = metadata.to_dataframe().query(query)
+        metadata = metadata.query(query)
     if exclude:
         filtered_sids = sids[~sids.isin(metadata.index)]
     else:
