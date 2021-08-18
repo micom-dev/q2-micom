@@ -136,6 +136,7 @@ plugin.methods.register_function(
         "threads": Int % Range(1, None),
         "cutoff": Float % Range(0.0, 1.0),
         "strict": Bool,
+        "solver": Str % Choices("auto", "cplex", "osqp", "gurobi"),
     },
     outputs=[("community_models", CommunityModels[Pickle])],
     input_descriptions={
@@ -150,11 +151,19 @@ plugin.methods.register_function(
         "threads": "The number of threads to use when constructing models.",
         "cutoff": "Taxa with a relative abundance smaller than this will "
         "be dropped.",
-        "strict": "If true will collapse and match on all taxa ranks up to the "
-        "specified rank (so on all higher ranks as well). If false "
-        "(default) will match only on single taxa rank specified before. "
-        "If using the strict option make sure ranks are named the same as in "
-        "the used database.",
+        "strict": (
+            "If true will collapse and match on all taxa ranks up to the "
+            "specified rank (so on all higher ranks as well). If false "
+            "(default) will match only on single taxa rank specified before. "
+            "If using the strict option make sure ranks are named the same as in "
+            "the used database."
+        ),
+        "solver": (
+            "The quadratic and linear programming solver that will be used "
+            "in the models. Will pick an appropriate one by default. "
+            "`cplex` and `gurobi` are commercial solvers with free academic "
+            "licenses and have to be installed manually. See the docs for more info."
+        ),
     },
     output_descriptions={"community_models": "The community models."},
     name="Build community models.",
@@ -203,6 +212,7 @@ plugin.methods.register_function(
     },
     parameters={
         "tradeoff": Float % Range(0.0, 1.0, inclusive_start=False, inclusive_end=True),
+        "strategy": Str % Choices("pFBA", "minimal uptake", "none"),
         "threads": Int % Range(1, None),
     },
     outputs=[("results", MicomResults)],
@@ -225,6 +235,15 @@ plugin.methods.register_function(
             "biomass. A value of 0.5 (the default) has been shown to "
             "best reproduce growth rates in the human gut."
         ),
+        "strategy": (
+            "The strategy used when choosing the solution in the "
+            "optimal flux space. `minimal uptake` uses the fluxes "
+            "that result in the smallest total uptake from the environment."
+            "`pFBA` uses parsimonious Flux Balance Analysis and thus will choose "
+            "the fluxes with the lowest enzyme requirement for each taxon. "
+            "`none` will return an arbitrary solution from the optimal flux space."
+
+        ),
         "threads": "The number of threads to use when simulating.",
     },
     output_descriptions={
@@ -234,8 +253,8 @@ plugin.methods.register_function(
     name="Simulate growth for community models.",
     description=(
         "Simulates growth for a set of samples. Note that those are "
-        'sample-specific or "personalized" simulations, so each taxa'
-        "may have different growth rates and metabolite usahe in each sample."
+        'sample-specific or "personalized" simulations, so each taxon '
+        "may have different growth rates and metabolite usage in each sample."
     ),
     citations=[citations["micom"]],
 )

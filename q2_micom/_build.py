@@ -61,8 +61,11 @@ def build(
     threads: int = 1,
     cutoff: float = 0.0001,
     strict: bool = False,
+    solver: str = "auto"
 ) -> CommunityModelDirectory:
     """Build the community models."""
+    if solver == "auto":
+        solver = None
     tax = build_spec(abundance, taxonomy, models, cutoff, strict)
     out = CommunityModelDirectory()
     out_folder = str(out.model_files.path_maker(model_id="test")).replace(
@@ -71,6 +74,6 @@ def build(
     model_folder = str(models.json_files.path_maker(model_id="test")).replace(
         "test.json", ""
     )
-    mw.build(tax, model_folder, out_folder, cutoff, threads)
+    mw.build(tax, model_folder, out_folder, cutoff, threads, solver)
     os.rename(os.path.join(out_folder, "manifest.csv"), out.manifest.path_maker())
     return out
