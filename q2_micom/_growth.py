@@ -14,11 +14,12 @@ def grow(
 ) -> mw.core.GrowthResults:
     """Simulate growth for a set of community models."""
     if strategy == "minimal uptake":
-        strategy == "minimal medium"
+        strategy == "minimal imports"
     model_folder = str(models.model_files.path_maker(model_id="blub")).replace(
         "blub.pickle", ""
     )
     manifest = models.manifest.view(pd.DataFrame)
-    results = mw.grow(manifest, model_folder, medium, tradeoff, threads, strategy)
+    results = mw.grow(manifest, model_folder, medium, tradeoff, threads,
+                      strategy=strategy)
 
     return results
