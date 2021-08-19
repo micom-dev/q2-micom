@@ -29,7 +29,14 @@ Finally, you activate your environment.
 conda activate qiime2-2021.2
 ```
 
-### Install a QP solver
+### Install a QP solver (optional)
+
+`q2-micom` will now install the open source solver OSQP that can be used with MICOM. OSQP is
+fairly fast and will give solutions with accuracy in the order of 1e-3 - 1e-4. If you use MICOM
+regularly we do recommend to obtain an academic license for CPLEX which will be faster and more
+accurate. We do not recommend Gurobi anymore because we can not test it as stringently as the
+other solvers and it is also slower than CPLEX or OSQP. However, you may still use Gurobi
+with `q2-micom`, but things may break.
 
 **CPLEX (recommended)**
 
@@ -43,7 +50,7 @@ Now install the CPLEX python package into your activated environment:
 pip install ibm/cplex/python/3.6/x86-64_linux
 ```
 
-Substitute `3.6` with the Python version in your QIMME 2 environment, `3.6` for QIIME 2 up to 2021.2 and `3.8` for QIIME 2 2021.4 and newer.
+Substitute `3.6` with the Python version in your QIIME 2 environment, `3.6` for QIIME 2 up to 2021.2 and `3.8` for QIIME 2 2021.4 and newer.
 Substitute `x86-64_linux` with the folder corresponding to your system (there will only be one subfolder in that directory).
 
 **Gurobi (works, but not recommended)**
