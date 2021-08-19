@@ -16,6 +16,19 @@ models = q2.Artifact.load(path.join(this_dir, "data", "build.qza"))
 res = q2m.grow(models.view(q2m._formats_and_types.CommunityModelDirectory), medium)
 
 
+def test_strategies():
+    for s in ["minimal uptake", "pFBA", "none"]:
+        res = q2m.grow(
+            models.view(q2m._formats_and_types.CommunityModelDirectory),
+            medium,
+            strategy=s,
+        )
+        gcs = res.growth_rates
+        assert "growth_rate" in gcs.columns
+        assert "sample_id" in gcs.columns
+        assert all(gcs.growth_rate > 1e-6)
+
+
 def test_growth_rates():
     gcs = res.growth_rates
     assert "growth_rate" in gcs.columns

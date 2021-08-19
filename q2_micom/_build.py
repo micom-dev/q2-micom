@@ -35,7 +35,7 @@ def build_spec(
     rank = model_files.summary_rank[0]
     rank_index = RANKS.index(rank)
     if strict:
-        ranks = RANKS[0:rank_index]
+        ranks = RANKS[0:(rank_index + 1)]
     else:
         ranks = [rank]
     model_files["file"] = model_files[rank].apply(

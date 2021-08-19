@@ -14,7 +14,7 @@ def grow(
 ) -> mw.core.GrowthResults:
     """Simulate growth for a set of community models."""
     if strategy == "minimal uptake":
-        strategy == "minimal imports"
+        strategy = "minimal imports"
     model_folder = str(models.model_files.path_maker(model_id="blub")).replace(
         "blub.pickle", ""
     )
