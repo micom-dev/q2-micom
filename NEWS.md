@@ -5,6 +5,10 @@ This includes a list of major changes for each minor version starting from 0.10.
 For information on how to use `q2-micom` please refer to
 [the tutorial](https://micom-dev.github.io/q2-micom).
 
+#### 0.12.1
+
+Now always cast sample IDs to strings avoiding issue with numeric IDs.
+
 ### 0.12.0
 
 `build` now accepts the `--p-solver` parameter that allows to specify which solver
@@ -16,8 +20,8 @@ to pick a flux solution.
 `grow` now defaults to using parsimonious FBA (pFBA) to get fluxes as this has more
 empirical evidence in returning the biologically relevant flux distributions. In some
 instances this can lead to results that are different from what previous versions
-have returned. In this case you can pick the previous strategy by using
-`--p-strategy="minimal uptake"`.
+have returned. In particular this will may lead to less secreted molecules.
+In this case you can pick the previous strategy by using `--p-strategy="minimal uptake"`.
 
 Fixed a bug in `build` when using the strict option where it would not use the correct
 taxonomic rank to merge.
