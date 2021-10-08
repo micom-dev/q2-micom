@@ -9,8 +9,8 @@ A QIIME 2 plugin for MICOM.
 
 ## Installation
 
-You will need an existing QIIME 2 environment. Follow the instructions on ([how to install QIIME 2](https://docs.qiime2.org/2021.2/install/native/#install-qiime-2-within-a-conda-environment))
-otherwise. Let's assume that environment was called `qiime2-2021.2` for all further steps.
+You will need an existing QIIME 2 environment. Follow the instructions on ([how to install QIIME 2](https://docs.qiime2.org/2021.8/install/native/#install-qiime-2-within-a-conda-environment))
+otherwise. Let's assume that environment was called `qiime2-2021.8` for all further steps.
 
 ### Add q2-micom to the QIIME 2 environment
 
@@ -18,7 +18,7 @@ This will be the same step for any supported QIIME 2 version or operating system
 
 ```bash
 wget https://raw.githubusercontent.com/micom-dev/q2-micom/master/q2-micom.yml
-conda env update -n qiime2-2021.2 -f q2-micom.yml
+conda env update -n qiime2-2021.8 -f q2-micom.yml
 # OPTIONAL CLEANUP
 rm q2-micom.yml
 ```
@@ -26,7 +26,7 @@ rm q2-micom.yml
 Finally, you activate your environment.
 
 ```bash
-conda activate qiime2-2021.2
+conda activate qiime2-2021.8
 ```
 
 ### Install a QP solver (optional)
@@ -78,7 +78,7 @@ grbgetkey YOUR-LICENSE-KEY
 If you installed `q2-micom` in an already existing QIIME 2 environment, update the plugin cache:
 
 ```bash
-conda activate qiime2-2021.2  # or whatever you called your environment
+conda activate qiime2-2021.8  # or whatever you called your environment
 qiime dev refresh-cache
 ```
 
