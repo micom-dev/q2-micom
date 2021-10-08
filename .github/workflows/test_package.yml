@@ -23,7 +23,7 @@ jobs:
             - image: "macos-latest"
               short: "osx"
         qiime:
-            - version: "2021.6"
+            - version: "2021.4"
               python: 38
             - version: "2021.8"
               python: 38
