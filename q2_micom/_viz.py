@@ -23,10 +23,7 @@ def exchanges_per_sample(
 ) -> None:
     """Plot the exchange fluxes."""
     viz.plot_exchanges_per_sample(
-        results,
-        join(output_dir, "index.html"),
-        direction,
-        cluster
+        results, join(output_dir, "index.html"), direction, cluster
     )
 
 
@@ -47,10 +44,7 @@ def exchanges_per_taxon(
 
 def plot_tradeoff(output_dir: str, results: pd.DataFrame) -> None:
     """Plot the taxa growth rates."""
-    viz.plot_tradeoff(
-        results,
-        join(output_dir, "index.html")
-    )
+    viz.plot_tradeoff(results, join(output_dir, "index.html"))
 
 
 def fit_phenotype(

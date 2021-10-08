@@ -55,8 +55,8 @@ plugin = Plugin(
     website="https://github.com/micom-dev/q2-micom",
     package="q2_micom",
     description=(""),
-    short_description="Plugin for metabolic modeling of "
-    "microbial communities.",
+    short_description="Plugin for metabolic modeling of microbial communities.",
+    citations=[citations["micom"]],
 )
 
 plugin.register_formats(
@@ -83,15 +83,9 @@ plugin.register_semantic_type_to_format(
     CommunityModels[Pickle], CommunityModelDirectory
 )
 plugin.register_semantic_type_to_format(MicomResults, MicomResultsDirectory)
-plugin.register_semantic_type_to_format(
-    TradeoffResults, TradeoffResultsDirectory
-)
-plugin.register_semantic_type_to_format(
-    MicomMedium[Global], MicomMediumDirectory
-)
-plugin.register_semantic_type_to_format(
-    MicomMedium[PerSample], MicomMediumDirectory
-)
+plugin.register_semantic_type_to_format(TradeoffResults, TradeoffResultsDirectory)
+plugin.register_semantic_type_to_format(MicomMedium[Global], MicomMediumDirectory)
+plugin.register_semantic_type_to_format(MicomMedium[PerSample], MicomMediumDirectory)
 
 plugin.methods.register_function(
     function=q2_micom.db,
@@ -106,8 +100,7 @@ plugin.methods.register_function(
     parameter_descriptions={
         "meta": (
             "Metadata for the individual metabolic models in `folder`. "
-            "Must contain the the following columns: %s."
-            % ", ".join(REQ_FIELDS)
+            "Must contain the the following columns: %s." % ", ".join(REQ_FIELDS)
         ),
         "rank": "The phylogenetic rank at which to summarize taxa.",
         "threads": "The number of threads to use when constructing models.",
@@ -142,7 +135,8 @@ plugin.methods.register_function(
     parameters={
         "threads": Int % Range(1, None),
         "cutoff": Float % Range(0.0, 1.0),
-        "strict": Bool
+        "strict": Bool,
+        "solver": Str % Choices("auto", "cplex", "osqp", "gurobi"),
     },
     outputs=[("community_models", CommunityModels[Pickle])],
     input_descriptions={
@@ -157,17 +151,23 @@ plugin.methods.register_function(
         "threads": "The number of threads to use when constructing models.",
         "cutoff": "Taxa with a relative abundance smaller than this will "
         "be dropped.",
-        "strict": "If true will collapse and match on all taxa ranks up to the "
-                  "specified rank (so on all higher ranks as well). If false "
-                  "(default) will match only on single taxa rank specified before. "
-                  "If using the strict option make sure ranks are named the same as in "
-                  "the used database."
+        "strict": (
+            "If true will collapse and match on all taxa ranks up to the "
+            "specified rank (so on all higher ranks as well). If false "
+            "(default) will match only on single taxa rank specified before. "
+            "If using the strict option make sure ranks are named the same as in "
+            "the used database."
+        ),
+        "solver": (
+            "The quadratic and linear programming solver that will be used "
+            "in the models. Will pick an appropriate one by default. "
+            "`cplex` and `gurobi` are commercial solvers with free academic "
+            "licenses and have to be installed manually. See the docs for more info."
+        ),
     },
     output_descriptions={"community_models": "The community models."},
     name="Build community models.",
-    description=(
-        "Builds the metabolic community models for a " "set of samples."
-    ),
+    description=("Builds the metabolic community models for a set of samples."),
     citations=[citations["micom"]],
 )
 
@@ -211,8 +211,8 @@ plugin.methods.register_function(
         "medium": MicomMedium[Global | PerSample],
     },
     parameters={
-        "tradeoff": Float
-        % Range(0.0, 1.0, inclusive_start=False, inclusive_end=True),
+        "tradeoff": Float % Range(0.0, 1.0, inclusive_start=False, inclusive_end=True),
+        "strategy": Str % Choices("pFBA", "minimal uptake", "none"),
         "threads": Int % Range(1, None),
     },
     outputs=[("results", MicomResults)],
@@ -235,6 +235,15 @@ plugin.methods.register_function(
             "biomass. A value of 0.5 (the default) has been shown to "
             "best reproduce growth rates in the human gut."
         ),
+        "strategy": (
+            "The strategy used when choosing the solution in the "
+            "optimal flux space. `minimal uptake` uses the fluxes "
+            "that result in the smallest total uptake from the environment."
+            "`pFBA` uses parsimonious Flux Balance Analysis and thus will choose "
+            "the fluxes with the lowest enzyme requirement for each taxon. "
+            "`none` will return an arbitrary solution from the optimal flux space."
+
+        ),
         "threads": "The number of threads to use when simulating.",
     },
     output_descriptions={
@@ -244,8 +253,8 @@ plugin.methods.register_function(
     name="Simulate growth for community models.",
     description=(
         "Simulates growth for a set of samples. Note that those are "
-        'sample-specific or "personalized" simulations, so each taxa'
-        "may have different growth rates and metabolite usahe in each sample."
+        'sample-specific or "personalized" simulations, so each taxon '
+        "may have different growth rates and metabolite usage in each sample."
     ),
     citations=[citations["micom"]],
 )
@@ -291,6 +300,70 @@ plugin.methods.register_function(
         "specific set of samples. Our study suggested that a good tradeoff "
         "value is the largest value that allows the majority of taxa in the "
         "sample to grow."
+    ),
+    citations=[citations["micom"]],
+)
+
+plugin.methods.register_function(
+    function=q2_micom.filter_models,
+    inputs={"models": CommunityModels[Pickle]},
+    parameters={"metadata": Metadata, "query": Str, "exclude": Bool},
+    outputs=[("filtered_models", CommunityModels[Pickle])],
+    input_descriptions={
+        "models": (
+            "A collection of metabolic community models. "
+            "This should contain on model for each sample."
+        )
+    },
+    parameter_descriptions={
+        "metadata": "The metadata for the samples to keep or to query.",
+        "query": (
+            "A pandas query expression to select samples from the metadata. "
+            "This will call `query` on the metadata DataFrame, so you can test "
+            "your query by loading our metadata into a pandas DataFrame."
+        ),
+        "exclude": (
+            "If true will use all samples *except* the ones selected "
+            "by metadata and query."
+        ),
+    },
+    output_descriptions={"filtered_models": "The filtered community models."},
+    name="Filters models for a chosen set of samples.",
+    description=(
+        "Select a subset of samples and their community models using a list "
+        "of samples or a pandas query expression."
+    ),
+    citations=[citations["micom"]],
+)
+
+plugin.methods.register_function(
+    function=q2_micom.filter_results,
+    inputs={"results": MicomResults},
+    parameters={"metadata": Metadata, "query": Str, "exclude": Bool},
+    outputs=[("filtered_results", MicomResults)],
+    input_descriptions={
+        "results": (
+            "A set of MICOM analysis results. "
+            "Contains predicted groath rates and exchange fluxes."
+        )
+    },
+    parameter_descriptions={
+        "metadata": "The metadata for the samples to keep or to query.",
+        "query": (
+            "A pandas query expression to select samples from the metadata. "
+            "This will call `query` on the metadata DataFrame, so you can test "
+            "your query by loading our metadata into a pandas DataFrame."
+        ),
+        "exclude": (
+            "If true will use all samples *except* the ones selected "
+            "by metadata and query."
+        ),
+    },
+    output_descriptions={"filtered_results": "The filtered simulation models."},
+    name="Filters results for a chosen set of samples.",
+    description=(
+        "Select a subset of samples and their simulation results using a list "
+        "of samples or a pandas query expression."
     ),
     citations=[citations["micom"]],
 )
@@ -415,14 +488,12 @@ plugin.visualizers.register_function(
         "variable_type": "The type of the phenotype variable.",
         "flux_type": "Which fluxes to use.",
         "min_coef": (
-            "Only coefficient with absolute values larger than this "
-            "will be shown."
+            "Only coefficient with absolute values larger than this " "will be shown."
         ),
     },
     name="Test for differential production",
     description=(
-        "Test for overall metabolite production differences "
-        "between two groups."
+        "Test for overall metabolite production differences " "between two groups."
     ),
     citations=[citations["micom"]],
 )

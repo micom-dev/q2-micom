@@ -35,68 +35,44 @@ MICOM models all biochemical reactions in all taxa, which means that the optimiz
 
 ### Setup Qiime 2
 
-You will need a Qiime 2 environment with version `2020.2` or higher ([how to install Qiime 2](https://docs.qiime2.org/2020.2/install/native/#install-qiime-2-within-a-conda-environment)). For instance on Linux you would use:
+You will need a Qiime 2 environment with version `2021.2` or higher ([how to install Qiime 2](https://docs.qiime2.org/2021.2/install/native/#install-qiime-2-within-a-conda-environment)). For instance on Linux you would use:
 
 ```bash
-wget https://data.qiime2.org/distro/core/qiime2-2020.2-py36-linux-conda.yml
-conda env create -n qiime2-2020.2 --file qiime2-2020.2-py36-linux-conda.yml
+wget https://data.qiime2.org/distro/core/qiime2-2021.2-py36-linux-conda.yml
+conda env create -n qiime2-2021.2 --file qiime2-2021.2-py36-linux-conda.yml
 # OPTIONAL CLEANUP
-rm qiime2-2020.8-py36-linux-conda.yml
+rm qiime2-2021.2-py36-linux-conda.yml
 ```
 
-Once installed, activate your Qiime 2 environment:
+Once installed, we also download the environment for q2-micom and install it into the
+QIIME 2 environment we just created.
 
 ```bash
-conda activate qiime2-2020.8
+wget https://raw.githubusercontent.com/micom-dev/q2-micom/master/q2-micom.yml
+conda env update -n qiime2-2021.2 -f q2-micom.yml
+# OPTIONAL CLEANUP
+rm q2-micom.yml
 ```
 
-Install dependencies for `q2-micom` from conda:
+Finally, you activate your environment.
+
 
 ```bash
-conda install -c conda-forge -c \
-    bioconda cobra jinja2 loguru tqdm
+conda activate qiime2-2021.2
 ```
 
-Install `q2-micom` (this will install `MICOM` as well).
 
-```bash
-pip install q2-micom
-```
+### Install a QP solver (optional)
 
-### Install a QP solver
-
-**CPLEX**
-
-After registering and downloading the CPLEX studio for your OS unpack it (by running the provided installer) to a directory of your choice (we will assume it's called `ibm`).
-
-Now install the CPLEX python package:
-
-```bash
-pip install ibm/cplex/python/3.6/x86-64_linux
-```
-
-Substitute `x86-64_linux` with the folder corresponding to your system (there will only be one subfolder in that directory).
-
-**Gurobi**
-
-Gurobi can be installed with conda.
-
-```bash
-conda install -c gurobi gurobi
-```
-
-You will now have to register the installation using your license key.
-
-```bash
-grbgetkey YOUR-LICENSE-KEY
-```
+`q2-micom` comes with a QP solver. You may install alternative solvers if for an additional speed-up.
+See the [README](https://github.com/micom-dev/q2-micom#install-a-qp-solver) for instructions.
 
 ### Finish your installation
 
 If you installed `q2-micom` in an already existing Qiime 2 environment, update the plugin cache:
 
 ```bash
-conda activate qiime2-2020.8  # or whatever you called your environment
+conda activate qiime2-2021.2  # or whatever you called your environment
 qiime dev refresh-cache
 ```
 
@@ -128,8 +104,8 @@ For the purposes of this tutorial, we will provide pre-built artifacts for a 16S
 
 **Downloads**:
 
-- [abundance table](crc_table.qza)
-- [taxonomy](crc_taxa.qza)
+- [abundance table](https://github.com/micom-dev/q2-micom/raw/master/docs/crc_table.qza)
+- [taxonomy](https://github.com/micom-dev/q2-micom/raw/master/docs/crc_taxa.qza)
 
 Using our pre-baked model database, we can now build our community models with the `qiime micom build` command. Note that most commands in `q2-micom` take a `--p-threads` parameter that specifies how many CPU cores to use. Using multiple threads will speed things up considerably. Additionally, using the `--verbose` flag will usually show a progress bar. Finally, low abundance taxa are usually dropped from the models to improve computational efficiency. This abundance cutoff is controlled by the `--p-cutoff` parameter, which is set to 0.01% by default. Okay, let's build our community models:
 
@@ -258,7 +234,7 @@ A common question is whether there is a conection between a host phenotype of in
 
 Overall production fluxes are the default set of fluxes used by q2-micom. MICOM also allows for the analysis of minimal import fluxes shown in `qiime micom exchanges-per-sample`, but these are often not very informative.
 
-To predict a phenotype from fluxes we will use the `fit-phenotype` command. Here you will need a Qiime 2 [Metadata file](https://docs.qiime2.org/2019.10/tutorials/metadata/) that specifies your phenotype of interest. Our metadata is pretty simple and just assigns a healthy or cancer status to each sample:
+To predict a phenotype from fluxes we will use the `fit-phenotype` command. Here you will need a Qiime 2 [Metadata file](https://docs.qiime2.org/2021.2/tutorials/metadata/) that specifies your phenotype of interest. Our metadata is pretty simple and just assigns a healthy or cancer status to each sample:
 
 ```
 id	status
@@ -289,7 +265,7 @@ qiime micom fit-phenotype --i-results growth.qza \
                           --o-visualization fit.qzv
 ```
 
-We could define a continous phenotype with `--p-variable-type continuous` or use for minimal import fluxes with `--p-flux-type import`.
+We could define a continuous phenotype with `--p-variable-type continuous` or use for minimal import fluxes with `--p-flux-type import`.
 
 The visualization now shows which production fluxes are predictive of the phenotype.
 
@@ -306,6 +282,34 @@ Obviously, we would still have to validate these very speculative hypotheses, bu
 
 ## Bonus
 
+### Filtering built community models or simulation results
+
+You can create q2-micom artifacts containing only a subset of samples using the `filter-models` and `filter-results` actions. For instance, if we wanted
+to create model and results artifacts that contain only the cancer samples we could do the following:
+
+```bash
+qiime micom filter-models --i-models models.qza \
+                          --m-metadata-file metadata.tsv \
+                          --p-query "status == 'colorectal cancer'" \
+                          --o-filtered-models cancer_built_models.qza
+```
+
+and similarly for the results:
+
+```bash
+qiime micom filter-results --i-results growth.qza \
+                           --m-metadata-file metadata.tsv \
+                           --p-query "status == 'colorectal cancer'" \
+                           --o-filtered-results cancer_results.qza
+```
+
+Note that you will need a metadata table either (1) only includes the samples of interest or (2) can be
+queried with a [pandas query](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html)
+to select only the samples of interest. You can also add the parameter `--p-exclude` which will
+return an artifact covering all samples *except* the ones selected by the metadata and query.
+
+Those can now be passed on to the visualization steps to generate visualizations for only the cancer samples.
+
 ### Identifying AGORA metabolites
 
 Many of the metabolite IDs returned by MICOM may be hard to identify. As long as you use the AGORA models you can look them up at https://www.vmh.life/#microbes/metabolites/ after stripping away the final `_m` or `(e)` which denotes the intracellular compartment. For instance to identify the metabolite `nmn_m` or `nmn(e)` use https://www.vmh.life/#microbes/metabolites/nmn.
@@ -315,7 +319,7 @@ Many of the metabolite IDs returned by MICOM may be hard to identify. As long as
 Maybe your sample is not well represented by the AGORA models, or you may have better metabolic reconstructions for the taxa in your samples. In that case you may want to build your own database for `q2-micom`. This is pretty simple -- you will need 2 things:
 
 1. A directory that contains your metabolic models in [SBML format](http://sbml.org/Main_Page) with filenames of the form `{ID}.xml`.
-2. A Qiime 2 Metadata file annotating each model with at least an id, the file path, and the full taxonomy (kingdom | phylum | class | order | family | species | strain (optional)).
+2. A Qiime 2 Metadata file annotating each model with at least an id, the file path, and the full taxonomy (kingdom, phylum, class, order, family, genus, species, strain (optional)).
 
 With these two things you can use `qiime micom db` to build your database, summarized to any given taxonomic rank. For instance the AGORA v1.03 artifact was built by downloading the SBML models from https://www.vmh.life/#downloadview and using an adapted metadata file ([agora.tsv](agora.tsv)). The genus database was then built using the following command.
 

@@ -5,12 +5,14 @@ import pandas as pd
 from qiime2.plugin import SemanticType
 import qiime2.plugin.model as model
 
-REQ_FIELDS = pd.Series(["file", "kingdom", "phylum", "class", "order",
-                        "family", "genus", "species"])
+REQ_FIELDS = pd.Series(
+    ["file", "kingdom", "phylum", "class", "order", "family", "genus", "species"]
+)
 
 
 class SBMLFormat(model.TextFileFormat):
     """Represents an SBML file."""
+
     def _check_n_lines(self, n):
         """Crudely check if the file is SBML."""
         with open(str(self), mode="r") as xml_file:
@@ -18,12 +20,13 @@ class SBMLFormat(model.TextFileFormat):
         return ".xml" in str(self).lower() and "<sbml" in lines.lower()
 
     def _validate_(self, level):
-        record_map = {'min': 5, 'max': 100}
+        record_map = {"min": 5, "max": 100}
         return self._check_n_lines(record_map[level])
 
 
 class JSONFormat(model.TextFileFormat):
     """Represents a JSON file."""
+
     def _check_n_lines(self, n):
         """Crudely check if the file is SBML."""
         with open(str(self), mode="r") as xml_file:
@@ -31,7 +34,7 @@ class JSONFormat(model.TextFileFormat):
         return ".xml" in str(self).lower() and "metabolites" in lines.lower()
 
     def _validate_(self, level):
-        record_map = {'min': 5, 'max': 100}
+        record_map = {"min": 5, "max": 100}
         return self._check_n_lines(record_map[level])
 
 
@@ -63,6 +66,7 @@ class JSONDirectory(model.DirectoryFormat):
 
 class CommunityModelFormat(model.BinaryFileFormat):
     """Represents a pickled community model."""
+
     def _validate_(self, level):
         return str(self).lower().endswith(".pickle")
 
@@ -77,8 +81,7 @@ class CommunityModelManifest(model.TextFileFormat):
 
 class CommunityModelDirectory(model.DirectoryFormat):
     manifest = model.File("manifest.csv", format=CommunityModelManifest)
-    model_files = model.FileCollection(r".+\.pickle",
-                                       format=CommunityModelFormat)
+    model_files = model.FileCollection(r".+\.pickle", format=CommunityModelFormat)
 
     @model_files.set_path_maker
     def model_path_maker(self, model_id):
@@ -88,8 +91,15 @@ class CommunityModelDirectory(model.DirectoryFormat):
 class GrowthRates(model.TextFileFormat):
     def _validate_(self, level):
         header = open(str(self), mode="r").readline().split(",")
-        return header == ["sample_id", "taxon", "reactions", "metabolites",
-                          "abundance", "tradeoff", "growth_rate"]
+        return header == [
+            "sample_id",
+            "taxon",
+            "reactions",
+            "metabolites",
+            "abundance",
+            "tradeoff",
+            "growth_rate",
+        ]
 
 
 class Fluxes(model.TextFileFormat):
@@ -105,8 +115,7 @@ class Annotations(model.TextFileFormat):
 
 class MicomResultsDirectory(model.DirectoryFormat):
     growth_rates = model.File("growth_rates.csv", format=GrowthRates)
-    exchange_fluxes = model.File("exchange_fluxes.csv",
-                                 format=Fluxes)
+    exchange_fluxes = model.File("exchange_fluxes.csv", format=Fluxes)
     annotations = model.File("annotations.csv", format=Annotations)
 
 
@@ -117,25 +126,23 @@ class MicomMediumFile(model.TextFileFormat):
 
 
 MicomMediumDirectory = model.SingleFileDirectoryFormat(
-    "MicomMediumDirectory", "medium.csv", MicomMediumFile)
+    "MicomMediumDirectory", "medium.csv", MicomMediumFile
+)
 
 TradeoffResultsDirectory = model.SingleFileDirectoryFormat(
-    "TradeoffResultsDirectory", "tradeoff.csv", GrowthRates)
+    "TradeoffResultsDirectory", "tradeoff.csv", GrowthRates
+)
 
 SBML = SemanticType("SBML")
 Pickle = SemanticType("Pickle")
 JSON = SemanticType("JSON")
 
 MetabolicModels = SemanticType(
-    "MetabolicModels",
-    field_names="format",
-    field_members={"format": (SBML, JSON)}
+    "MetabolicModels", field_names="format", field_members={"format": (SBML, JSON)}
 )
 
 CommunityModels = SemanticType(
-    "CommunityModels",
-    field_names="format",
-    field_members={"format": (Pickle,)}
+    "CommunityModels", field_names="format", field_members={"format": (Pickle,)}
 )
 
 MicomResults = SemanticType("MicomResults")
@@ -144,10 +151,8 @@ TradeoffResults = SemanticType("TradeoffResults")
 Global = SemanticType("Global")
 PerSample = SemanticType("PerSample")
 MicomMedium = SemanticType(
-    "MicomMedium",
-    field_names="type",
-    field_members={"type": (Global, PerSample)})
+    "MicomMedium", field_names="type", field_members={"type": (Global, PerSample)}
+)
 
 
-MicomResultsData = namedtuple(
-    "MicomResultsData", ["growth_rates", "exchange_fluxes"])
+MicomResultsData = namedtuple("MicomResultsData", ["growth_rates", "exchange_fluxes"])
