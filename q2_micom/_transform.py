@@ -95,6 +95,8 @@ def _14(rd: ft.MicomResultsDirectory) -> GrowthResults:
         rd.exchange_fluxes.view(pd.DataFrame),
         rd.annotations.view(pd.DataFrame)
     )
+    gr.growth_rates.sample_id = gr.growth_rates.sample_id.astype("str").str.strip()
+    gr.exchanges.sample_id = gr.exchanges.sample_id.astype("str").str.strip()
     return gr
 
 
