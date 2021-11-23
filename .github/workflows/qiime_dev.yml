@@ -25,6 +25,9 @@ jobs:
       uses: conda-incubator/setup-miniconda@v2
       with:
        python-version: 3.8
+       mamba-version: "*"
+       channels: conda-forge,defaults
+       channel-priority: true
     - shell: bash -l {0}
       run: |
         conda info
@@ -33,18 +36,18 @@ jobs:
       shell: bash -l {0}
       run: |
         wget https://raw.githubusercontent.com/qiime2/environment-files/master/latest/staging/qiime2-latest-py38-${{matrix.os.short}}-conda.yml
-        conda env create -q -n qiime2-dev --file qiime2-latest-py38-${{matrix.os.short}}-conda.yml
+        mamba env create -q -n qiime2-dev --file qiime2-latest-py38-${{matrix.os.short}}-conda.yml
         rm qiime2-latest-py38-${{matrix.os.short}}-conda.yml
     - name: Install q2-micom
       shell: bash -l {0}
       run: |
         conda activate qiime2-dev
-        conda env update -q -n qiime2-dev -f q2-micom.yml
+        mamba env update -q -n qiime2-dev -f q2-micom.yml
     - name: Install CPLEX
       shell: bash -l {0}
       run: |
         conda activate qiime2-dev
-        conda install -yq -c ibmdecisionoptimization cplex
+        mamba install -yq -c ibmdecisionoptimization cplex
     - name: Lint with flake8
       shell: bash -l {0}
       run: |

@@ -57,7 +57,7 @@ jobs:
       shell: bash -l {0}
       run: |
         conda activate qiime2-dev
-        conda install -yq -c ibmdecisionoptimization cplex
+        mamba install -yq -c ibmdecisionoptimization cplex
     - name: Lint with flake8
       shell: bash -l {0}
       run: |
