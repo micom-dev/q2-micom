@@ -36,6 +36,8 @@ jobs:
       with:
        python-version: 3.8
        mamba-version: "*"
+       channels: conda-forge,defaults
+       channel-priority: true
     - shell: bash -l {0}
       run: |
         conda info
