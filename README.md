@@ -1,4 +1,4 @@
-<img src="https://github.com/micom-dev/q2-micom/raw/master/docs/assets/logo.png" width="75%">
+<img src="https://github.com/micom-dev/q2-micom/raw/main/docs/assets/logo.png" width="75%">
 
 [![Test and deploy](https://github.com/micom-dev/q2-micom/actions/workflows/test_package.yml/badge.svg)](https://github.com/micom-dev/q2-micom/actions/workflows/test_package.yml)
 [![codecov](https://codecov.io/gh/micom-dev/q2-micom/branch/master/graph/badge.svg)](https://codecov.io/gh/micom-dev/q2-micom)
