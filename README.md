@@ -1,7 +1,7 @@
 <img src="https://github.com/micom-dev/q2-micom/raw/main/docs/assets/logo.png" width="75%">
 
 [![Test and deploy](https://github.com/micom-dev/q2-micom/actions/workflows/test_package.yml/badge.svg)](https://github.com/micom-dev/q2-micom/actions/workflows/test_package.yml)
-[![codecov](https://codecov.io/gh/micom-dev/q2-micom/branch/master/graph/badge.svg)](https://codecov.io/gh/micom-dev/q2-micom)
+[![codecov](https://codecov.io/gh/micom-dev/q2-micom/branch/main/graph/badge.svg)](https://codecov.io/gh/micom-dev/q2-micom)
 [![PyPI version](https://badge.fury.io/py/q2-micom.svg)](https://badge.fury.io/py/q2-micom)
 
 
@@ -17,7 +17,7 @@ otherwise. Let's assume that environment was called `qiime2-2021.8` for all furt
 This will be the same step for any supported QIIME 2 version or operating systems.
 
 ```bash
-wget https://raw.githubusercontent.com/micom-dev/q2-micom/master/q2-micom.yml
+wget https://raw.githubusercontent.com/micom-dev/q2-micom/main/q2-micom.yml
 conda env update -n qiime2-2021.8 -f q2-micom.yml
 # OPTIONAL CLEANUP
 rm q2-micom.yml
@@ -88,7 +88,7 @@ You are now ready to run `q2-micom`!
 
 Here is a graphical overview of a `q2-micom` analysis.
 
-<img src="https://github.com/micom-dev/q2-micom/raw/master/docs/assets/overview.png" width="100%">
+<img src="https://github.com/micom-dev/q2-micom/raw/main/docs/assets/overview.png" width="100%">
 
 The best way to get started is to work through the [community tutorial](https://micom-dev.github.io/q2-micom).
 
