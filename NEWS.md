@@ -5,6 +5,10 @@ This includes a list of major changes for each minor version starting from 0.10.
 For information on how to use `q2-micom` please refer to
 [the tutorial](https://micom-dev.github.io/q2-micom).
 
+#### 0.12.2
+
+Add some more citations. Now tests against newer Qiime2 versions.
+
 #### 0.12.1
 
 Now always cast sample IDs to strings avoiding issue with numeric IDs.
@@ -25,10 +29,6 @@ In this case you can pick the previous strategy by using `--p-strategy="minimal 
 
 Fixed a bug in `build` when using the strict option where it would not use the correct
 taxonomic rank to merge.
-
-#### 0.11.4
-
-Add some more citations. Now tests against newer Qiime2 versions.
 
 #### 0.11.3
 
