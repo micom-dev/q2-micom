@@ -35,21 +35,15 @@ MICOM models all biochemical reactions in all taxa, which means that the optimiz
 
 ### Setup Qiime 2
 
-You will need a Qiime 2 environment with version `2021.2` or higher ([how to install Qiime 2](https://docs.qiime2.org/2021.2/install/native/#install-qiime-2-within-a-conda-environment)). For instance on Linux you would use:
-
-```bash
-wget https://data.qiime2.org/distro/core/qiime2-2021.2-py36-linux-conda.yml
-conda env create -n qiime2-2021.2 --file qiime2-2021.2-py36-linux-conda.yml
-# OPTIONAL CLEANUP
-rm qiime2-2021.2-py36-linux-conda.yml
-```
+You will need a Qiime 2 environment with version `2021.2` or higher ([how to install Qiime 2](https://docs.qiime2.org/2022.11/install/native/#install-qiime-2-within-a-conda-environment)). For instance on Linux you would use:
 
 Once installed, we also download the environment for q2-micom and install it into the
-QIIME 2 environment we just created.
+QIIME 2 environment we just created. Substitute `qiime2-2022.11` with the name of your Qiime2 environment throughout
+this tutorial.
 
 ```bash
 wget https://raw.githubusercontent.com/micom-dev/q2-micom/main/q2-micom.yml
-conda env update -n qiime2-2021.2 -f q2-micom.yml
+conda env update -n qiime2-2022.11 -f q2-micom.yml
 # OPTIONAL CLEANUP
 rm q2-micom.yml
 ```
@@ -58,7 +52,7 @@ Finally, you activate your environment.
 
 
 ```bash
-conda activate qiime2-2021.2
+conda activate qiime2-2022.11
 ```
 
 
@@ -72,7 +66,7 @@ See the [README](https://github.com/micom-dev/q2-micom#install-a-qp-solver) for 
 If you installed `q2-micom` in an already existing Qiime 2 environment, update the plugin cache:
 
 ```bash
-conda activate qiime2-2021.2  # or whatever you called your environment
+conda activate qiime2-2022.11  # or whatever you called your environment
 qiime dev refresh-cache
 ```
 
