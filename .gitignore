@@ -138,3 +138,6 @@ q2_micom/tests/data/crc*
 communities.qza
 docs/agora*_*.qza
 docs/models.qza
+
+# Qiime2 files
+qiime2-*.yml

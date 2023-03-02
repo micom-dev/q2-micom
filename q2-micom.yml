@@ -7,5 +7,7 @@ dependencies:
   - jinja2
   - python-symengine>=0.6.1
   - pip
+  - scikit-learn>=1.2.1
+  - osqp>=0.6.2
   - pip:
     - q2-micom

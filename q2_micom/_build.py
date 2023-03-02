@@ -38,13 +38,11 @@ def build_spec(
         ranks = RANKS[0:(rank_index + 1)]
     else:
         ranks = [rank]
-    model_files["file"] = model_files[rank].apply(
-        lambda i: str(models.json_files.path_maker(model_id=i))
-    )
 
     tax = build_from_qiime(abundance, taxonomy, collapse_on=ranks)
     micom_taxonomy = pd.merge(model_files, tax, on=ranks)
     micom_taxonomy = micom_taxonomy[micom_taxonomy.relative > cutoff]
+    del micom_taxonomy["file"]
     stats = micom_taxonomy.sample_id.value_counts().describe()
     print("Merged with the database using ranks: %s" % ", ".join(ranks))
     print(
