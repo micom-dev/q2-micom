@@ -10,7 +10,7 @@ def grow(
     medium: pd.DataFrame,
     tradeoff: float = 0.5,
     threads: int = 1,
-    strategy: str = "pFBA"
+    strategy: str = "pFBA",
 ) -> mw.core.GrowthResults:
     """Simulate growth for a set of community models."""
     if strategy == "minimal uptake":
@@ -19,7 +19,8 @@ def grow(
         "blub.pickle", ""
     )
     manifest = models.manifest.view(pd.DataFrame)
-    results = mw.grow(manifest, model_folder, medium, tradeoff, threads,
-                      strategy=strategy)
+    results = mw.grow(
+        manifest, model_folder, medium, tradeoff, threads, strategy=strategy
+    )
 
     return results

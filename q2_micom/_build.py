@@ -35,7 +35,7 @@ def build_spec(
     rank = model_files.summary_rank[0]
     rank_index = RANKS.index(rank)
     if strict:
-        ranks = RANKS[0:(rank_index + 1)]
+        ranks = RANKS[0 : (rank_index + 1)]
     else:
         ranks = [rank]
 
@@ -59,7 +59,7 @@ def build(
     threads: int = 1,
     cutoff: float = 0.0001,
     strict: bool = False,
-    solver: str = "auto"
+    solver: str = "auto",
 ) -> CommunityModelDirectory:
     """Build the community models."""
     if solver == "auto":

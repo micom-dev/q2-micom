@@ -242,7 +242,6 @@ plugin.methods.register_function(
             "`pFBA` uses parsimonious Flux Balance Analysis and thus will choose "
             "the fluxes with the lowest enzyme requirement for each taxon. "
             "`none` will return an arbitrary solution from the optimal flux space."
-
         ),
         "threads": "The number of threads to use when simulating.",
     },

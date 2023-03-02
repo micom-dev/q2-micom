@@ -25,7 +25,7 @@ jobs:
         qiime:
             - version: "2022.11"
               python: 38
-            - version: "2022.8"
+            - version: "2022.2"
               python: 38
     runs-on: "${{matrix.os.image}}"
 
