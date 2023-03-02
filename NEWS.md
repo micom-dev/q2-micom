@@ -26,6 +26,10 @@ In this case you can pick the previous strategy by using `--p-strategy="minimal 
 Fixed a bug in `build` when using the strict option where it would not use the correct
 taxonomic rank to merge.
 
+#### 0.11.4
+
+Add some more citations. Now tests against newer Qiime2 versions.
+
 #### 0.11.3
 
 Fixed a bug in the filter functions where the metadata was not correctly transformed
