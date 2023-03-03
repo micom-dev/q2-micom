@@ -15,7 +15,7 @@ from q2_micom._viz import (
     fit_phenotype,
 )
 
-__version__ = "0.12.2"
+__version__ = "0.12.3"
 
 
 def read_results(path):
