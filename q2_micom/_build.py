@@ -45,6 +45,8 @@ def build_spec(
     del micom_taxonomy["file"]
     stats = micom_taxonomy.sample_id.value_counts().describe()
     print("Merged with the database using ranks: %s" % ", ".join(ranks))
+    if stats.count == 1.0:
+        stats["std"] = 0.0
     print(
         "Each community model contains %d-%d taxa (average %d+-%d)."
         % (stats["min"], stats["max"], round(stats["mean"]), round(stats["std"]))
