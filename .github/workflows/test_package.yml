@@ -31,33 +31,48 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Setup conda
+    - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v2
       with:
-       python-version: 3.8
-       mamba-version: "*"
-       channels: conda-forge,defaults
-       channel-priority: true
+        miniforge-variant: Mambaforge
+        miniforge-version: latest
+        use-mamba: true
     - shell: bash -l {0}
       run: |
         conda info
         conda list
-    - name: Install Qiime 2
+    - name: Download Qiime2 env file
       shell: bash -l {0}
       run: |
         wget https://raw.githubusercontent.com/qiime2/environment-files/master/${{matrix.qiime.version}}/release/qiime2-${{matrix.qiime.version}}-py${{matrix.qiime.python}}-${{matrix.os.short}}-conda.yml
-        mamba env create -n qiime2-dev --file qiime2-${{matrix.qiime.version}}-py${{matrix.qiime.python}}-${{matrix.os.short}}-conda.yml
-        rm qiime2-${{matrix.qiime.version}}-py${{matrix.qiime.python}}-${{matrix.os.short}}-conda.yml
-    - name: Install q2-micom
+    - name: Cache Conda env
+      uses: actions/cache@v2
+      with:
+        path: ${{ env.CONDA }}/envs
+        key:
+          conda-${{ runner.os }}--${{ runner.arch }}--${{
+          hashFiles('qiime2-${{matrix.qiime.version}}-py${{matrix.qiime.python}}-${{matrix.os.short}}-conda.yml') }}-${{ env.CACHE_NUMBER
+          }}
+      env:
+        # Increase this value to reset cache if etc/example-environment.yml has not changed
+        CACHE_NUMBER: 0
+      id: cache
+    - name: Install Qiime 2
       shell: bash -l {0}
       run: |
-        conda activate qiime2-dev
-        mamba env update -n qiime2-dev -f q2-micom.yml
+        mamba env create -n qiime2-dev --file qiime2-${{matrix.qiime.version}}-py${{matrix.qiime.python}}-${{matrix.os.short}}-conda.yml
+      if: steps.cache.outputs.cache-hit != 'true'
     - name: Install CPLEX
       shell: bash -l {0}
       run: |
         conda activate qiime2-dev
         mamba install -v -c ibmdecisionoptimization cplex
+      if: steps.cache.outputs.cache-hit != 'true'
+    - name: Install q2-micom
+      shell: bash -l {0}
+      run: |
+        conda activate qiime2-dev
+        mamba env update -n qiime2-dev -f q2-micom.yml
     - name: Lint with flake8
       shell: bash -l {0}
       run: |
