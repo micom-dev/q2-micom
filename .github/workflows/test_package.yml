@@ -45,14 +45,12 @@ jobs:
       shell: bash -l {0}
       run: |
         wget https://raw.githubusercontent.com/qiime2/environment-files/master/${{matrix.qiime.version}}/release/qiime2-${{matrix.qiime.version}}-py${{matrix.qiime.python}}-${{matrix.os.short}}-conda.yml
+        cp https://raw.githubusercontent.com/qiime2/environment-files/master/${{matrix.qiime.version}}/release/qiime2-${{matrix.qiime.version}}-py${{matrix.qiime.python}}-${{matrix.os.short}}-conda.yml env.yml
     - name: Cache Conda env
       uses: actions/cache@v2
       with:
         path: ${{ env.CONDA }}/envs
-        key:
-          conda-${{ runner.os }}--${{ runner.arch }}--${{
-          hashFiles("qiime2-${{matrix.qiime.version}}-py${{matrix.qiime.python}}-${{matrix.os.short}}-conda.yml") }}-${{ env.CACHE_NUMBER
-          }}
+        key: conda-${{ runner.os }}--${{ runner.arch }}--${{hashFiles('env.yml') }}-${{ env.CACHE_NUMBER}}
       env:
         # Increase this value to reset cache if etc/example-environment.yml has not changed
         CACHE_NUMBER: 0
@@ -60,7 +58,7 @@ jobs:
     - name: Install Qiime 2
       shell: bash -l {0}
       run: |
-        mamba env create -n qiime2-dev --file qiime2-${{matrix.qiime.version}}-py${{matrix.qiime.python}}-${{matrix.os.short}}-conda.yml
+        mamba env create -n qiime2-dev --file env.yml
       if: steps.cache.outputs.cache-hit != 'true'
     - name: Install CPLEX
       shell: bash -l {0}
