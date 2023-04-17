@@ -50,13 +50,11 @@ jobs:
       shell: bash -l {0}
       run: |
         mamba env create -n qiime2-dev --file env.yml
-      if: steps.cache.outputs.cache-hit != 'true'
     - name: Install CPLEX
       shell: bash -l {0}
       run: |
         conda activate qiime2-dev
         mamba install -v -c ibmdecisionoptimization cplex
-      if: steps.cache.outputs.cache-hit != 'true'
     - name: Install q2-micom
       shell: bash -l {0}
       run: |
