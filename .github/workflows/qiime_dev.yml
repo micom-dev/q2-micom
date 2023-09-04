@@ -20,7 +20,7 @@ jobs:
     runs-on: "${{matrix.os.image}}"
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Setup conda
       uses: conda-incubator/setup-miniconda@v2
       with:
