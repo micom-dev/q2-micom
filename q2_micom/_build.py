@@ -3,7 +3,7 @@
 import biom
 import os
 import micom.workflows as mw
-from micom.taxonomy import build_from_qiime
+from micom.taxonomy import build_from_qiime, rank_prefixes
 import pandas as pd
 from q2_micom._formats_and_types import (
     JSONDirectory,
@@ -39,7 +39,10 @@ def build_spec(
     else:
         ranks = [rank]
 
-    tax = build_from_qiime(abundance, taxonomy, collapse_on=ranks)
+    no_rank_prefixes = rank_prefixes(model_files).isna().all()
+    tax = build_from_qiime(
+        abundance, taxonomy, collapse_on=ranks, trim_rank_prefix=no_rank_prefixes
+    )
     micom_taxonomy = pd.merge(model_files, tax, on=ranks)
     micom_taxonomy = micom_taxonomy[micom_taxonomy.relative > cutoff]
     del micom_taxonomy["file"]
