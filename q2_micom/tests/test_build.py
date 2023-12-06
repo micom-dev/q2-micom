@@ -29,7 +29,7 @@ def test_build():
 
 
 def test_solvers():
-    for solver in ["cplex", "osqp", "auto"]:
+    for solver in ["cplex", "hybrid", "auto"]:
         d = q2m.build(
             table,
             taxa,
