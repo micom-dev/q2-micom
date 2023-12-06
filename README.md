@@ -9,8 +9,8 @@ A QIIME 2 plugin for MICOM.
 
 ## Installation
 
-You will need an existing QIIME 2 environment. Follow the instructions on ([how to install QIIME 2](https://docs.qiime2.org/2023.9/install/native/#install-qiime-2-within-a-conda-environment))
-otherwise. Let's assume that environment was called `qiime2-2023.9` for all further steps.
+You will need an existing QIIME 2 environment. Follow the instructions on ([how to install QIIME 2](https://docs.qiime2.org/2023.9/install/native/#install-qiime-2-within-a-conda-environment)) otherwise. `q2-micom` is compatible with all QIIME 2 distributions.
+Let's assume that environment was called `qiime2-2023.9` for all further steps.
 
 ### Add q2-micom to the QIIME 2 environment
 
@@ -21,7 +21,7 @@ This will be the same step for any supported QIIME 2 version but will vary depen
 
 ```bash
 wget https://raw.githubusercontent.com/micom-dev/q2-micom/main/q2-micom-linux.yml
-conda env update -n qiime2-2021.8 -f q2-micom-linux.yml
+conda env update -n qiime2-2023.8 -f q2-micom-linux.yml
 # OPTIONAL CLEANUP
 rm q2-micom-*.yml
 ```
@@ -30,7 +30,7 @@ rm q2-micom-*.yml
 
 ```bash
 wget https://raw.githubusercontent.com/micom-dev/q2-micom/main/q2-micom-osx.yml
-conda env update -n qiime2-2021.8 -f q2-micom-osx.yml
+conda env update -n qiime2-2023.9 -f q2-micom-osx.yml
 # OPTIONAL CLEANUP
 rm q2-micom-*.yml
 ```
