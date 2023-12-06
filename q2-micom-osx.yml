@@ -10,3 +10,4 @@ dependencies:
   - osqp>=0.6.2
   - pip:
     - q2-micom
+    - https://github.com/micom-dev/micom/raw/main/.github/wheels/highspy-1.5.3-cp38-cp38-macosx_10_9_x86_64.whl

@@ -5,6 +5,15 @@ This includes a list of major changes for each minor version starting from 0.10.
 For information on how to use `q2-micom` please refer to
 [the tutorial](https://micom-dev.github.io/q2-micom).
 
+### 0.13.0
+
+Fixes issues with the new model databases due to automatic stripping of taxonomic rank
+prefixes.
+
+Switches the default solver to the new hybrid solver.
+
+Updated the tutorial.
+
 #### 0.12.6
 
 Fixes the CI, no changes to the actual codebase.
