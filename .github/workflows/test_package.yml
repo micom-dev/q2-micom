@@ -23,9 +23,9 @@ jobs:
             - image: "macos-latest"
               short: "osx"
         qiime:
-            - version: "2023.7"
+            - version: "2023.9"
               python: 38
-            - version: "2023.5"
+            - version: "2023.7"
               python: 38
     runs-on: "${{matrix.os.image}}"
 

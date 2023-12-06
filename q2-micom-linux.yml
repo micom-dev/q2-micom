@@ -10,4 +10,4 @@ dependencies:
   - osqp>=0.6.2
   - pip:
     - q2-micom
-    - highspy>=1.6.0
+    - highspy>=1.5.3
