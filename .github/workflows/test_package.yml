@@ -24,9 +24,11 @@ jobs:
               short: "osx"
         qiime:
             - version: "2023.9"
+              dist: "tiny-"
               python: 38
             - version: "2023.7"
               python: 38
+              dist: ""
     runs-on: "${{matrix.os.image}}"
 
     steps:
@@ -44,7 +46,7 @@ jobs:
     - name: Download Qiime2 env file
       shell: bash -l {0}
       run: |
-        wget https://raw.githubusercontent.com/qiime2/environment-files/master/${{matrix.qiime.version}}/release/qiime2-${{matrix.qiime.version}}-py${{matrix.qiime.python}}-${{matrix.os.short}}-conda.yml
+        wget https://data.qiime2.org/distro/core/qiime2-${{matrix.qiime.dist}}${{matrix.qiime.version}}-py${{matrix.qiime.python}}-${{matrix.os.short}}-conda.yml
         cp qiime2-${{matrix.qiime.version}}-py${{matrix.qiime.python}}-${{matrix.os.short}}-conda.yml env.yml
     - name: Install Qiime 2
       shell: bash -l {0}
