@@ -10,7 +10,7 @@ def grow(
     medium: pd.DataFrame,
     tradeoff: float = 0.5,
     threads: int = 1,
-    strategy: str = "pFBA",
+    strategy: str = "minimal uptake",
 ) -> mw.core.GrowthResults:
     """Simulate growth for a set of community models."""
     if strategy == "minimal uptake":

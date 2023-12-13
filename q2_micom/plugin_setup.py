@@ -136,7 +136,7 @@ plugin.methods.register_function(
         "threads": Int % Range(1, None),
         "cutoff": Float % Range(0.0, 1.0),
         "strict": Bool,
-        "solver": Str % Choices("auto", "cplex", "osqp", "gurobi"),
+        "solver": Str % Choices("auto", "cplex", "hybrid", "gurobi"),
     },
     outputs=[("community_models", CommunityModels[Pickle])],
     input_descriptions={
