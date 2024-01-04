@@ -110,6 +110,6 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         artifacts: 'dist/*'
         body: |
-          Please see https://github.com/micom-dev/q2-micom/blob/master/NEWS.md for the full release notes.
+          Please see https://github.com/micom-dev/q2-micom/blob/main/NEWS.md for the full release notes.
         draft: false
         prerelease: false
