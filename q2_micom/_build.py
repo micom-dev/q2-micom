@@ -46,13 +46,29 @@ def build_spec(
     micom_taxonomy = pd.merge(model_files, tax, on=ranks)
     micom_taxonomy = micom_taxonomy[micom_taxonomy.relative > cutoff]
     del micom_taxonomy["file"]
-    stats = micom_taxonomy.sample_id.value_counts().describe()
+    n_stats = micom_taxonomy.sample_id.value_counts().describe()
+    ab_stats = micom_taxonomy.groupby("sample_id").relative.sum().describe() * 100.0
     print("Merged with the database using ranks: %s" % ", ".join(ranks))
-    if stats.count == 1.0:
-        stats["std"] = 0.0
+    if n_stats.count() == 1:
+        n_stats["std"] = 0.0
+        ab_stats["std"] = 0.0
     print(
         "Each community model contains %d-%d taxa (average %d+-%d)."
-        % (stats["min"], stats["max"], round(stats["mean"]), round(stats["std"]))
+        % (
+            n_stats["min"],
+            n_stats["max"],
+            round(n_stats["mean"]),
+            round(n_stats["std"]),
+        )
+    )
+    print(
+        "Community models cover %.2f%%-%.2f%% of the total abundance (average %.2f%%+-%.2f%%)."
+        % (
+            ab_stats["min"],
+            ab_stats["max"],
+            round(ab_stats["mean"]),
+            round(ab_stats["std"]),
+        )
     )
     return micom_taxonomy
 
