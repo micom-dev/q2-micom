@@ -27,7 +27,6 @@ def build_spec(
     abundance: biom.Table,
     taxonomy: pd.Series,
     models: JSONDirectory,
-    cutoff: float,
     strict: bool,
 ) -> pd.DataFrame:
     """Build the specification for the community models."""
@@ -43,12 +42,38 @@ def build_spec(
     tax = build_from_qiime(
         abundance, taxonomy, collapse_on=ranks, trim_rank_prefix=no_rank_prefixes
     )
-    micom_taxonomy = pd.merge(model_files, tax, on=ranks)
-    micom_taxonomy = micom_taxonomy[micom_taxonomy.relative > cutoff]
-    del micom_taxonomy["file"]
-    n_stats = micom_taxonomy.sample_id.value_counts().describe()
-    ab_stats = micom_taxonomy.groupby("sample_id").relative.sum().describe() * 100.0
-    print("Merged with the database using ranks: %s" % ", ".join(ranks))
+
+    print("Merging with the database using ranks: %s" % ", ".join(ranks))
+
+    return tax
+
+
+def build(
+    abundance: biom.Table,
+    taxonomy: pd.Series,
+    models: JSONDirectory,
+    threads: int = 1,
+    cutoff: float = 0.0001,
+    strict: bool = False,
+    solver: str = "auto",
+) -> CommunityModelDirectory:
+    """Build the community models."""
+    if solver == "auto":
+        solver = None
+    tax = build_spec(abundance, taxonomy, models, strict)
+    out = CommunityModelDirectory()
+    out_folder = str(out.model_files.path_maker(model_id="test")).replace(
+        "test.pickle", ""
+    )
+    model_folder = str(models.json_files.path_maker(model_id="test")).replace(
+        "test.json", ""
+    )
+    manifest = mw.build(tax, model_folder, out_folder, cutoff, threads, solver)
+    os.rename(os.path.join(out_folder, "manifest.csv"), out.manifest.path_maker())
+
+    # Return some some info inverbose mode
+    n_stats = manifest.sample_id.value_counts().describe()
+    ab_stats = manifest.groupby("sample_id").relative.sum().describe() * 100.0
     if n_stats.count() == 1:
         n_stats["std"] = 0.0
         ab_stats["std"] = 0.0
@@ -70,29 +95,5 @@ def build_spec(
             round(ab_stats["std"]),
         )
     )
-    return micom_taxonomy
 
-
-def build(
-    abundance: biom.Table,
-    taxonomy: pd.Series,
-    models: JSONDirectory,
-    threads: int = 1,
-    cutoff: float = 0.0001,
-    strict: bool = False,
-    solver: str = "auto",
-) -> CommunityModelDirectory:
-    """Build the community models."""
-    if solver == "auto":
-        solver = None
-    tax = build_spec(abundance, taxonomy, models, cutoff, strict)
-    out = CommunityModelDirectory()
-    out_folder = str(out.model_files.path_maker(model_id="test")).replace(
-        "test.pickle", ""
-    )
-    model_folder = str(models.json_files.path_maker(model_id="test")).replace(
-        "test.json", ""
-    )
-    mw.build(tax, model_folder, out_folder, cutoff, threads, solver)
-    os.rename(os.path.join(out_folder, "manifest.csv"), out.manifest.path_maker())
     return out
