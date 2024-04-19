@@ -72,8 +72,8 @@ def build(
     os.rename(os.path.join(out_folder, "manifest.csv"), out.manifest.path_maker())
 
     # Return some some info inverbose mode
-    n_stats = manifest.sample_id.value_counts().describe()
-    ab_stats = manifest.groupby("sample_id").relative.sum().describe() * 100.0
+    n_stats = manifest.found_taxa.describe()
+    ab_stats = manifest.found_abundance_fraction.describe() * 100.0
     if n_stats.count() == 1:
         n_stats["std"] = 0.0
         ab_stats["std"] = 0.0
