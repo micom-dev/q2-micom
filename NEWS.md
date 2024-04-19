@@ -5,6 +5,12 @@ This includes a list of major changes for each minor version starting from 0.10.
 For information on how to use `q2-micom` please refer to
 [the tutorial](https://micom-dev.github.io/q2-micom).
 
+#### 0.13.2
+
+Fixes a bug where the build manifest would always report 100% matching.
+
+Pins the MICOM versions to anticipate the transition from fit -> association.
+
 #### 0.13.1
 
 Fixes the broken prefix trimming.
