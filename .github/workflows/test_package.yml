@@ -26,6 +26,9 @@ jobs:
             - version: "2023.9"
               dist: "tiny"
               python: 38
+            - version: "2024.2"
+              dist: "tiny"
+              python: 38
     runs-on: "${{matrix.os.image}}"
 
     steps:
