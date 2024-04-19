@@ -41,7 +41,7 @@ jobs:
       shell: bash -l {0}
       run: |
         conda activate qiime2-dev
-        mamba env update -n qiime2-dev -f q2-micom-${{matrix.os.short}}.yml
+        mamba env update -n qiime2-dev -f q2-micom.yml
     - name: Install CPLEX
       shell: bash -l {0}
       run: |
