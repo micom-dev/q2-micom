@@ -42,15 +42,15 @@ def test_plot_tradeoff():
         assert q2m.tests.check_viz(str(d))
 
 
-def test_fit_phenotype():
+def test_association():
     large = q2.Artifact.load(path.join(this_dir, "data", "growth.qza"))
     r = large.view(GrowthResults)
     mcol = q2.Metadata.load(path.join(this_dir, "data", "metadata.tsv")).get_column(
         "status"
     )
     with TemporaryDirectory(prefix="q2-micom-") as d:
-        q2m.fit_phenotype(str(d), r, mcol, min_coef=0.001)
+        q2m.association(str(d), r, mcol, fdr_threshold=0.1)
         assert q2m.tests.check_viz(str(d))
     with TemporaryDirectory(prefix="q2-micom-") as d:
-        q2m.fit_phenotype(str(d), r, mcol, flux_type="import", min_coef=0.0)
+        q2m.association(str(d), r, mcol, flux_type="import", fdr_threshold=0.3)
         assert q2m.tests.check_viz(str(d))
