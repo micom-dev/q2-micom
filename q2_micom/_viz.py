@@ -47,23 +47,23 @@ def plot_tradeoff(output_dir: str, results: pd.DataFrame) -> None:
     viz.plot_tradeoff(results, join(output_dir, "index.html"))
 
 
-def fit_phenotype(
+def association(
     output_dir: str,
     results: GrowthResults,
     metadata: MetadataColumn,
     variable_type: str = "binary",
     flux_type: str = "production",
-    min_coef: float = 0.001,
+    fdr_threshold: float = 0.1,
 ):
     """Test for differential metabolite production."""
     meta = metadata.to_series()
-    viz.plot_fit(
+    viz.plot_association(
         results,
         meta,
         variable_type,
         meta.name,
         join(output_dir, "index.html"),
         flux_type,
-        min_coef,
+        fdr_threshold,
         atol=1e-6,
     )

@@ -5,6 +5,20 @@ This includes a list of major changes for each minor version starting from 0.10.
 For information on how to use `q2-micom` please refer to
 [the tutorial](https://micom-dev.github.io/q2-micom).
 
+### 0.14.0
+
+`plot-fit` got renamed to `association` and will not use LASSO coefficients anymore as
+a proxy for univariate associations. Instead univariate non-parametric tests are run for
+each metabolite. This should be more stable and avoid issues with low reproducibility of
+coefficients. LASSO model performance is still reported as a global measure of
+association. In case you need access to the previous plot-fit function you can simply
+install a prior version of q2-micom (<0.14.0) in a Qiime 2 environment.
+
+Some broad updates to the visualizations with updated depndencies and some visual updates
+to avoid very squished plots.
+
+Now uses the hybrid solver by default which gives better accuracy.
+
 #### 0.13.2
 
 Fixes a bug where the build manifest would always report 100% matching.

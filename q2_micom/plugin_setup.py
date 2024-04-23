@@ -468,13 +468,13 @@ plugin.visualizers.register_function(
 )
 
 plugin.visualizers.register_function(
-    function=q2_micom.fit_phenotype,
+    function=q2_micom.association,
     inputs={"results": MicomResults},
     parameters={
         "metadata": MetadataColumn[Categorical | Numeric],
         "variable_type": Str % Choices("binary", "continuous"),
         "flux_type": Str % Choices("import", "production"),
-        "min_coef": Float % Range(0, None),
+        "fdr_threshold": Float % Range(0, 1),
     },
     input_descriptions={
         "results": (
@@ -486,13 +486,14 @@ plugin.visualizers.register_function(
         "metadata": "The metadata variable to use.",
         "variable_type": "The type of the phenotype variable.",
         "flux_type": "Which fluxes to use.",
-        "min_coef": (
-            "Only coefficient with absolute values larger than this " "will be shown."
+        "fdr_threshold": (
+            "The cutoff for the FDR-corrected p values (q values). Only metabolites "
+            "with q values lower than this will be shown."
         ),
     },
     name="Test for differential production",
     description=(
-        "Test for overall metabolite production differences " "between two groups."
+        "Test for overall metabolite production differences between two groups."
     ),
     citations=[citations["micom"]],
 )

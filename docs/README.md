@@ -47,17 +47,17 @@ MICOM models all biochemical reactions in all taxa, which means that the optimiz
 
 ### Setup Qiime 2
 
-You will need a Qiime 2 environment with version `2021.2` or higher ([how to install Qiime 2](https://docs.qiime2.org/2023.9/install/native/#install-qiime-2-within-a-conda-environment)).
+You will need a Qiime 2 environment with version `2021.2` or higher ([how to install Qiime 2](https://docs.qiime2.org/2024.2/install/native/#install-qiime-2-within-a-conda-environment)).
 
 Once installed, we also download the environment for q2-micom and install it into the
-QIIME 2 environment we just created. Substitute `qiime2-2023.9` with the name of your Qiime2 environment throughout
+QIIME 2 environment we just created. Substitute `qiime2-2024.2` with the name of your Qiime2 environment throughout
 this tutorial. Similar to the default Qiime2 installation you will then install an additional environment
 file depending on your operating system. Here we are assuming you are using Linux but if you use MacOS just
 replace `q2-micom-linux.yml` with `q2-micom-osx.yml` in the download link and file name.
 
 ```bash
 wget https://raw.githubusercontent.com/micom-dev/q2-micom/main/q2-micom-linux.yml
-conda env update -n qiime2-2023.9 -f q2-micom-linux.yml
+conda env update -n qiime2-2024.2 -f q2-micom-linux.yml
 # OPTIONAL CLEANUP
 rm q2-micom-*.yml
 ```
@@ -66,7 +66,7 @@ Finally, you activate your environment.
 
 
 ```bash
-conda activate qiime2-2023.9
+conda activate qiime2-2024.2
 ```
 
 You can now optionally install a proprietary solver if you'd like.
@@ -133,7 +133,8 @@ is the same. Our model database support RefSeqs or GTDB so we recommend you clas
 The first artifacts you will want to produce are the metabolic community models. These are sample-specific metabolic models that contain all taxa in a sample (i.e. all taxa represented in AGORA) at the correct relative abundance (i.e. as inferred from the 16S or metagenomic sequencing data). To build these models, you will need the relative abundance and taxonomic annotation for each sequence variant in your sample. Luckily, one of the main function of Qiime 2 is to obtain these features from your sequencing data ...phew.
 
 For the purposes of this tutorial, we will provide pre-built artifacts for a 16S amplicon sequencing data set from healthy donors and individuals with recurrent *C. difficile* infection. Those files were taken from the [ISB Microbiome course 2023](https//isbscience.org/microbiome2023), so feel free to check out
-the course to learn more about the samples and how they were processed. These artifacts were generated using DADA2 and the taxonomy was inferred using the SILVA database (version 132).
+the course to learn more about the samples and how they were processed. These artifacts were generated using DADA2 and the taxonomy was inferred using the NCBI
+Refseq database.
 
 **Downloads**:
 
@@ -147,7 +148,7 @@ qiime micom build --i-abundance cdi_table.qza \
                   --i-taxonomy cdi_taxa.qza \
                   --i-models agora103_refseq216_genus_1.qza \
                   --p-cutoff 0.0001 \
-                  --p-threads 2 \
+                  --p-threads 4 \
                   --o-community-models models.qza \
                   --verbose
 ```
@@ -155,13 +156,17 @@ qiime micom build --i-abundance cdi_table.qza \
 This will give you something like this:
 
 ```
-Merged with the database using ranks: genus
+Merging with the database using ranks: genus
+[16:00:08] WARNING  Less than 50% of the abundance could be matched to the model database. Model `ERR1883294` may not be   community.py:229
+                    representative of the sample
+Running ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:02:56
 Each community model contains 10-42 taxa (average 26+-11).
-Running ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━   0% -:--:--
-
+Community models cover 49.46%-99.91% of the total abundance (average 88.00%+-17.00%).
+Saved CommunityModels[Pickle] to: models.qza
 ```
 
- Building the community models will take a while, but this usually only needs to be done once for each sample. You can then run many growth simulations for a given sample using the existing model.
+ Building the community models will take a while, but this usually only needs to be done once for each sample. You can then run many growth simulations for a given sample using the existing model. You see a warning here that one sample does not match well to the database. This is usually a good point to choose a larger database. Here we
+ will continue since we are close to 50% for that sample and this is meant as an example ;)
 
 ### Running a growth simulation
 
@@ -181,25 +186,25 @@ the tradeoff between maximal community growth and individual taxon growth. For n
 qiime micom grow --i-models models.qza \
                  --i-medium western_diet_gut_agora.qza \
                  --p-tradeoff 0.5 \
-                 --p-threads 2 \
+                 --p-threads 4 \
                  --o-results growth.qza \
                  --verbose
 ```
 
-You will again see a progress bar and will have the results when everything is done (for me, this took about 5m with 4 threads).
+You will again see a progress bar and will have the results when everything is done (for me, this took about 9m with 4 threads).
 
 We can now start to look at growth rates and fluxes in our models, but we will first come back to our tradeoff parameter...
 
 ### Picking a tradeoff value
 
-One feature specific to MICOM is the tradeoff between community growth rate and individual taxon growth rates. Here, MICOM applies "pressure" to the model to allow growth for as many taxa as possible. However, this dual optimization problem results in tug-of-war between high community-level biomass production vs. allowing more taxa to grow. The balance between the two is dictated by a *tradeoff* value which dictates what percentage of the maximal community growth rate must be maintained, which ranges from 0 (no growth enforced) to 1 (enforce maximum community growth).
+One feature specific to MICOM is the tradeoff between community growth rate and individual taxon growth rates. Here, MICOM applies "pressure" to the model to allow growth for as many taxa as possible. However, this dual optimization problem results in tug-of-war between high community-level biomass production vs. allowing individual taxa to grow. The balance between the two is dictated by a *tradeoff* value which dictates what percentage of the maximal community growth rate can be reached, which ranges from 0 (no growth enforced) to 1 (enforce maximum community growth). A more detailed description and ecological interpretation of what MICOM does [can be found here](https://journals.asm.org/doi/10.1128/msystems.01270-22).
 
 The truth usually lies in the middle of these extremes, and in [our study](https://msystems.asm.org/content/5/1/e00606-19) we found that a tradeoff of 0.5 seemed to correspond best to *in vivo* replication rates. However, the best tradeoff may also depend on your samples, environment, and taxonomic rank used to build the models. So it is always a good idea to run a validation step. The following command will run the growth simulation with many different tradeoff values and track some key metrics.
 
 ```bash
 qiime micom tradeoff --i-models models.qza \
                      --i-medium western_diet_gut_agora.qza \
-                     --p-threads 2 \
+                     --p-threads 4 \
                      --o-results tradeoff.qza \
                      --verbose
 ```
@@ -243,7 +248,7 @@ qiime micom exchanges-per-sample --i-results growth.qza \
 
 <img src="assets/exchanges.png" width="80%">
 
-We do see that there is some separation between healthy and cancer samples in the consumption of certain metabolites. For instance, there is a set of amino acids that get consumed by healthy gut microbiota but not so much in the cancer-associated gut microbiota. One of these amino acids is glutamine. Many cancer cells show glutamine addiction, as a consequence of the [Warburg effect](https://en.wikipedia.org/wiki/Warburg_effect_(oncology)). So, we might hypothesize that glutamine is somewhat depleted in cancer samples and the associated microbiota have adapted to grow without it.
+We do see that there is some separation between healthy and cancer samples in the consumption of certain metabolites. For instance, isoleucin is only ever consumed in 3 of the 4 pre-FMT samples but none of the others.
 
 We could also look at production of metabolites by passing the `--p-direction export` parameter, but due to the enforced minimum import there is usually very little net production of metabolites. So this is only useful if you want to look at overshoot production.
 
@@ -253,12 +258,15 @@ The last visualization gave us a global view of metabolite consumption but we ma
 
 ```bash
 qiime micom exchanges-per-taxon --i-results growth.qza \
-                                --p-perplexity 5 \
                                 --o-visualization niche.qzv
 ```
 <img src="assets/niche.png" width="80%">
 
-Most taxa have a specific growth niche, which varies slightly from sample to sample. You can tune the UMAP reduction by using the parameters `--p-n-neighbors` and `--p-min-dist`. You can look at metabolite production with `--p-direction export` where you can observe weaker clustering, suggesting that there is considerably more overlap across taxa in metabolite production.
+Most taxa have a specific growth niche, which varies slightly from sample to sample. Though inspecting the plot you will be able to find out that Bacteroides
+and Phocaeicola have very different niches in pre- versus post-FMT communities indicating that their metabolic behavior does shift a lot during FMT.
+
+
+You can tune the UMAP reduction by using the parameters `--p-n-neighbors` and `--p-min-dist`. You can look at metabolite production with `--p-direction export` where you can observe weaker clustering, suggesting that there is considerably more overlap across taxa in metabolite production.
 
 ### Associating fluxes with a host phenotype
 
@@ -266,31 +274,38 @@ A common question is whether there is a connection between a host phenotype of i
 
 Overall production fluxes are the default set of fluxes used by q2-micom. MICOM also allows for the analysis of minimal import fluxes shown in `qiime micom exchanges-per-sample`, but these are often not very informative.
 
-To predict a phenotype from fluxes we will use the `fit-phenotype` command. Here you will need a Qiime 2 [Metadata file](https://docs.qiime2.org/2023.9/tutorials/metadata/) that specifies your phenotype of interest. Our metadata is pretty simple and just assigns a healthy or cancer status to each sample.
+To predict a phenotype from fluxes we will use the `fit-phenotype` command. Here you will need a Qiime 2 [Metadata file](https://docs.qiime2.org/2024.2/tutorials/metadata/) that specifies your phenotype of interest. Our metadata is pretty simple and just assigns a healthy or cancer status to each sample.
 
 **Download:**
 
 [Metadata file](https://github.com/Gibbons-Lab/isb_course_2023/raw/main/data/metadata.tsv)
 
-`q2-micom` supports binary or continuous phenotype data (using L1 penalized logistic regression for binary data, and LASSO regression for continuous data).
+`q2-micom` supports binary or continuous phenotype data.
 
 ```bash
-qiime micom fit-phenotype --i-results growth.qza \
-                          --m-metadata-file metadata.tsv \
-                          --m-metadata-column disease_state \
-                          --o-visualization fit.qzv
+qiime micom association --i-results growth.qza \
+                        --p-fdr-threshold 0.3 \
+                        --m-metadata-file metadata.tsv \
+                        --m-metadata-column disease_state \
+                        --o-visualization associations.qzv
 ```
 
 We could define a continuous phenotype with `--p-variable-type continuous` or look for differences in import fluxes with `--p-flux-type import`.
 
-The visualization now shows which production fluxes are predictive of the phenotype.
+The visualization now shows which production fluxes are predictive of the phenotype. For this it runs a non-parametric test (Mann Whitney U in this case)
+for each metabolite across the phenotype. After correction for multiple testing the visualization will show metabolites with a significance level below
+the chosen FDR threshold. The bars will correspond to the magnitude of the difference/correlation. We choose a very large threshold here because we are not
+really powered to see the differences. Normally they default of 0.05 is more stringent. We do see that there seems to be a trend for higher TMAO production
+in the pre-FMT samles for instance. Furthermore, the FMT status can be predicted perfectly from the fluxes overall.
 
-**Disclaimer**: Depending on the version of scikit-learn in your installation this may look different.
+**Note**: The CSV file containing the tests that can be downloaded from the visualization always contains all tests and ignores the FDR cutoff.
+
+It also runs a LASSO regression predicting the pehnotype from fluxes in a cross-validation scheme. The accuracy or R2 of the regression
+can tell you if the phenotype is associated globally with the fluxes.
 
 <img src="assets/phenotype.png" width="100%">
 
-Basically, the metabolites on both extremes of the barplot are the most predictive. In this case, negative coefficients denote fluxes that are higher in CDI samples and positive coefficients denote fluxes that are higher in healthy samples. You can
-hover over the bars to see the name of the metabolite and can plot the production fluxes in the lower panel.
+Basically, the larger the bar, the stronger the effect. In this case, negative coefficients denote fluxes that are higher in rCDI samples and positive coefficients denote fluxes that are higher in healthy samples. You can hover over the bars to see the name of the metabolite and can plot the production fluxes in the lower panel.
 
 Obviously, we would still have to validate these very speculative hypotheses, but at least we get some functional insight starting from 16S data alone (while making several assumptions as detailed above...).
 
@@ -330,7 +345,7 @@ Many of the metabolite IDs returned by MICOM may be hard to identify but will be
 You can also export the detailed annotations from the growth results:
 
 ```bash
-qiime tools export qiime tools export --input-path growth.qza --output-path growth
+qiime tools export --input-path growth.qza --output-path growth
 ```
 
 The folder `growth` will now include an `annotations.csv` file that contains the individual annotations.
@@ -347,7 +362,7 @@ With these two things you can use `qiime micom db` to build your database, summa
 ```bash
 qiime micom db --m-meta-file agora.tsv \
                --p-rank genus \
-               --p-threads 2 \
+               --p-threads 4 \
                --o-metabolic-models agora_genus_103.qza
 ```
 
@@ -357,28 +372,28 @@ The full Nextflow workflows for all provided databases can be found in the MICOM
 
 Obviously, you may want to perform different statistical tests, visualizations, or analyses on the growth rates or fluxes obtained from `q2-micom`. For this we provide a convenience function in the `q2_micom` module, which returns the data as pandas DataFrames.
 
-```text
+```python
 In [1]: from q2_micom import read_results
 
 In [2]: res = read_results("growth.qza")
 
 In [3]: res.exchange_fluxes.head()
 Out[3]:
-         taxon   sample_id  tolerance          reaction      flux  abundance     metabolite direction
-0  Akkermansia  ERR1883195   0.000001  EX_MGlcn81_rl(e) -0.000012   0.000126  MGlcn81_rl[e]    import
-1  Akkermansia  ERR1883195   0.000001     EX_gncore2(e) -0.000029   0.000126     gncore2[e]    import
-2  Akkermansia  ERR1883195   0.000001    EX_MGlcn158(e) -0.000007   0.000126    MGlcn158[e]    import
-3  Akkermansia  ERR1883195   0.000001  EX_MGlcn10_rl(e)  0.000007   0.000126  MGlcn10_rl[e]    export
-4  Akkermansia  ERR1883195   0.000001     EX_MGlcn34(e) -0.000009   0.000126     MGlcn34[e]    import
+    taxon   sample_id  tolerance           reaction      flux  abundance      metabolite direction
+0  medium  ERR1883214   0.000001  EX_amylopect900_m -0.000016        NaN  amylopect900_m    import
+1  medium  ERR1883214   0.000001         EX_pydxn_m -0.000018        NaN         pydxn_m    import
+2  medium  ERR1883214   0.000001      EX_12dgr180_m -0.000043        NaN      12dgr180_m    import
+3  medium  ERR1883214   0.000001           EX_co2_m  3.962737        NaN           co2_m    export
+4  medium  ERR1883214   0.000001          EX_ptrc_m -0.100000        NaN          ptrc_m    import
 
 In [4]: res.growth_rates.head()
 Out[4]:
-   abundance  growth_rate  reactions  metabolites            taxon  tradeoff   sample_id
-0   0.011512     0.015234       1278         1090  Acidaminococcus       0.5  ERR1883195
-1   0.002516     0.008608        942          904    Adlercreutzia       0.5  ERR1883195
-2   0.000126     0.006588       2274         1386      Akkermansia       0.5  ERR1883195
-3   0.045376     0.060052       2650         1613        Alistipes       0.5  ERR1883195
-4   0.021577     0.028555       1894         1451  Anaerobutyricum       0.5  ERR1883195
+   abundance  growth_rate  reactions  metabolites                   taxon  tradeoff   sample_id
+0   0.821946     0.289004       2274         1386             Akkermansia       0.5  ERR1883214
+1   0.000270     0.000201       2808         1732                 Blautia       0.5  ERR1883214
+2   0.059597     0.043305       3532         2001             Clostridium       0.5  ERR1883214
+3   0.000255     0.000187       2518         1753            Enterococcus       0.5  ERR1883214
+4   0.014103     0.010495       2826         1639  Erysipelatoclostridium       0.5  ERR1883214
 ```
 
 ### Estimating a minimal medium
@@ -408,15 +423,15 @@ In [3]: medium = Artifact.load("minimal_medium.qza").view(pd.DataFrame)
 
 In [4]: medium.sort_values(by="flux", ascending=False).head()
 Out[4]:
-          reaction      flux   metabolite
-4         EX_amp_m  0.015676        amp_m
-2      EX_MGlcn9_m  0.009282     MGlcn9_m
-3   EX_MGlcn9_rl_m  0.007943  MGlcn9_rl_m
-21        EX_nmn_m  0.000279        nmn_m
-16       EX_hspg_m  0.000207       hspg_m
+            reaction      flux     metabolite
+24          EX_nmn_m  0.012929          nmn_m
+6           EX_amp_m  0.012759          amp_m
+2      EX_MGlcn103_m  0.009263     MGlcn103_m
+3   EX_MGlcn103_rl_m  0.008774  MGlcn103_rl_m
+5     EX_MGlcn9_rl_m  0.008484    MGlcn9_rl_m
 
 In [5]: medium.shape
-Out[5]: (31, 3)
+Out[5]: (34, 3)
 ```
 
-So, the most 'efficient' growth requires at least 31 different metabolites and seems to be consuming mucin glycans (all of the MGln* metabolites), as well as nucleotide and NAD precursors, like AMP and nicotinamide ribotide.
+So, the most 'efficient' growth requires at least 34 different metabolites and seems to be consuming mucin glycans (all of the MGln* metabolites), as well as nucleotide and NAD precursors, like AMP and nicotinamide ribotide.
