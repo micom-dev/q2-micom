@@ -15,7 +15,7 @@ from q2_micom._viz import (
     association,
 )
 
-__version__ = "0.13.2"
+__version__ = "0.14.0"
 
 
 def read_results(path):
