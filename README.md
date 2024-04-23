@@ -9,28 +9,17 @@ A QIIME 2 plugin for MICOM.
 
 ## Installation
 
-You will need an existing QIIME 2 environment. Follow the instructions on ([how to install QIIME 2](https://docs.qiime2.org/2023.9/install/native/#install-qiime-2-within-a-conda-environment)) otherwise. `q2-micom` is compatible with all QIIME 2 distributions.
-Let's assume that environment was called `qiime2-2023.9` for all further steps.
+You will need an existing QIIME 2 environment. Follow the instructions on ([how to install QIIME 2](https://docs.qiime2.org/2024.2/install/native/#install-qiime-2-within-a-conda-environment)) otherwise. `q2-micom` is compatible with all QIIME 2 distributions.
+Let's assume that environment was called `qiime2-2024.2` for all further steps.
 
 ### Add q2-micom to the QIIME 2 environment
 
 This will be the same step for any supported QIIME 2 version but will vary depending on your operating system
 (similar to the normal QIIME 2 installation).
 
-**Linux**
-
 ```bash
-wget https://raw.githubusercontent.com/micom-dev/q2-micom/main/q2-micom-linux.yml
-conda env update -n qiime2-2023.8 -f q2-micom-linux.yml
-# OPTIONAL CLEANUP
-rm q2-micom-*.yml
-```
-
-**Mac**
-
-```bash
-wget https://raw.githubusercontent.com/micom-dev/q2-micom/main/q2-micom-osx.yml
-conda env update -n qiime2-2023.9 -f q2-micom-osx.yml
+wget https://raw.githubusercontent.com/micom-dev/q2-micom/main/q2-micom.yml
+conda env update -n qiime2-2024.2 -f q2-micom-linux.yml
 # OPTIONAL CLEANUP
 rm q2-micom-*.yml
 ```
@@ -38,7 +27,7 @@ rm q2-micom-*.yml
 Finally, you activate your environment.
 
 ```bash
-conda activate qiime2-2023.9
+conda activate qiime2-2024.2
 ```
 
 `q2-micom` will now install an open source solver that can be used with MICOM. If you use MICOM
@@ -80,7 +69,7 @@ grbgetkey YOUR-LICENSE-KEY
 If you installed `q2-micom` in an already existing QIIME 2 environment, update the plugin cache:
 
 ```bash
-conda activate qiime2-2023.9  # or whatever you called your environment
+conda activate qiime2-2024.2  # or whatever you called your environment
 qiime dev refresh-cache
 ```
 
