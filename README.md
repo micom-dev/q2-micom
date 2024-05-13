@@ -19,7 +19,7 @@ This will be the same step for any supported QIIME 2 version but will vary depen
 
 ```bash
 wget https://raw.githubusercontent.com/micom-dev/q2-micom/main/q2-micom.yml
-conda env update -n qiime2-2024.2 -f q2-micom-linux.yml
+conda env update -n qiime2-2024.2 -f q2-micom.yml
 # OPTIONAL CLEANUP
 rm q2-micom-*.yml
 ```
