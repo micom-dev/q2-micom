@@ -15,7 +15,7 @@ jobs:
         os:
             - image: "ubuntu-latest"
               short: "linux"
-            - image: "macos-latest"
+            - image: "macos-13"
               short: "osx"
     runs-on: "${{matrix.os.image}}"
 
