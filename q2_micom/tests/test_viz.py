@@ -1,9 +1,8 @@
 """Test if visualizations work."""
 
-from micom.workflows.core import GrowthResults
+from micom.workflows import GrowthResults
 import os.path as path
 import pandas as pd
-import pytest
 import qiime2 as q2
 import q2_micom as q2m
 from tempfile import TemporaryDirectory

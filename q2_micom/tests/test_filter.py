@@ -2,7 +2,6 @@
 
 import os.path as path
 import pandas as pd
-from micom.workflows.core import GrowthResults
 import pytest
 import qiime2 as q2
 import q2_micom as q2m

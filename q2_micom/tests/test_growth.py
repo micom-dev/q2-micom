@@ -4,7 +4,7 @@ import os.path as path
 import pandas as pd
 import qiime2 as q2
 import q2_micom as q2m
-from micom.workflows.core import GrowthResults
+from micom.workflows import GrowthResults
 from q2_micom._formats_and_types import MicomResults
 from q2_micom.tests import this_dir
 
@@ -44,8 +44,8 @@ def test_exchanges():
 
 def test_feasible_exchanges():
     ex = res.exchanges
-    ex = ex[(ex.taxon == "medium") & (ex.direction == "import")]
-    ex["bound"] = medium.loc[ex.reaction, "flux"].values
+    ex = ex[(ex.taxon == "medium") & (ex.direction == "import")].copy()
+    ex["bound"] = medium.loc[ex.reaction.values, "flux"].values
     ex = ex.dropna()
     assert all(ex.flux < ex.bound + 1e-6)
 
