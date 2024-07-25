@@ -1,6 +1,6 @@
 """Visualizers for MICOM results."""
 
-from micom.workflows.core import GrowthResults
+from micom.workflows import GrowthResults
 import micom.viz as viz
 from os.path import join
 import pandas as pd

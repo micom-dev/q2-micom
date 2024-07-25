@@ -309,6 +309,64 @@ Basically, the larger the bar, the stronger the effect. In this case, negative c
 
 Obviously, we would still have to validate these very speculative hypotheses, but at least we get some functional insight starting from 16S data alone (while making several assumptions as detailed above...).
 
+### Estimating a minimal medium
+
+In some cases you may have no information on the environment and thus lack a starting point for parameterizing a growth medium. In this case `q2-micom`, lets you predict a minimal medium based on all importable metabolites in the community models by specifying a minimum growth rate all taxa have to achieve simultaneously.
+
+> Be aware that this does not necessarily correspond to any realistic environment that your microbial community is exposed to!
+
+> [!NOTE]
+> This will require you to specify minimum growth rates for the community and/or (some) taxa.
+
+You can also specify exactly what you would want to optimize. For instance, you can minimize the number of media components rather than
+flux with the `--p-minimize-components` flag (this will be slow). Or you could rather minimize the uptake of mass or any elements
+(such as carbon or nitrogen) with the `--p-weights` options.
+
+As an example let's build a minimal medium for our community with the following specifications:
+
+1. The community grows at a rate of 0.1/h
+2. All taxa individually grow at least with a rate of 0.01/h
+3. We want the minimum uptake of mass
+
+```bash
+qiime micom minimal-medium --i-models models.qza \
+                           --p-community-growth 0.1 \
+                           --p-growth 0.01 \
+                           --p-weights mass \
+                           --p-threads 2 \
+                           --o-medium minimal_medium.qza \
+                           --o-sample-media sample_minimal_media.qza \
+                           --o-results media_results.qza \
+                           --verbose
+```
+
+This will output a combined medium, the minimal media for each single sample, and a
+results artifact in case you want to expect the solution with the applied growth constraints.
+
+We can use the Qiime 2 artifact API to inspect the medium:
+
+```python
+In [1]: from qiime2 import Artifact
+
+In [2]: import pandas as pd
+
+In [3]: medium = Artifact.load("minimal_medium.qza").view(pd.DataFrame)
+
+In [4]: medium.sort_values(by="flux", ascending=False).head()
+Out[4]:
+       reaction      flux metabolite
+2   EX_MGlcn9_m  0.108333   MGlcn9_m
+19      EX_pi_m  0.088816       pi_m
+12    EX_hspg_m  0.001911     hspg_m
+10  EX_glygn2_m  0.001554   glygn2_m
+9      EX_fe3_m  0.001250      fe3_m
+
+In [5]: medium.shape
+Out[5]: (27, 3)
+```
+
+So, the most 'efficient' medium requires at least 27 different metabolites and seems to be consuming mucin glycans (all of the MGln* metabolites), as well as phosphate, glycogen, and iron.
+
 ## Bonus
 
 ### Filtering built community models or simulation results
@@ -395,43 +453,3 @@ Out[4]:
 3   0.000255     0.000187       2518         1753            Enterococcus       0.5  ERR1883214
 4   0.014103     0.010495       2826         1639  Erysipelatoclostridium       0.5  ERR1883214
 ```
-
-### Estimating a minimal medium
-
-In some cases you may have no information on the environment and thus lack a starting point for parameterizing a growth medium. In this case `q2-micom`, lets you predict a minimal medium based on all importable metabolites in the community models by specifying a minimum growth rate all taxa have to achieve simultaneously.
-
-> Be aware that this does not necessarily correspond to any realistic environment that your microbial community is exposed to and may lead to very unrealistic predictions!
-
-For instance we can generate a minimal medium for our community models:
-
-```bash
-qiime micom minimal-medium --i-models models.qza \
-                           --p-min-growth 0.01 \
-                           --p-threads 2 \
-                           --o-medium minimal_medium.qza \
-                           --verbose
-```
-
-We can use the Qiime 2 artifact API to inspect the medium:
-
-```python
-In [1]: from qiime2 import Artifact
-
-In [2]: import pandas as pd
-
-In [3]: medium = Artifact.load("minimal_medium.qza").view(pd.DataFrame)
-
-In [4]: medium.sort_values(by="flux", ascending=False).head()
-Out[4]:
-            reaction      flux     metabolite
-24          EX_nmn_m  0.012929          nmn_m
-6           EX_amp_m  0.012759          amp_m
-2      EX_MGlcn103_m  0.009263     MGlcn103_m
-3   EX_MGlcn103_rl_m  0.008774  MGlcn103_rl_m
-5     EX_MGlcn9_rl_m  0.008484    MGlcn9_rl_m
-
-In [5]: medium.shape
-Out[5]: (34, 3)
-```
-
-So, the most 'efficient' growth requires at least 34 different metabolites and seems to be consuming mucin glycans (all of the MGln* metabolites), as well as nucleotide and NAD precursors, like AMP and nicotinamide ribotide.

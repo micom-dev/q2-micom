@@ -5,6 +5,12 @@ This includes a list of major changes for each minor version starting from 0.10.
 For information on how to use `q2-micom` please refer to
 [the tutorial](https://micom-dev.github.io/q2-micom).
 
+### 0.15.0
+
+`minimal-medium` now supports more options and outputs global and sample-specific media
+by default. We also provide the results associated with the media optimization which can
+help to inspect growth rates or required taxon-specific uptakes.
+
 ### 0.14.0
 
 `plot-fit` got renamed to `association` and will not use LASSO coefficients anymore as
@@ -14,7 +20,7 @@ coefficients. LASSO model performance is still reported as a global measure of
 association. In case you need access to the previous plot-fit function you can simply
 install a prior version of q2-micom (<0.14.0) in a Qiime 2 environment.
 
-Some broad updates to the visualizations with updated depndencies and some visual updates
+Some broad updates to the visualizations with updated dependencies and some visual updates
 to avoid very squished plots.
 
 Now uses the hybrid solver by default which gives better accuracy.

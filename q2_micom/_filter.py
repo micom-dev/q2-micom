@@ -2,7 +2,7 @@
 
 from q2_micom._formats_and_types import CommunityModelDirectory
 from qiime2 import Metadata
-from micom.workflows.core import GrowthResults
+from micom.workflows import GrowthResults
 import pandas as pd
 import shutil
 

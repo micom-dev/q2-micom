@@ -175,10 +175,17 @@ plugin.methods.register_function(
     function=q2_micom.minimal_medium,
     inputs={"models": CommunityModels[Pickle]},
     parameters={
-        "min_growth": Float % Range(0.0, None, inclusive_start=False),
+        "community_growth": Float % Range(0.0, None, inclusive_start=True),
+        "growth": Float % Range(0.0, None, inclusive_start=True),
+        "minimize_components": Bool,
+        "weights": Str,
         "threads": Int % Range(1, None),
     },
-    outputs=[("medium", MicomMedium[Global])],
+    outputs=[
+        ("medium", MicomMedium[Global]),
+        ("sample_media", MicomMedium[PerSample]),
+        ("results", MicomResults)
+    ],
     input_descriptions={
         "models": (
             "A collection of metabolic community models. "
@@ -186,19 +193,42 @@ plugin.methods.register_function(
         ),
     },
     parameter_descriptions={
-        "min_growth": (
+        "community_growth": (
+            "The minimum community growth rate. The entire community has to "
+            "with at least this rate on the medium."
+        ),
+        "growth": (
             "The minimum achievable growth rate for each taxon. "
             "The returned growth medium enables all taxa to growth "
             "simultaneously with at least this rate."
         ),
+        "minimize_components": (
+            "Whether to minimize the number of medium components irrespective of "
+            "flux. This will ignore the `weights` parameter."
+        ),
+        "weights": (
+            "Weights to use for the flux minimization. Can be 'flux' which minimizes "
+            "the uptake flux, 'mass' which minimizes the mass uptake, "
+            "or any single chemical element which will minimize the uptake of this "
+            "element. For instance, 'C' would find the most carbon-depleted medium."
+        ),
         "threads": "The number of threads to use when simulating.",
     },
-    output_descriptions={"medium": "The resulting growth medium."},
+    output_descriptions={
+        "medium": "The resulting growth medium.",
+        "sample_media": "The resulting growth media for each individual sample.",
+        "results": (
+            "The growth results with the applied growth constraints on the "
+            "minimal medium. Useful to see individual taxon exchanges and the "
+            "achieved growth rates."
+        )
+    },
     name="Obtain a minimal growth medium for models.",
     description=(
         "Obtains a minimal growth medium for the community models. "
-        "Please note that this medium does not have any biological "
-        "feasibility. If you have any knowledge about metabolites present "
+        "Please note that this only represents the theoretically most efficient "
+        "growth medium and does not have to match what happens in the natural "
+        "environment. If you have any knowledge about metabolites present "
         "in the environment we recommend you construct the medium by hand."
     ),
     citations=[citations["micom"]],

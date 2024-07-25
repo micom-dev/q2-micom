@@ -1,6 +1,6 @@
 """Transformers for MICOM types."""
 
-from micom.workflows.core import GrowthResults
+from micom.workflows import GrowthResults
 import pandas as pd
 from q2_micom.plugin_setup import plugin
 import q2_micom._formats_and_types as ft

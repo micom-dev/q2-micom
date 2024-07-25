@@ -11,7 +11,7 @@ def grow(
     tradeoff: float = 0.5,
     threads: int = 1,
     strategy: str = "minimal uptake",
-) -> mw.core.GrowthResults:
+) -> mw.GrowthResults:
     """Simulate growth for a set of community models."""
     if strategy == "minimal uptake":
         strategy = "minimal imports"
