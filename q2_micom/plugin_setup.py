@@ -400,14 +400,14 @@ plugin.methods.register_function(
 plugin.visualizers.register_function(
     function=q2_micom.plot_growth,
     inputs={"results": MicomResults},
-    parameters={},
+    parameters={"metadata": MetadataColumn[Categorical]},
     input_descriptions={
         "results": (
             "A set of MICOM analysis results. "
             "Contains predicted groath rates and exchange fluxes."
         )
     },
-    parameter_descriptions={},
+    parameter_descriptions={"metadata": "The metadata variable to use."},
     name="Plot taxa growth rates.",
     description=(
         "Plot predicted growth rates for each taxon in each sample. "
@@ -451,6 +451,7 @@ plugin.visualizers.register_function(
     inputs={"results": MicomResults},
     parameters={
         "direction": Str % Choices("import", "export"),
+        "metadata": MetadataColumn[Categorical],
         "perplexity": Int % Range(2, None),
     },
     input_descriptions={
@@ -461,6 +462,7 @@ plugin.visualizers.register_function(
     },
     parameter_descriptions={
         "direction": "The direction of the flux.",
+        "metadata": "The metadata variable to use.",
         "perplexity": "TSNE parameter. Relates to the number of neighbors used to "
         "calculate distances. Smaller values preserve more local "
         "structure and larger values preserve more global structure.",

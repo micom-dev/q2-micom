@@ -14,8 +14,13 @@ results = q2.Artifact.load(path.join(this_dir, "data", "growth.qza"))
 
 def test_growth_plots():
     r = results.view(GrowthResults)
+    mcol = q2.Metadata.load(path.join(this_dir, "data", "metadata.tsv")).get_column(
+        "status"
+    )
     with TemporaryDirectory(prefix="q2-micom-") as d:
         q2m.plot_growth(str(d), r)
+        assert q2m.tests.check_viz(str(d))
+        q2m.plot_growth(str(d), r, metadata=mcol)
         assert q2m.tests.check_viz(str(d))
 
 
@@ -28,8 +33,13 @@ def test_exchanges_per_sample():
 
 def test_exchanges_per_taxon():
     r = results.view(GrowthResults)
+    mcol = q2.Metadata.load(path.join(this_dir, "data", "metadata.tsv")).get_column(
+        "status"
+    )
     with TemporaryDirectory(prefix="q2-micom-") as d:
         q2m.exchanges_per_taxon(str(d), r)
+        assert q2m.tests.check_viz(str(d))
+        q2m.exchanges_per_taxon(str(d), r, metadata=mcol)
         assert q2m.tests.check_viz(str(d))
 
 

@@ -7,12 +7,12 @@ import pandas as pd
 from qiime2 import MetadataColumn
 
 
-def plot_growth(output_dir: str, results: GrowthResults) -> None:
+def plot_growth(
+    output_dir: str, results: GrowthResults, metadata: MetadataColumn = None
+) -> None:
     """Plot the taxa growth rates."""
-    viz.plot_growth(
-        results,
-        join(output_dir, "index.html"),
-    )
+    meta = None if metadata is None else metadata.to_series()
+    viz.plot_growth(results, join(output_dir, "index.html"), groups=meta)
 
 
 def exchanges_per_sample(
@@ -31,13 +31,16 @@ def exchanges_per_taxon(
     output_dir: str,
     results: GrowthResults,
     direction: str = "import",
+    metadata: MetadataColumn = None,
     perplexity: int = 20,
 ) -> None:
     """Plot the exchange fluxes."""
+    meta = None if metadata is None else metadata.to_series()
     viz.plot_exchanges_per_taxon(
         results,
         join(output_dir, "index.html"),
         direction,
+        groups=meta,
         perplexity=perplexity,
     )
 
