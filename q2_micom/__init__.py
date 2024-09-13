@@ -13,6 +13,8 @@ from q2_micom._viz import (
     exchanges_per_taxon,
     plot_tradeoff,
     association,
+    focal_interactions,
+    mes
 )
 
 __version__ = "0.15.0"
@@ -56,6 +58,8 @@ __all__ = [
     "exchanges_per_taxon",
     "plot_tradeoff",
     "association",
+    "focal_interactions",
+    "mes",
     "read_results",
     "filter_models",
     "filter_results",

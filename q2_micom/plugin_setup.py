@@ -530,4 +530,65 @@ plugin.visualizers.register_function(
     citations=[citations["micom"]],
 )
 
+plugin.visualizers.register_function(
+    function=q2_micom.focal_interactions,
+    inputs={"results": MicomResults},
+    parameters={
+        "taxon": Str,
+        "kind": Str,
+    },
+    input_descriptions={
+        "results": (
+            "A set of MICOM analysis results. "
+            "Contains predicted growth rates and exchange fluxes."
+        ),
+    },
+    parameter_descriptions={
+        "taxon": (
+            "The focal taxon to use as a reference. You can use `plot-growth` to "
+            "check for valid taxa names."
+        ),
+        "kind": (
+            "Which kind of flux to use. Either - 'flux': molar flux of a "
+            "metabolite - 'mass' (default): the mass flux (flux normalized by "
+            "molecular weight) - 'C': carbon flux - 'N': nitrogen flux."
+        )
+    },
+    name="Interactions for a taxon",
+    description=(
+        "Quantifies all metabolic interactions between a taxon of interest "
+        "(focal taxon) and all other taxa in all samples."
+    ),
+    citations=[citations["micom"]],
+)
+
+plugin.visualizers.register_function(
+    function=q2_micom.mes,
+    inputs={"results": MicomResults},
+    parameters={
+        "metadata": MetadataColumn[Categorical],
+        "prevalence": Float % Range(0, 1),
+    },
+    input_descriptions={
+        "results": (
+            "A set of MICOM analysis results. "
+            "Contains predicted growth rates and exchange fluxes."
+        ),
+    },
+    parameter_descriptions={
+        "metadata": "The metadata variable to use.",
+        "prevalence": (
+            "In what proportion of samples the metabolite has to have a "
+            "non-zero MES to be shown on the plots. Can be used to show only "
+            "very commonly exchanged metabolites."
+        ),
+    },
+    name="Metabolic exchange scores",
+    description=(
+        "Calculates the metabolic exchange score (MES) for all metabolites "
+        "in all samples."
+    ),
+    citations=[citations["micom"], citations["marcelino"]],
+)
+
 importlib.import_module("q2_micom._transform")
