@@ -5,6 +5,14 @@ This includes a list of major changes for each minor version starting from 0.10.
 For information on how to use `q2-micom` please refer to
 [the tutorial](https://micom-dev.github.io/q2-micom).
 
+### 0.16.0
+
+New interaction visualizations that allow tracking metabolite exchanges between taxa.
+
+New visualization shwoing Metabolic Exchange Scores (MES).
+
+Growth rates and taxon exchange plots now allow coloring by custom metadata columns.
+
 ### 0.15.0
 
 `minimal-medium` now supports more options and outputs global and sample-specific media
