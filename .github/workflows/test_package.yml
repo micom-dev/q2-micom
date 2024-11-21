@@ -33,12 +33,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Setup Mambaforge
+    - name: Setup conda
       uses: conda-incubator/setup-miniconda@v3
-      with:
-        miniforge-variant: Mambaforge
-        miniforge-version: latest
-        use-mamba: true
     - shell: bash -l {0}
       run: |
         conda info
@@ -51,17 +47,17 @@ jobs:
     - name: Install Qiime 2
       shell: bash -l {0}
       run: |
-        mamba env create -n qiime2-dev --file env.yml
+        conda env create -n qiime2-dev --file env.yml
     - name: Install CPLEX
       shell: bash -l {0}
       run: |
         conda activate qiime2-dev
-        mamba install -v -c ibmdecisionoptimization cplex
+        conda install -v -c ibmdecisionoptimization cplex
     - name: Install q2-micom
       shell: bash -l {0}
       run: |
         conda activate qiime2-dev
-        mamba env update -n qiime2-dev -f q2-micom.yml
+        conda env update -n qiime2-dev -f q2-micom.yml
         pip install -e .
     - name: Lint with flake8
       shell: bash -l {0}
