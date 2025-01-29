@@ -23,12 +23,12 @@ jobs:
             - image: "macos-13"
               short: "osx"
         qiime:
-            - version: "2023.9"
-              dist: "tiny"
-              python: 38
             - version: "2024.2"
               dist: "tiny"
               python: 38
+            - version: "2024.5"
+              dist: "tiny"
+              python: 39
     runs-on: "${{matrix.os.image}}"
 
     steps:

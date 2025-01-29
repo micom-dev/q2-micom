@@ -14,9 +14,9 @@ jobs:
       matrix:
         os:
             - image: "ubuntu-latest"
-              short: "linux"
+              short: "ubuntu"
             - image: "macos-13"
-              short: "osx"
+              short: "macos"
     runs-on: "${{matrix.os.image}}"
 
     steps:
@@ -32,9 +32,9 @@ jobs:
     - name: Install Qiime 2
       shell: bash -l {0}
       run: |
-        wget https://raw.githubusercontent.com/qiime2/environment-files/master/latest/staging/qiime2-latest-py38-${{matrix.os.short}}-conda.yml
-        conda env create -n qiime2-dev --file qiime2-latest-py38-${{matrix.os.short}}-conda.yml
-        rm qiime2-latest-py38-${{matrix.os.short}}-conda.yml
+        wget https://github.com/qiime2/distributions/raw/refs/heads/dev/latest/passed/qiime2-tiny-${{matrix.os.short}}-latest-conda.yml
+        conda env create -n qiime2-dev --file qiime2-tiny-${{matrix.os.short}}-latest-conda.yml
+        rm qiime2-tiny-${{matrix.os.short}}-latest-conda.yml
     - name: Install q2-micom
       shell: bash -l {0}
       run: |
