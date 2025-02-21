@@ -1,0 +1,9 @@
+channels:
+- https://packages.qiime2.org/qiime2/2024.10/metagenome/released
+- conda-forge
+- bioconda
+dependencies:
+  - qiime2-metagenome
+  - pip
+  - pip:
+    - q2-micom@git+https://github.com/micom-dev/q2-micom.git@main
