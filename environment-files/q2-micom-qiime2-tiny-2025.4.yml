@@ -1,0 +1,15 @@
+channels:
+- https://packages.qiime2.org/qiime2/2025.4/tiny/passed
+- conda-forge
+- bioconda
+dependencies:
+  - qiime2-tiny
+  - cobra
+  - optlang>=1.5.1
+  - rich
+  - jinja2
+  - python-symengine>=0.6.1
+  - osqp>=0.6.2
+  - pip
+  - pip:
+    - q2-micom@git+https://github.com/micom-dev/q2-micom.git@v0.16.0
