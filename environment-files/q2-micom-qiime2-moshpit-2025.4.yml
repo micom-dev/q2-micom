@@ -3,7 +3,7 @@ channels:
 - conda-forge
 - bioconda
 dependencies:
-  - moshpit
+  - qiime2-moshpit
   - cobra
   - optlang>=1.5.1
   - rich
