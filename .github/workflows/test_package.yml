@@ -19,9 +19,9 @@ jobs:
       matrix:
         os:
             - image: "ubuntu-latest"
-              short: "linux"
+              short: "ubuntu"
             - image: "macos-13"
-              short: "osx"
+              short: "macos"
         qiime:
             - version: "2025.4"
               dist: "tiny"
@@ -59,7 +59,7 @@ jobs:
         conda activate qiime2-dev
         conda env update -n qiime2-dev -f q2-micom.yml
         pip install -e .
-    - name: Lint with flake8
+    - name: Lint with black
       shell: bash -l {0}
       run: |
         conda activate qiime2-dev
