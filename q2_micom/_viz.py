@@ -76,14 +76,11 @@ def focal_interactions(
     output_dir: str,
     results: GrowthResults,
     taxon: str,
-    kind:str = "mass",
+    kind: str = "mass",
 ):
     """Plot for interactions."""
     viz.plot_focal_interactions(
-        results,
-        filename=join(output_dir, "index.html"),
-        taxon=taxon,
-        kind=kind
+        results, filename=join(output_dir, "index.html"), taxon=taxon, kind=kind
     )
 
 
@@ -91,7 +88,7 @@ def mes(
     output_dir: str,
     results: GrowthResults,
     metadata: MetadataColumn = None,
-    prevalence:float = 0.5,
+    prevalence: float = 0.5,
 ):
     """Test for differential metabolite production."""
     meta = None if metadata is None else metadata.to_series()
@@ -99,5 +96,5 @@ def mes(
         results,
         groups=meta,
         filename=join(output_dir, "index.html"),
-        prevalence=prevalence
+        prevalence=prevalence,
     )

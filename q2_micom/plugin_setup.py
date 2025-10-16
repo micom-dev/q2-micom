@@ -184,7 +184,7 @@ plugin.methods.register_function(
     outputs=[
         ("medium", MicomMedium[Global]),
         ("sample_media", MicomMedium[PerSample]),
-        ("results", MicomResults)
+        ("results", MicomResults),
     ],
     input_descriptions={
         "models": (
@@ -221,7 +221,7 @@ plugin.methods.register_function(
             "The growth results with the applied growth constraints on the "
             "minimal medium. Useful to see individual taxon exchanges and the "
             "achieved growth rates."
-        )
+        ),
     },
     name="Obtain a minimal growth medium for models.",
     description=(
@@ -552,7 +552,7 @@ plugin.visualizers.register_function(
             "Which kind of flux to use. Either - 'flux': molar flux of a "
             "metabolite - 'mass' (default): the mass flux (flux normalized by "
             "molecular weight) - 'C': carbon flux - 'N': nitrogen flux."
-        )
+        ),
     },
     name="Interactions for a taxon",
     description=(

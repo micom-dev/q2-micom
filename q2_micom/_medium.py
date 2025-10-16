@@ -8,11 +8,11 @@ from q2_micom._formats_and_types import CommunityModelDirectory
 
 def minimal_medium(
     models: CommunityModelDirectory,
-    community_growth : float = 0.1,
+    community_growth: float = 0.1,
     growth: float = 1e-2,
-    minimize_components : bool = False,
-    weights : str = "flux",
-    threads: int = 1
+    minimize_components: bool = False,
+    weights: str = "flux",
+    threads: int = 1,
 ) -> (pd.DataFrame, pd.DataFrame, mw.GrowthResults):
     """Calculate the minimal medium for a set of community models."""
     manifest = models.manifest.view(pd.DataFrame)
@@ -30,7 +30,7 @@ def minimal_medium(
         weights=weights,
         summarize=False,
         threads=threads,
-        solution=True
+        solution=True,
     )
     medium = sample_media.groupby("reaction").flux.max().reset_index()
     medium["metabolite"] = medium.reaction.str.replace("EX_", "")

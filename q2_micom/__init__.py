@@ -14,7 +14,7 @@ from q2_micom._viz import (
     plot_tradeoff,
     association,
     focal_interactions,
-    mes
+    mes,
 )
 
 __version__ = "0.16.0"
