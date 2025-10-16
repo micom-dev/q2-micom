@@ -51,7 +51,7 @@ jobs:
       run: |
         conda activate qiime2-dev
         pip install black
-        black --check --diff ./q2-micom
+        black --check --diff ./q2_micom
     - name: Test with pytest
       shell: bash -l {0}
       run: |
