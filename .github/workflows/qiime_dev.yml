@@ -35,12 +35,6 @@ jobs:
         wget https://raw.githubusercontent.com/qiime2/distributions/refs/heads/dev/latest/passed/qiime2-tiny-${{matrix.os.short}}-latest-conda.yml
         conda env create -n qiime2-dev --file qiime2-tiny-${{matrix.os.short}}-latest-conda.yml
         rm qiime2-tiny-${{matrix.os.short}}-latest-conda.yml
-    - name: Install q2-micom
-      shell: bash -l {0}
-      run: |
-        conda activate qiime2-dev
-        conda env update -n qiime2-dev -f q2-micom.yml
-        pip install -e .
     - name: Install CPLEX
       shell: bash -l {0}
       run: |
@@ -49,6 +43,12 @@ jobs:
     - name: Enable Rosetta emulation for conda
       if: ${{ matrix.os.short == 'macos' }}
       run: conda activate qiime2-dev && conda config --env --set subdir osx-64
+    - name: Install q2-micom
+      shell: bash -l {0}
+      run: |
+        conda activate qiime2-dev
+        conda env update -n qiime2-dev -f q2-micom.yml
+        pip install -e .
     - name: Lint with black
       shell: bash -l {0}
       run: |
