@@ -15,7 +15,7 @@ jobs:
         os:
             - image: "ubuntu-latest"
               short: "ubuntu"
-            - image: "macos-13"
+            - image: "macos-latest"
               short: "macos"
     runs-on: "${{matrix.os.image}}"
 
@@ -46,6 +46,9 @@ jobs:
       run: |
         conda activate qiime2-dev
         conda install -y -c ibmdecisionoptimization cplex
+    - name: Enable Rosetta emulation for conda
+      if: ${{ matrix.os.short == 'macos' }}
+      run: conda activate qiime2-dev && conda config --env --set subdir osx-64
     - name: Lint with black
       shell: bash -l {0}
       run: |
