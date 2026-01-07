@@ -20,7 +20,7 @@ jobs:
         os:
             - image: "ubuntu-latest"
               short: "ubuntu"
-            - image: "macos-13"
+            - image: "macos-latest"
               short: "macos"
         qiime:
             - version: "2025.4"
