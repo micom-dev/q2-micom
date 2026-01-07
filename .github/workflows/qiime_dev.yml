@@ -21,6 +21,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v6
+    - name: Enable Rosetta emulation for conda
+      if: ${{ matrix.os.short == 'macos' }}
+      run: echo "CONDA_SUBDIR=osx-64" >> "$GITHUB_ENV"
     - name: Setup conda
       uses: conda-incubator/setup-miniconda@v3
       with:
@@ -40,9 +43,6 @@ jobs:
       run: |
         conda activate qiime2-dev
         conda install -y -c ibmdecisionoptimization cplex
-    - name: Enable Rosetta emulation for conda
-      if: ${{ matrix.os.short == 'macos' }}
-      run: conda activate qiime2-dev && conda config --env --set subdir osx-64
     - name: Install q2-micom
       shell: bash -l {0}
       run: |
