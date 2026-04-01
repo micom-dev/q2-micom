@@ -9,5 +9,6 @@ dependencies:
   - python-symengine>=0.6.1
   - pip
   - osqp>=1.1.0
+  - highspy>=1.13.1
   - pip:
     - q2-micom
