@@ -10,5 +10,7 @@ dependencies:
   - pip
   - osqp>=1.1.0
   - highspy>=1.13.1
+  - pandas>=1.0,<3.0
+  - numpy
   - pip:
     - q2-micom

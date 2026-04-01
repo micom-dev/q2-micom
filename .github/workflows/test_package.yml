@@ -59,9 +59,9 @@ jobs:
     - name: Install q2-micom
       shell: bash -l {0}
       run: |
-        conda activate qiime2-dev
         conda env update -n qiime2-dev -f q2-micom.yml
-        pip install -e .
+        conda activate qiime2-dev
+        pip install --force-reinstall q2-micom
     - name: Lint with black
       shell: bash -l {0}
       run: |
