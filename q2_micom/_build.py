@@ -10,7 +10,6 @@ from q2_micom._formats_and_types import (
     CommunityModelDirectory,
 )
 
-
 RANKS = [
     "kingdom",
     "phylum",

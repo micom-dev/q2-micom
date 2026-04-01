@@ -3,11 +3,11 @@ channels:
   - bioconda
 dependencies:
   - cobra
-  - optlang>=1.5.1
+  - optlang>=1.9.0
   - rich
   - jinja2
   - python-symengine>=0.6.1
   - pip
-  - osqp>=0.6.2
+  - osqp>=1.1.0
   - pip:
     - q2-micom

@@ -23,9 +23,9 @@ jobs:
             - image: "macos-latest"
               short: "macos"
         qiime:
-            - version: "2025.4"
+            - version: "2026.1"
               dist: "tiny"
-            - version: "2025.7"
+            - version: "2025.10"
               dist: "tiny"
     runs-on: "${{matrix.os.image}}"
 
