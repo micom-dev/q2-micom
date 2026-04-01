@@ -59,9 +59,9 @@ jobs:
     - name: Install q2-micom
       shell: bash -l {0}
       run: |
-        sed 's/- q2-micom/- ./' q2-micom.yml
-        cat q2-micom.yml
-        conda env update -v -q -n qiime2-dev -f q2-micom.yml
+        sed 's/- q2-micom/- ./g' q2-micom.yml > env.yml
+        cat env.yml
+        conda env update -v -q -n qiime2-dev -f env.yml
     - name: Lint with black
       shell: bash -l {0}
       run: |
