@@ -50,18 +50,18 @@ jobs:
     - name: Install Qiime 2
       shell: bash -l {0}
       run: |
-        conda env create -n qiime2-dev --file env.yml
+        conda env create -v -q -n qiime2-dev --file env.yml
     - name: Install CPLEX
       shell: bash -l {0}
       run: |
         conda activate qiime2-dev
-        conda install -v -c ibmdecisionoptimization cplex
+        conda install -v -q -c ibmdecisionoptimization cplex
     - name: Install q2-micom
       shell: bash -l {0}
       run: |
-        sed -i '$c\    - .' q2-micom.yml
+        sed 's/- q2-micom/- ./' q2-micom.yml
         cat q2-micom.yml
-        conda env update -n qiime2-dev -f q2-micom.yml
+        conda env update -v -q -n qiime2-dev -f q2-micom.yml
     - name: Lint with black
       shell: bash -l {0}
       run: |

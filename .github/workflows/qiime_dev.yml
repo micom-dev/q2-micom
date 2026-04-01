@@ -42,13 +42,13 @@ jobs:
       shell: bash -l {0}
       run: |
         conda activate qiime2-dev
-        conda install -y -c ibmdecisionoptimization cplex
+        conda install -v -q -c ibmdecisionoptimization cplex
     - name: Install q2-micom
       shell: bash -l {0}
       run: |
-        conda activate qiime2-dev
-        conda env update -n qiime2-dev -f q2-micom.yml
-        pip install -e .
+        sed 's/- q2-micom/- ./' q2-micom.yml
+        cat q2-micom.yml
+        conda env update -v -q -n qiime2-dev -f q2-micom.yml
     - name: Lint with black
       shell: bash -l {0}
       run: |
