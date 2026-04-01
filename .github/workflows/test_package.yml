@@ -59,7 +59,7 @@ jobs:
     - name: Install q2-micom
       shell: bash -l {0}
       run: |
-        sed -i '$c\    - .' q2_micom.yml
+        sed -i '$c\    - .' q2-micom.yml
         cat q2_micom.yml
         conda env update -n qiime2-dev -f q2-micom.yml
     - name: Lint with black
