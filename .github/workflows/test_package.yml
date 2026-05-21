@@ -30,7 +30,7 @@ jobs:
     steps:
     - uses: actions/checkout@v6
     - name: Enable Rosetta emulation for conda
-      if: ${{ matrix.os.short == 'macos' }}
+      if: ${{ matrix.os.short == 'osx-64' }}
       run: echo "CONDA_SUBDIR=osx-64" >> "$GITHUB_ENV"
     - name: Setup conda
       uses: conda-incubator/setup-miniconda@v3
