@@ -33,7 +33,7 @@ jobs:
       if: ${{ matrix.os.short == 'osx-64' }}
       run: echo "CONDA_SUBDIR=osx-64" >> "$GITHUB_ENV"
     - name: Setup conda
-      uses: conda-incubator/setup-miniconda@v3
+      uses: conda-incubator/setup-miniconda@v4
       with:
         miniforge-version: latest
     - shell: bash -l {0}
