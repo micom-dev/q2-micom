@@ -20,7 +20,7 @@ jobs:
     runs-on: "${{matrix.os.image}}"
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - name: Enable Rosetta emulation for conda
       if: ${{ matrix.os.short == 'osx-64' }}
       run: echo "CONDA_SUBDIR=osx-64" >> "$GITHUB_ENV"
